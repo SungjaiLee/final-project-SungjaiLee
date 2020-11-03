@@ -33,9 +33,13 @@ Even if the ray hits an entity such as a enemy, it will simply collect that data
 This is done because entity may not take up the whole vertical strip
  and you may be able to look over the entity at the wall.
 
+######Helpful Links
+[Coding Train's Raycasting](https://www.youtube.com/watch?v=vYgIKn7iDH8)  
+[Lode's Raycasting Tutorial](https://lodev.org/cgtutor/raycasting.html)
+
 ####Non Euclidean Ray Casting
-The problem is with the Non-Euclidean nature of my maps. \
-Because my maps are not simple geometric shapes, you cannot shoot a simple ray. \
+The problem is with the Non-Euclidean nature of my maps.  
+Because my maps are not simple geometric shapes, you cannot shoot a simple ray.  
 The ray might go through the door and into the adjacent room, which is not straight-forward because they will
  only be linked by data, but map. \
 This means that if a ray is cast into a door, we will have to request the connected room to shoot another ray
@@ -45,7 +49,10 @@ This allows the game to maintain that weird Non-Euclidean feel.
  
 This ray casting through so many doors and elements may make the game bit slow, 
  but by allowing limited range and using c++ instead of slower java, I'm hoping it is at least playable. 
- 
+
+######Hepful Links
+[Non-Euclidean Example](https://www.youtube.com/watch?v=kEB11PQ9Eo8)
+
 ##Combat and Entity
 
 Some rooms may spawn entity within them. This again will eb determined by the room types.\ 
@@ -95,3 +102,43 @@ Entity handling: very complicated\
 ----Movement might be bit difficult \
 -----Maybe have a simplified a* algorithm, by dividing up the room into big grids\
 -----Make them walk to the door leading to player?
+
+##Timeline
+###Week 1: Ray Casting and Map Generation
+* Begin exploring Ray-Cast rendering in a single room.
+  * Explore Ray Casting in a Euclidean single regional map
+  * Play around with range and efficiency
+  * Find good number of rays to cast
+  * Play arond with perspective and heights
+  * Figure out 
+   
+* Come up with simple map generation. 
+  * Use heavily modified linked list for this non-euclidean map
+  * Come up with few prototype rooms and see how to randomly generate and link rooms
+    * Test room generation upon Player entering and ray entering
+   
+###Week 2: Non-Euclidean Ray Casting Render
+*Non Euclidean Rendering
+  * Begin implementing Ray Casting onto the Non-Euclidean Map
+  * Make sure Rays transfer proper data through
+
+* Game Structure
+  * Add player mobility
+    * Forward and Backward Movement
+    * Rotation (Using left right?) (Use arrows?)
+  * Test room transfer
+
+* Enemy Rendering and Spawning
+  * Allow some room types to come with enemy
+  * Begin looking into enemy motion
+
+###Week 3: Player Mechanics and Enemy Mobility
+* Add Bullet motion
+  * Allow player to fire bullet which will also be rendered by the rays
+
+*Fix bugs and such 
+
+
+###Stretch Goals
+* Textured Walls
+* Enemy and Combat Mechanics may be considered Stretch Goals too
