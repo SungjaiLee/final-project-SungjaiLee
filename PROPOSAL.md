@@ -101,6 +101,12 @@ Entity handling: very complicated
 -----Maybe have a simplified a* algorithm, by dividing up the room into big grids  
 -----Make them walk to the door leading to player?  
 
+#######Entity Checking
+Instead of looping through every entity that are too far away to count,  
+From the current room, branch out for n number of rooms and compute movements for entities only in that room
+This might cause a weird effect of some entities freezing in time if we move far away enough  
+This can be a worked into a concept for the game.
+
 ##Timeline
 ###Week 1: Ray Casting and Map Generation
 * Begin exploring Ray-Cast rendering in a single room.
