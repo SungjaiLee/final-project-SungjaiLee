@@ -38,8 +38,15 @@ using json = nlohmann::json;
 
    std::map<std::string, RoomTemplate> template_rooms_;
 
+   std::set<std::string> ids_;
+
  public:
-   const size_t GetTemplateCount();
+   const float RoomWidth() const;
+   const float RoomHeight() const;
+
+   size_t AvailableCount() const;
+   const std::set<std::string> GetAvailableIds() const;
+
 
 
 

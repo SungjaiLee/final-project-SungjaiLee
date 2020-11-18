@@ -66,20 +66,147 @@ TEST_CASE("Load RoomTemplate from JSON ") {
 TEST_CASE("Load Factory from JSON") {
   SECTION("No Rooms") {
 
-//    json json = R"aa(
-//    {
-//      "room_dimension" : {
-//        "width" : 500,
-//        "height" : 500
-//      }
-//      "rooms" : []
-//    })aa"_json;
+    json json = R"aa(
+    {
+      "room_dimension" : {
+        "width" : 500,
+        "height" : 200
+      },
+      "__comment" : "rooms are assisgned as map of string with value of room template",
+      "rooms" : {
+      }
+    }
+    )aa"_json;
 
-//    RoomFactory factory = json;x
+    RoomFactory factory = json;
 
+    REQUIRE(factory.RoomWidth() == 500);
+    REQUIRE(factory.RoomHeight() == 200);
+
+    REQUIRE(factory.AvailableCount() == 0);
+
+    std::set<std::string> ids = factory.GetAvailableIds();
+    REQUIRE(ids.empty());
   }
 
   SECTION("Many Rooms") {
+
+    SECTION("One Room") {
+
+      json json = R"aa(
+      {
+        "room_dimension" : {
+          "width" : 500,
+          "height" : 200
+        },
+        "__comment" : "rooms are assisgned as map of string with value of room template",
+        "rooms" : {
+          "default" : {
+            "walls" : [
+              {
+                "head_x" : 10,
+                "head_y" : 10,
+                "tail_x" : 100,
+                "tail_y" : 100
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 101,
+                "tail_y" : 101
+              }
+            ]
+          }
+        }
+      })aa"_json;
+
+      RoomFactory factory = json;
+
+      REQUIRE(factory.RoomWidth() == 500);
+      REQUIRE(factory.RoomHeight() == 200);
+
+      REQUIRE(factory.AvailableCount() == 1);
+
+      std::set<std::string> ids = factory.GetAvailableIds();
+      REQUIRE(!ids.empty());
+      REQUIRE(ids.find("default") != ids.end());
+
+    }
+
+    SECTION("Many Rooms") {
+
+      json json = R"aa(
+      {
+        "room_dimension" : {
+          "width" : 500,
+          "height" : 200
+        },
+        "__comment" : "rooms are assisgned as map of string with value of room template",
+        "rooms" : {
+          "default" : {
+            "walls" : [
+              {
+                "head_x" : 10,
+                "head_y" : 10,
+                "tail_x" : 100,
+                "tail_y" : 100
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 101,
+                "tail_y" : 101
+              }
+            ]
+          },
+          "second" : {
+            "walls" : [
+              {
+                "head_x" : 1,
+                "head_y" : 1,
+                "tail_x" : 10,
+                "tail_y" : 10
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 11,
+                "tail_y" : 101
+              }
+            ]
+          },
+          "third" : {
+            "walls" : [
+              {
+                "head_x" : 1,
+                "head_y" : 1,
+                "tail_x" : 10,
+                "tail_y" : 10
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 11,
+                "tail_y" : 101
+              }
+            ]
+          }
+        }
+      })aa"_json;
+
+      RoomFactory factory = json;
+
+      REQUIRE(factory.RoomWidth() == 500);
+      REQUIRE(factory.RoomHeight() == 200);
+
+      REQUIRE(factory.AvailableCount() == 3);
+
+      std::set<std::string> ids = factory.GetAvailableIds();
+      REQUIRE(!ids.empty());
+      REQUIRE(ids.find("default") != ids.end());
+      REQUIRE(ids.find("second") != ids.end());
+      REQUIRE(ids.find("third") != ids.end());
+    }
 
   }
 }
