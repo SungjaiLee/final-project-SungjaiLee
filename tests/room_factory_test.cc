@@ -66,15 +66,14 @@ TEST_CASE("Load RoomTemplate from JSON ") {
 TEST_CASE("Load Factory from JSON") {
   SECTION("No Rooms") {
 
-    json json = R"aa(
-    {
-      "room_dimension" : {
-        "width" : 500,
-        "height" : 500
-      }
-      "rooms" : []
-    }
-    )aa"_json;
+//    json json = R"aa(
+//    {
+//      "room_dimension" : {
+//        "width" : 500,
+//        "height" : 500
+//      }
+//      "rooms" : []
+//    })aa"_json;
 
 //    RoomFactory factory = json;x
 
