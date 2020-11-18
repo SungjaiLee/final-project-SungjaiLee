@@ -5,16 +5,31 @@
 #ifndef NONEUCLIDEAN_RAY_CASTER_WALL_H
 #define NONEUCLIDEAN_RAY_CASTER_WALL_H
 
+
+
 #include "cinder/gl/gl.h"
+
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace room_explorer {
 
 class Wall {
-
+private:
   glm::vec2 head_;
   glm::vec2 tail_;
 
+public:
+
+  const glm::vec2 &getHead() const;
+
+  const glm::vec2 &getTail() const;
+
+  friend void from_json(const json& j, Wall& wall);
 };
+
+void from_json(const json& j, Wall& wall);
 
 } // namespace room_explorer
 

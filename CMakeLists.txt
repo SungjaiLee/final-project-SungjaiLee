@@ -30,6 +30,7 @@ if(${CMAKE_VERSION} VERSION_LESS 3.14)
     include(cmake/add_FetchContent_MakeAvailable.cmake)
 endif()
 
+
 FetchContent_Declare(
         catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
@@ -50,29 +51,34 @@ get_filename_component(APP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/" ABSOLUTE)
 include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 
 list(APPEND CORE_SOURCE_FILES src/core/room.cc)
+list(APPEND CORE_SOURCE_FILES src/core/room_factory.cc)
+list(APPEND CORE_SOURCE_FILES src/core/wall.cc)
 
 
 list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
         src/visualizer/rooms_explorer_app.cc)
 
-list(APPEND TEST_FILES tests/test_main.cc)
 
-list(APPEND TEST_FILES tests/room_test.cc)
+list(APPEND TEST_FILES tests/wall_test.cc)
 
 ci_make_app(
-        APP_NAME        rooms
+        APP_NAME        rooms_explorer
         CINDER_PATH     ${CINDER_PATH}
         SOURCES         apps/cinder_app_main.cc ${SOURCE_FILES}
         INCLUDES        include
 )
 
 ci_make_app(
-        APP_NAME        rooms_test
+        APP_NAME        rooms_explorer_test
         CINDER_PATH     ${CINDER_PATH}
         SOURCES tests/test_main.cc ${SOURCE_FILES} ${TEST_FILES}
         INCLUDES        include
         LIBRARIES       catch2
 )
+
+
+
+
 
 if(MSVC)
     set_property(TARGET ideal-gas-test APPEND_STRING PROPERTY LINK_FLAGS " /SUBSYSTEM:CONSOLE")

@@ -1,0 +1,29 @@
+{
+  "_comment" : "This is a debug json room templates, involving only a single room as possible template.",
+
+  "room_dimension" : {
+    "width" : 500,
+    "height" : 500
+  },
+
+  "rooms" : [
+    {
+      "id" : 0,
+      "walls" : [
+        {
+          "head_x" : 100,
+          "head_y" : 100,
+          "tail_x" : 400,
+          "tail_y" : 400
+        },
+        {
+          "head_x" : 250.5,
+          "head_y" : 200,
+          "tail_x" : 400.5,
+          "tail_y" : 400.5
+        }
+      ]
+
+    }
+  ]
+}
