@@ -7,6 +7,20 @@
 
 namespace room_explorer {
 
+
+Direction OppositeDirection(Direction dir) {
+  switch (dir) {
+    case kNorth:
+      return kSouth;
+    case kSouth:
+      return kNorth;
+    case kEast:
+      return kWest;
+    case kWest:
+      return kEast;
+  }
+}
+
 Room* Room::GetRoomPointer(Direction dir) {
   switch (dir) {
     case kNorth:

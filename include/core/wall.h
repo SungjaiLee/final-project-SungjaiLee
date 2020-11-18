@@ -27,6 +27,9 @@ public:
   const glm::vec2 &getTail() const;
 
   friend void from_json(const json& j, Wall& wall);
+
+  bool operator< (const Wall& wall) const;
+
 };
 
 void from_json(const json& j, Wall& wall);

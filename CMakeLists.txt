@@ -60,6 +60,8 @@ list(APPEND SOURCE_FILES    ${CORE_SOURCE_FILES}
 
 
 list(APPEND TEST_FILES tests/wall_test.cc)
+list(APPEND TEST_FILES tests/room_factory_test.cc)
+list(APPEND TEST_FILES tests/room_test.cc)
 
 ci_make_app(
         APP_NAME        rooms_explorer

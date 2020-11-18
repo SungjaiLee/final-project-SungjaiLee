@@ -6,6 +6,7 @@
 #define NONEUCLIDEAN_RAY_CASTER_ROOM_FACTORY_H
 
 #include <core/wall.h>
+#include <core/room.h>
 
 #include <nlohmann/json.hpp>
 
@@ -22,18 +23,25 @@ using json = nlohmann::json;
 
  class RoomFactory {
 
+
+ public:
+   struct RoomTemplate {
+     std::set<Wall> walls_;
+     friend void from_json(const json&, RoomTemplate& );
+
+   public:
+     const size_t GetWallCount() const;
+   };
+
  private:
    float kRoomWidth, kRoomHeight;
 
-   struct RoomTemplate {
-     std::set<Wall> walls_;
-     int id_;
-     friend void from_json(const json&, RoomTemplate& );
-   };
-
-   std::vector<RoomTemplate> rooms_;
+   std::map<std::string, RoomTemplate> template_rooms_;
 
  public:
+   const size_t GetTemplateCount();
+
+
 
    //json parse needs access to private RoomTemplate
    friend void from_json(const json& json, RoomFactory::RoomTemplate& room_template);

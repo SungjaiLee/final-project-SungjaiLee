@@ -23,4 +23,9 @@ const glm::vec2 &Wall::getTail() const {
   return tail_;
 }
 
+bool Wall::operator<(const Wall& wall) const {
+  //!! doesn't matter what it is actually comparing, just need a valid comparision for them to work in a set
+  return this < &wall;
+}
+
 } // namespace room_explorer
