@@ -7,7 +7,7 @@
 namespace room_explorer {
 
 
-
+// JSON Loaders ===============================================
 
 void from_json(const json& json, RoomFactory& room_factory) {
   room_factory.kRoomWidth = json.at("room_dimension").at("width");
@@ -20,8 +20,10 @@ void from_json(const json& json, RoomFactory& room_factory) {
     std::string id = item.key();
 
     room_factory.ids_.insert(id);
-    room_factory.template_rooms_.insert(std::pair<std::string, RoomFactory::RoomTemplate>(id, std::move(item.value())));
+    room_factory.template_rooms_.insert(std::pair<std::string, RoomFactory::RoomTemplate>(id, item.value()));
   }
+
+  room_factory.counts_ = room_factory.ids_.size();
 
 }
 
@@ -31,8 +33,13 @@ void from_json(const json& json, RoomFactory::RoomTemplate& room_template) {
             std::inserter(room_template.walls_, room_template.walls_.begin()));
 }
 
+// end of JSON Loaders
+
+
+// RoomFactory Member Handler =====================================
+
 size_t RoomFactory::AvailableCount() const {
-  return template_rooms_.size();
+  return counts_;
 }
 
 const float RoomFactory::RoomWidth() const {
@@ -45,6 +52,38 @@ const float RoomFactory::RoomHeight() const {
 
 const std::set<std::string> RoomFactory::GetAvailableIds() const {
   return ids_;
+}
+
+const std::string &RoomFactory::RandomId() const {
+  auto it = ids_.begin();
+  if (counts_ == 0) {
+    throw exceptions::NoRoomTemplateException();
+  }
+  size_t advance_length = std::rand() % counts_;
+  std::advance(it, advance_length);
+  return *it;
+}
+
+Room* RoomFactory::GenerateRoom(const std::string &id) const {
+
+  if (!ContainsRoomId(id)) {
+    return nullptr;
+  }
+
+  Room* room = new Room();
+  room->width_ = kRoomWidth;
+  room->height = kRoomHeight;
+
+  RoomTemplate room_temp = template_rooms_.at(id);
+
+  //TODO should walls be
+  std::copy( room_temp.walls_.begin(), room_temp.walls_.end(), std::inserter(room->walls, room->walls.begin()) );
+
+  return room;
+}
+
+bool RoomFactory::ContainsRoomId(const std::string &id) const {
+  return ids_.find(id) != ids_.end();
 }
 
 const size_t RoomFactory::RoomTemplate::GetWallCount() const {

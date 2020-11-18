@@ -1,16 +1,16 @@
+#include <climits>
 //
-// Created by Jack Lee on 2020/11/16.
+// Created by Jack Lee on 2020/11/19.
 //
 
 #ifndef NONEUCLIDEAN_RAY_CASTER_ROOM_H
 #define NONEUCLIDEAN_RAY_CASTER_ROOM_H
 
-#include "wall.h"
+#include <core/wall.h>
 
 #include <set>
 
 namespace room_explorer {
-
 
 enum Direction {
   kNorth,
@@ -19,48 +19,44 @@ enum Direction {
   kWest
 };
 
-Direction OppositeDirection(Direction dir);
+Direction OppositeDirection(Direction direction);
 
 class Room {
 private:
-  Room* north_ = nullptr;
-  Room* east_ = nullptr;
-  Room* south_ = nullptr;
-  Room* west_ = nullptr;
+  Room* north_;
+  Room* south_;
+  Room* east_;
+  Room* west_;
 
+  __unused float width_;
+  __unused float height;
+
+  std::set<Wall> walls;
+
+public:
   /**
-   * Contains wall layout information.
-   */
-  struct Layout {
-    std::set<Wall>  walls_;
-  };
-
-  Layout layout_;
-
-  /**
-   * Generate a new room
+   * Returns pointer to room in the given direction.
+   * @param dir
    * @return
    */
-  Room* GenerateRoom();
-
-  //TODO consider making it referecne to pointer so we can modify it
-  Room* GetRoomPointer(Direction dir);
+  Room*& GetRoomPointer(Direction dir);
 
   /**
-   * Link the room in the given direction.
-   * Thge other room also will be linked to this room by the opposite direction
-   * Returns false if room in the given direction was already populated.
-   * @param dir Diretion of this room where room_p will be connected.
-   * @param room_p Should not be null
+   * Link this currnt room's portal in the given direction to the give room.
+   * The corresponding room is also linekd back.
+   * If either rooms are already linked in the diretion, returns fakse.
+   * @param dir
+   * @param room_p
    * @return
    */
   bool LinkRoom(Direction dir, Room* room_p);
 
-  bool CutLink(Direction dir);
 
-public:
+  friend class RoomFactory;
 };
 
-} // namespace room_explorer
+
+
+}
 
 #endif //NONEUCLIDEAN_RAY_CASTER_ROOM_H

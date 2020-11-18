@@ -6,7 +6,6 @@
 #define NONEUCLIDEAN_RAY_CASTER_WALL_H
 
 
-
 #include "cinder/gl/gl.h"
 
 #include <nlohmann/json.hpp>

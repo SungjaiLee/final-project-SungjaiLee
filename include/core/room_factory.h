@@ -8,10 +8,13 @@
 #include <core/wall.h>
 #include <core/room.h>
 
+#include <exceptions/room_explorer_exception.h>
+
 #include <nlohmann/json.hpp>
 
 #include <string>
 #include <fstream>
+#include <random>
 
 using json = nlohmann::json;
 
@@ -40,12 +43,29 @@ using json = nlohmann::json;
 
    std::set<std::string> ids_;
 
+   size_t counts_;
+
  public:
    const float RoomWidth() const;
    const float RoomHeight() const;
 
    size_t AvailableCount() const;
    const std::set<std::string> GetAvailableIds() const;
+
+   bool ContainsRoomId(const std::string& id) const;
+
+   /*
+    * nullptr is no id,
+    */
+   Room* GenerateRoom(const std::string& id) const;
+
+   const std::string& RandomId() const;
+
+   /*
+    * nullptr is no id,
+    *
+    */
+   Room* GenerateRandomRoom() const;
 
 
 

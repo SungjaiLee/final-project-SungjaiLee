@@ -210,3 +210,115 @@ TEST_CASE("Load Factory from JSON") {
 
   }
 }
+
+TEST_CASE("Get Rand ID") {
+  SECTION("No Id") {
+    json json = R"aa(
+      {
+        "room_dimension" : {
+          "width" : 500,
+          "height" : 200
+        },
+        "__comment" : "rooms are assisgned as map of string with value of room template",
+        "rooms" : {}
+      })aa"_json;
+    RoomFactory factory = json;
+
+    REQUIRE_THROWS_AS(factory.RandomId(), exceptions::NoRoomTemplateException);
+  }
+  SECTION("One ID") {
+    json json = R"aa(
+      {
+        "room_dimension" : {
+          "width" : 500,
+          "height" : 200
+        },
+        "__comment" : "rooms are assisgned as map of string with value of room template",
+        "rooms" : {
+          "default" : {
+            "walls" : [
+              {
+                "head_x" : 10,
+                "head_y" : 10,
+                "tail_x" : 100,
+                "tail_y" : 100
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 101,
+                "tail_y" : 101
+              }
+            ]
+          }
+        }
+      })aa"_json;
+    RoomFactory factory = json;
+
+    std::string id = factory.RandomId();
+
+    REQUIRE(id == "default");
+  }
+  SECTION("More Id") {
+    json json = R"aa(
+      {
+        "room_dimension" : {
+          "width" : 500,
+          "height" : 200
+        },
+        "__comment" : "rooms are assisgned as map of string with value of room template",
+        "rooms" : {
+          "default" : {
+            "walls" : [
+              {
+                "head_x" : 10,
+                "head_y" : 10,
+                "tail_x" : 100,
+                "tail_y" : 100
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 101,
+                "tail_y" : 101
+              }
+            ]
+          },
+          "second" : {
+            "walls" : [
+              {
+                "head_x" : 1,
+                "head_y" : 1,
+                "tail_x" : 10,
+                "tail_y" : 10
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 11,
+                "tail_y" : 101
+              }
+            ]
+          },
+          "third" : {
+            "walls" : [
+              {
+                "head_x" : 1,
+                "head_y" : 1,
+                "tail_x" : 10,
+                "tail_y" : 10
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 11,
+                "tail_y" : 101
+              }
+            ]
+          }
+        }
+      })aa"_json;
+    RoomFactory factory = json;
+
+  }
+}
