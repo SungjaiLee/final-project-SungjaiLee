@@ -25,15 +25,15 @@ public:
 
   Wall(const glm::vec2&, const glm::vec2&);
 
-  const glm::vec2 &getHead() const;
+  const glm::vec2& GetHead() const;
 
-  const glm::vec2 &getTail() const;
-
-  friend void from_json(const json& j, Wall& wall);
+  const glm::vec2 &GetTail() const;
 
   bool operator< (const Wall& wall) const;
   bool operator== (const Wall& wall) const;
 
+
+  friend void from_json(const json& j, Wall& wall);
 };
 
 void from_json(const json& j, Wall& wall);

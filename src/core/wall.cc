@@ -15,11 +15,11 @@ void from_json(const json& json, Wall& wall) {
   wall.tail_ = glm::vec2(t_x, t_y);
 }
 
-const glm::vec2 &Wall::getHead() const {
+const glm::vec2 &Wall::GetHead() const {
   return head_;
 }
 
-const glm::vec2 &Wall::getTail() const {
+const glm::vec2 &Wall::GetTail() const {
   return tail_;
 }
 

@@ -179,7 +179,7 @@ TEST_CASE("Get Room") {
 
   }
 
-  SECTION("Check Get room consitency") {
+  SECTION("Check Get room consistency") {
     Room* room1 = room->GetConnectedRoom(kNorth);
     Room* room2 = room->GetConnectedRoom(kNorth);
 

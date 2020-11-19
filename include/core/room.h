@@ -44,11 +44,11 @@ private:
 
   /**
    * Returns pointer to room in the given direction.
-   * @param dir
+   * @param direction
    * @return
    */
-  Room*& GetRoomPointer(const Direction& dir);
-  Room* GetRoomPointer(const Direction& dir) const;
+  Room*& GetLinkedRoomPointer(const Direction& direction);
+  Room* GetLinkedRoomPointer(const Direction& direction) const;
 
   /**
    * Link this currnt room's portal in the given direction to the give room.
@@ -81,6 +81,7 @@ public:
   bool ConnectedWith(Room* other) const;
 
 
+  // Factory need to be able to populate the private room members
   friend class RoomFactory;
 };
 

@@ -13,9 +13,7 @@ void from_json(const json& json, RoomFactory& room_factory) {
   room_factory.kRoomWidth = json.at("room_dimension").at("width");
   room_factory.kRoomHeight = json.at("room_dimension").at("height");
 
-//  room_factory.template_rooms_ = json.at("rooms").get<std::map<std::string, RoomFactory::RoomTemplate>>();
-  //USE .items for both keya dn value
-
+  //Use for each items instead of copy to not have to copy id and templates separately
   for (auto& item : json.at("rooms").items()) {
     std::string id = item.key();
 
@@ -24,9 +22,7 @@ void from_json(const json& json, RoomFactory& room_factory) {
   }
 
   room_factory.counts_ = room_factory.ids_.size();
-
 }
-
 
 void from_json(const json& json, RoomFactory::RoomTemplate& room_template) {
   std::copy(json.at("walls").begin(), json.at("walls").end(),
@@ -38,7 +34,6 @@ void from_json(const json& json, RoomFactory::RoomTemplate& room_template) {
 
 // RoomFactory Member Handler =====================================
 
-
 float RoomFactory::RoomWidth() const {
   return kRoomWidth;
 }
@@ -49,11 +44,6 @@ float RoomFactory::RoomHeight() const {
 
 size_t RoomFactory::RoomTemplateCount() const {
   return counts_;
-}
-
-
-size_t RoomFactory::RoomTemplate::GetWallCount() const {
-  return walls_.size();
 }
 
 bool RoomFactory::ContainsRoomId(const std::string &id) const {
@@ -97,6 +87,14 @@ Room* RoomFactory::GenerateRoom(const std::string &id) const {
 Room* RoomFactory::GenerateRandomRoom() const {
   return GenerateRoom(RandomId());
 }
+
+//RoomTemplate Methods ============================================
+
+size_t RoomFactory::RoomTemplate::GetWallCount() const {
+  return walls_.size();
+}
+
+// End of RoomTemplate ===========================
 
 
 } // namespace room_explorer

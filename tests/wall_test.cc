@@ -26,8 +26,8 @@ TEST_CASE("Load From JSON") {
 
     Wall wall = json;
 
-    REQUIRE(wall.getHead() == glm::vec2(100.5, 55.555));
-    REQUIRE(wall.getTail() == glm::vec2(-1002.34, 0));
+    REQUIRE(wall.GetHead() == glm::vec2(100.5, 55.555));
+    REQUIRE(wall.GetTail() == glm::vec2(-1002.34, 0));
   }
 
   SECTION("Load into Set of Walls") {
@@ -60,11 +60,11 @@ TEST_CASE("Load From JSON") {
 
     auto itr = walls.begin();
 
-    REQUIRE(itr->getHead() == glm::vec2(100.5, 55.555));
-    REQUIRE(itr->getTail() == glm::vec2(-1002.34, 0));
+    REQUIRE(itr->GetHead() == glm::vec2(100.5, 55.555));
+    REQUIRE(itr->GetTail() == glm::vec2(-1002.34, 0));
     ++itr;
-    REQUIRE(itr->getHead() == glm::vec2(100.5, 55.555));
-    REQUIRE(itr->getTail() == glm::vec2(-1002.34, 0));
+    REQUIRE(itr->GetHead() == glm::vec2(100.5, 55.555));
+    REQUIRE(itr->GetTail() == glm::vec2(-1002.34, 0));
   }
 
   SECTION("Load into Vector of Walls") {
@@ -95,9 +95,9 @@ TEST_CASE("Load From JSON") {
 
     REQUIRE(walls.size() == 2);
 
-    REQUIRE(walls[0].getHead() == glm::vec2(100.5, 55.555));
-    REQUIRE(walls[0].getTail() == glm::vec2(-1002.34, 0));
-    REQUIRE(walls[1].getHead() == glm::vec2(100.5, 55.555));
-    REQUIRE(walls[1].getTail() == glm::vec2(-1002.34, 0));
+    REQUIRE(walls[0].GetHead() == glm::vec2(100.5, 55.555));
+    REQUIRE(walls[0].GetTail() == glm::vec2(-1002.34, 0));
+    REQUIRE(walls[1].GetHead() == glm::vec2(100.5, 55.555));
+    REQUIRE(walls[1].GetTail() == glm::vec2(-1002.34, 0));
   }
 }
