@@ -9,7 +9,6 @@
 #include <core/room.h>
 #endif  // NONEUCLIDEAN_RAY_CASTER_ROOM_H
 
-
 #include <core/wall.h>
 
 #include <exceptions/room_explorer_exception.h>
@@ -26,64 +25,64 @@ using json = nlohmann::json;
  * Responsibe for generating new rooms.
  * Knows all the room templates from which rooms can be generatde from
  */
- namespace room_explorer {
+namespace room_explorer {
 
- class RoomFactory {
+class Room;
 
- public:
-   struct RoomTemplate {
-     std::set<Wall> walls_;
-     friend void from_json(const json&, RoomTemplate& );
-
-   public:
-     size_t GetWallCount() const;
-   };
-
- private:
-   float kRoomWidth, kRoomHeight;
-
-   std::map<std::string, RoomTemplate> template_rooms_;
-
-   std::set<std::string> ids_;
-
-   size_t counts_;
+class RoomFactory {
+public:
+ struct RoomTemplate {
+   std::set<Wall> walls_;
+   friend void from_json(const json&, RoomTemplate& );
 
  public:
-   float RoomWidth() const;
-   float RoomHeight() const;
-
-   size_t RoomTemplateCount() const;
-   const std::set<std::string>& GetAvailableIds() const;
-
-   bool ContainsRoomId(const std::string& id) const;
-
-   /*
-    * nullptr is no id,
-    */
-   Room* GenerateRoom(const std::string& id) const;
-
-   const std::string& RandomId() const;
-
-   /*
-    * nullptr is no id,
-    *
-    */
-   Room* GenerateRandomRoom() const;
-
-
-
-
-   //json parse needs access to private RoomTemplate
-   friend void from_json(const json& json, RoomFactory::RoomTemplate& room_template);
-
-   friend void from_json(const json& json, RoomFactory& room_factory);
-
+   size_t GetWallCount() const;
  };
+
+private:
+  float kRoomWidth, kRoomHeight;
+
+  std::map<std::string, RoomTemplate> template_rooms_;
+
+  std::set<std::string> ids_;
+
+  size_t counts_;
+
+public:
+  float RoomWidth() const;
+  float RoomHeight() const;
+
+  size_t RoomTemplateCount() const;
+  const std::set<std::string>& GetAvailableIds() const;
+
+  bool ContainsRoomId(const std::string& id) const;
+
+  /*
+   * nullptr is no id,
+   */
+  Room* GenerateRoom(const std::string& id) const;
+
+ const std::string& RandomId() const;
+
+  /*
+  * nullptr is no id,
+  *
+  */
+  Room* GenerateRandomRoom() const;
+
+
+
+
+  //json parse needs access to private RoomTemplate
+  friend void from_json(const json& json, RoomFactory::RoomTemplate& room_template);
+
+  friend void from_json(const json& json, RoomFactory& room_factory);
+};
 
 // void from_json(const json& json, RoomFactory& room_factory);
 //
 // void from_json(const json& json, RoomFactory::RoomTemplate& room_template);
 
- } // namespace room_explorer
+} // namespace room_explorer
 
 #endif //NONEUCLIDEAN_RAY_CASTER_ROOM_FACTORY_H

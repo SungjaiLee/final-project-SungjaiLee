@@ -10,7 +10,6 @@
 #include <core/room_factory.h>
 #endif //NONEUCLIDEAN_RAY_CASTER_ROOM_FACTORY_H
 
-
 #include <core/wall.h>
 
 #include <set>
@@ -27,14 +26,11 @@ enum Direction {
 Direction OppositeDirection(const Direction& direction);
 
 
-class Room;
-
-//class RoomFactory;
-
+class RoomFactory;
 
 class Room {
 private:
-  RoomFactory* factory;
+  const RoomFactory* factory;
 
   Room* north_;
   Room* south_;
@@ -52,6 +48,7 @@ private:
    * @return
    */
   Room*& GetRoomPointer(const Direction& dir);
+  Room* GetRoomPointer(const Direction& dir) const;
 
   /**
    * Link this currnt room's portal in the given direction to the give room.
@@ -79,6 +76,9 @@ public:
 
   const std::set<Wall>& GetWalls() const;
 
+  bool ConnectedWith(Room* other, Direction direction) const;
+
+  bool ConnectedWith(Room* other) const;
 
 
   friend class RoomFactory;

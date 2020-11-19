@@ -83,6 +83,8 @@ Room* RoomFactory::GenerateRoom(const std::string &id) const {
   room->width_ = kRoomWidth;
   room->height_ = kRoomHeight;
 
+  room->factory = this;
+
   RoomTemplate room_temp = template_rooms_.at(id);
 
   //TODO should walls be only reference? copying might take up too much storage
@@ -95,5 +97,6 @@ Room* RoomFactory::GenerateRoom(const std::string &id) const {
 Room* RoomFactory::GenerateRandomRoom() const {
   return GenerateRoom(RandomId());
 }
+
 
 } // namespace room_explorer

@@ -32,6 +32,22 @@ Room*& Room::GetRoomPointer(const Direction& dir) {
   }
 }
 
+Room* Room::GetRoomPointer(const Direction& dir) const {
+  // This repetition is necessary to allow simple manipulation for both const and non-const context
+  switch (dir) {
+    case kNorth:
+      return north_;
+    case kSouth:
+      return south_;
+    case kEast:
+      return east_;
+    case kWest:
+      return west_;
+  }
+}
+
+
+
 bool Room::LinkRoom(const Direction& dir, Room* room_p) {
 
 //  if (GetRoomPointer(dir) != nullptr) {
@@ -109,13 +125,28 @@ const std::set<Wall>& Room::GetWalls() const {
 Room* Room::GetConnectedRoom(const Direction& direction) {
   Room* room = GetRoomPointer(direction);
   if (room == nullptr) {
-
-    LinkRoom(direction, factory->GenerateRandomRoom());
-
+    room = factory->GenerateRandomRoom();
+    LinkRoom(direction, room);
   }
-  return nullptr;
+  return room;
 }
 
+bool Room::ConnectedWith(Room* other, Direction direction) const {
+  if (other != GetRoomPointer(direction)) {
+    return false;
+  }
+  if (this != other->GetRoomPointer(OppositeDirection(direction))) {
+    return false;
+  }
+  return true;
+}
+
+bool Room::ConnectedWith(Room* other) const {
+  return  ConnectedWith(other, kNorth)  ||
+          ConnectedWith(other, kSouth)  ||
+          ConnectedWith(other, kEast)   ||
+          ConnectedWith(other, kWest);
+}
 
 
 

@@ -17,9 +17,7 @@ TEST_CASE("Room Test Sanity Check") {
 // Factory Generation assumed to be tested in Factor Test
 
 
-TEST_CASE("Correct Members generated") {
-
-  RoomFactory factory = R"aa(
+RoomFactory factory = R"aa(
 {
   "room_dimension" : {
     "width" : 500,
@@ -84,6 +82,9 @@ TEST_CASE("Correct Members generated") {
   }
 })aa"_json;
 
+TEST_CASE("Correct Members generated") {
+
+
   Room& room = *factory.GenerateRoom("default");
 
   SECTION("dimension") {
@@ -121,5 +122,67 @@ TEST_CASE("Correct Members generated") {
       REQUIRE( (flag_wall4 != flag_wall2) );
       REQUIRE( (flag_wall3 || flag_wall4) );
     }
+  }
+}
+
+
+TEST_CASE("Get Room") {
+  //Expeect room to generate new room automatically
+  Room* room = factory.GenerateRandomRoom();
+
+  SECTION("North") {
+    Room* next = room->GetConnectedRoom(kNorth);
+
+    REQUIRE(next != nullptr);
+
+    REQUIRE(room->ConnectedWith(next, kNorth));
+    REQUIRE(!room->ConnectedWith(next, kSouth));
+    REQUIRE(!room->ConnectedWith(next, kEast));
+    REQUIRE(!room->ConnectedWith(next, kWest));
+    REQUIRE(room->ConnectedWith(next));
+  }
+
+  SECTION("South") {
+    Room* next = room->GetConnectedRoom(kSouth);
+
+    REQUIRE(next != nullptr);
+
+    REQUIRE(!room->ConnectedWith(next, kNorth));
+    REQUIRE(room->ConnectedWith(next, kSouth));
+    REQUIRE(!room->ConnectedWith(next, kEast));
+    REQUIRE(!room->ConnectedWith(next, kWest));
+    REQUIRE(room->ConnectedWith(next));
+  }
+
+  SECTION("East") {
+    Room* next = room->GetConnectedRoom(kEast);
+
+    REQUIRE(next != nullptr);
+
+    REQUIRE(!room->ConnectedWith(next, kNorth));
+    REQUIRE(!room->ConnectedWith(next, kSouth));
+    REQUIRE(room->ConnectedWith(next, kEast));
+    REQUIRE(!room->ConnectedWith(next, kWest));
+    REQUIRE(room->ConnectedWith(next));
+  }
+
+  SECTION("West") {
+    Room* next = room->GetConnectedRoom(kWest);
+
+    REQUIRE(next != nullptr);
+
+    REQUIRE(!room->ConnectedWith(next, kNorth));
+    REQUIRE(!room->ConnectedWith(next, kSouth));
+    REQUIRE(!room->ConnectedWith(next, kEast));
+    REQUIRE(room->ConnectedWith(next, kWest));
+    REQUIRE(room->ConnectedWith(next));
+
+  }
+
+  SECTION("Check Get room consitency") {
+    Room* room1 = room->GetConnectedRoom(kNorth);
+    Room* room2 = room->GetConnectedRoom(kNorth);
+
+    REQUIRE(room1 == room2);
   }
 }
