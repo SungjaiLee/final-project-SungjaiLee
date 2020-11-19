@@ -83,7 +83,7 @@ TEST_CASE("Load Factory from JSON") {
     REQUIRE(factory.RoomWidth() == 500);
     REQUIRE(factory.RoomHeight() == 200);
 
-    REQUIRE(factory.AvailableCount() == 0);
+    REQUIRE(factory.RoomTemplateCount() == 0);
 
     std::set<std::string> ids = factory.GetAvailableIds();
     REQUIRE(ids.empty());
@@ -125,7 +125,7 @@ TEST_CASE("Load Factory from JSON") {
       REQUIRE(factory.RoomWidth() == 500);
       REQUIRE(factory.RoomHeight() == 200);
 
-      REQUIRE(factory.AvailableCount() == 1);
+      REQUIRE(factory.RoomTemplateCount() == 1);
 
       std::set<std::string> ids = factory.GetAvailableIds();
       REQUIRE(!ids.empty());
@@ -199,7 +199,7 @@ TEST_CASE("Load Factory from JSON") {
       REQUIRE(factory.RoomWidth() == 500);
       REQUIRE(factory.RoomHeight() == 200);
 
-      REQUIRE(factory.AvailableCount() == 3);
+      REQUIRE(factory.RoomTemplateCount() == 3);
 
       std::set<std::string> ids = factory.GetAvailableIds();
       REQUIRE(!ids.empty());
@@ -320,5 +320,112 @@ TEST_CASE("Get Rand ID") {
       })aa"_json;
     RoomFactory factory = json;
 
+    std::string id = factory.RandomId();
+
+    bool a = id == "default" || id == "second" || id == "third";
+    REQUIRE(a);
+  }
+}
+
+TEST_CASE("Generate New Room from template") {
+
+  json json = R"aa(
+      {
+        "room_dimension" : {
+          "width" : 500,
+          "height" : 200
+        },
+        "__comment" : "rooms are assisgned as map of string with value of room template",
+        "rooms" : {
+          "default" : {
+            "walls" : [
+              {
+                "head_x" : 10,
+                "head_y" : 10,
+                "tail_x" : 100,
+                "tail_y" : 100
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 101,
+                "tail_y" : 101
+              }
+            ]
+          },
+          "second" : {
+            "walls" : [
+              {
+                "head_x" : 1,
+                "head_y" : 1,
+                "tail_x" : 10,
+                "tail_y" : 10
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 11,
+                "tail_y" : 101
+              }
+            ]
+          },
+          "third" : {
+            "walls" : [
+              {
+                "head_x" : 1,
+                "head_y" : 1,
+                "tail_x" : 10,
+                "tail_y" : 10
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 11,
+                "tail_y" : 101
+              },
+              {
+                "head_x" : 11,
+                "head_y" : 11,
+                "tail_x" : 11,
+                "tail_y" : 101
+              }
+            ]
+          }
+        }
+      })aa"_json;
+
+  RoomFactory factory = json;
+
+  SECTION("Generation Check") {
+
+    SECTION("No matching Id") {
+      Room* room = factory.GenerateRoom("none");
+      REQUIRE(room == nullptr);
+    }
+
+    SECTION("Valid id") {
+      Room* room = factory.GenerateRoom("default");
+      REQUIRE(room != nullptr);
+
+      REQUIRE(room->GetWidth() == 500);
+      REQUIRE(room->GetHeight() == 200);
+
+      REQUIRE(room->GetWallCount() == 2);
+    }
+
+  }
+
+  SECTION("Distinction Check") {
+    Room* room1 = factory.GenerateRoom("default");
+    Room* room2 = factory.GenerateRoom("third");
+
+    REQUIRE(room1 != room2);
+
+    REQUIRE(room1->GetWidth() == 500);
+    REQUIRE(room1->GetHeight() == 200);
+    REQUIRE(room2->GetWidth() == 500);
+    REQUIRE(room2->GetHeight() == 200);
+
+    REQUIRE(room1->GetWallCount() != room2->GetWallCount());
   }
 }

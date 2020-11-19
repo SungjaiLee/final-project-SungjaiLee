@@ -5,8 +5,12 @@
 #ifndef NONEUCLIDEAN_RAY_CASTER_ROOM_FACTORY_H
 #define NONEUCLIDEAN_RAY_CASTER_ROOM_FACTORY_H
 
-#include <core/wall.h>
+#ifndef NONEUCLIDEAN_RAY_CASTER_ROOM_H
 #include <core/room.h>
+#endif  // NONEUCLIDEAN_RAY_CASTER_ROOM_H
+
+
+#include <core/wall.h>
 
 #include <exceptions/room_explorer_exception.h>
 
@@ -26,14 +30,13 @@ using json = nlohmann::json;
 
  class RoomFactory {
 
-
  public:
    struct RoomTemplate {
      std::set<Wall> walls_;
      friend void from_json(const json&, RoomTemplate& );
 
    public:
-     const size_t GetWallCount() const;
+     size_t GetWallCount() const;
    };
 
  private:
@@ -46,11 +49,11 @@ using json = nlohmann::json;
    size_t counts_;
 
  public:
-   const float RoomWidth() const;
-   const float RoomHeight() const;
+   float RoomWidth() const;
+   float RoomHeight() const;
 
-   size_t AvailableCount() const;
-   const std::set<std::string> GetAvailableIds() const;
+   size_t RoomTemplateCount() const;
+   const std::set<std::string>& GetAvailableIds() const;
 
    bool ContainsRoomId(const std::string& id) const;
 

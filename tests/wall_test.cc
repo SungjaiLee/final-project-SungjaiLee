@@ -15,14 +15,14 @@ TEST_CASE("Sanity Check Wall") {
 TEST_CASE("Load From JSON") {
 
   SECTION("Single Wall") {
-    json json = R"aa(
-    {
-      "head_x" : 100.5,
-      "head_y" : 55.555,
-      "tail_x" : -1002.34,
-      "tail_y" : 0
-    }
-  )aa"_json;
+      json json = R"aa(
+      {
+        "head_x" : 100.5,
+        "head_y" : 55.555,
+        "tail_x" : -1002.34,
+        "tail_y" : 0
+      }
+    )aa"_json;
 
     Wall wall = json;
 

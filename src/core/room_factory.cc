@@ -38,19 +38,29 @@ void from_json(const json& json, RoomFactory::RoomTemplate& room_template) {
 
 // RoomFactory Member Handler =====================================
 
-size_t RoomFactory::AvailableCount() const {
-  return counts_;
-}
 
-const float RoomFactory::RoomWidth() const {
+float RoomFactory::RoomWidth() const {
   return kRoomWidth;
 }
 
-const float RoomFactory::RoomHeight() const {
+float RoomFactory::RoomHeight() const {
   return kRoomHeight;
 }
 
-const std::set<std::string> RoomFactory::GetAvailableIds() const {
+size_t RoomFactory::RoomTemplateCount() const {
+  return counts_;
+}
+
+
+size_t RoomFactory::RoomTemplate::GetWallCount() const {
+  return walls_.size();
+}
+
+bool RoomFactory::ContainsRoomId(const std::string &id) const {
+  return ids_.find(id) != ids_.end();
+}
+
+const std::set<std::string>& RoomFactory::GetAvailableIds() const {
   return ids_;
 }
 
@@ -65,30 +75,25 @@ const std::string &RoomFactory::RandomId() const {
 }
 
 Room* RoomFactory::GenerateRoom(const std::string &id) const {
-
   if (!ContainsRoomId(id)) {
     return nullptr;
   }
 
   Room* room = new Room();
   room->width_ = kRoomWidth;
-  room->height = kRoomHeight;
+  room->height_ = kRoomHeight;
 
   RoomTemplate room_temp = template_rooms_.at(id);
 
-  //TODO should walls be
-  std::copy( room_temp.walls_.begin(), room_temp.walls_.end(), std::inserter(room->walls, room->walls.begin()) );
+  //TODO should walls be only reference? copying might take up too much storage
+  std::copy( room_temp.walls_.begin(), room_temp.walls_.end(),
+             std::inserter(room->walls, room->walls.begin()) );
 
   return room;
 }
 
-bool RoomFactory::ContainsRoomId(const std::string &id) const {
-  return ids_.find(id) != ids_.end();
+Room* RoomFactory::GenerateRandomRoom() const {
+  return GenerateRoom(RandomId());
 }
-
-const size_t RoomFactory::RoomTemplate::GetWallCount() const {
-  return walls_.size();
-}
-
 
 } // namespace room_explorer

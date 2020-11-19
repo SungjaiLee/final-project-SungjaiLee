@@ -26,6 +26,22 @@ const glm::vec2 &Wall::getTail() const {
 bool Wall::operator<(const Wall& wall) const {
   //!! doesn't matter what it is actually comparing, just need a valid comparision for them to work in a set
   return this < &wall;
+
+  //First check by actual wall length,
+  //then check by head length,
+  //then by tail
+
+  //TODO find some clever maths
+}
+
+bool Wall::operator==(const Wall& wall) const {
+  // True if and only if both head and tail is equal
+  return head_ == wall.head_ && tail_ == wall.tail_;
+}
+
+Wall::Wall(const glm::vec2& head, const glm::vec2& tail) {
+  head_ = head;
+  tail_ = tail;
 }
 
 } // namespace room_explorer

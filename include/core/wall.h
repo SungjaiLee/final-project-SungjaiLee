@@ -21,6 +21,10 @@ private:
 
 public:
 
+  Wall() = default;
+
+  Wall(const glm::vec2&, const glm::vec2&);
+
   const glm::vec2 &getHead() const;
 
   const glm::vec2 &getTail() const;
@@ -28,6 +32,7 @@ public:
   friend void from_json(const json& j, Wall& wall);
 
   bool operator< (const Wall& wall) const;
+  bool operator== (const Wall& wall) const;
 
 };
 

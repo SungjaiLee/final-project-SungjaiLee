@@ -6,7 +6,7 @@
 
 namespace room_explorer {
 
-Direction OppositeDirection(Direction direction) {
+Direction OppositeDirection(const Direction& direction) {
   switch (direction) {
     case kNorth:
       return kSouth;
@@ -19,7 +19,7 @@ Direction OppositeDirection(Direction direction) {
   }
 }
 
-Room*& Room::GetRoomPointer(Direction dir) {
+Room*& Room::GetRoomPointer(const Direction& dir) {
   switch (dir) {
     case kNorth:
       return north_;
@@ -32,7 +32,7 @@ Room*& Room::GetRoomPointer(Direction dir) {
   }
 }
 
-bool Room::LinkRoom(Direction dir, Room* room_p) {
+bool Room::LinkRoom(const Direction& dir, Room* room_p) {
 
 //  if (GetRoomPointer(dir) != nullptr) {
 //    // Room in the direction already linked. should not override
@@ -89,6 +89,35 @@ bool Room::LinkRoom(Direction dir, Room* room_p) {
   other_link = this;
   return true;
 }
+
+float Room::GetWidth() const {
+  return width_;
+}
+
+float Room::GetHeight() const {
+  return height_;
+}
+
+size_t Room::GetWallCount() const {
+  return walls.size();
+}
+
+const std::set<Wall>& Room::GetWalls() const {
+  return walls;
+}
+
+Room* Room::GetConnectedRoom(const Direction& direction) {
+  Room* room = GetRoomPointer(direction);
+  if (room == nullptr) {
+
+    LinkRoom(direction, factory->GenerateRandomRoom());
+
+  }
+  return nullptr;
+}
+
+
+
 
 //======================================================================================================================
 

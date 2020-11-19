@@ -6,6 +6,11 @@
 #ifndef NONEUCLIDEAN_RAY_CASTER_ROOM_H
 #define NONEUCLIDEAN_RAY_CASTER_ROOM_H
 
+#ifndef NONEUCLIDEAN_RAY_CASTER_ROOM_FACTORY_H
+#include <core/room_factory.h>
+#endif //NONEUCLIDEAN_RAY_CASTER_ROOM_FACTORY_H
+
+
 #include <core/wall.h>
 
 #include <set>
@@ -19,27 +24,34 @@ enum Direction {
   kWest
 };
 
-Direction OppositeDirection(Direction direction);
+Direction OppositeDirection(const Direction& direction);
+
+
+class Room;
+
+//class RoomFactory;
+
 
 class Room {
 private:
+  RoomFactory* factory;
+
   Room* north_;
   Room* south_;
   Room* east_;
   Room* west_;
 
-  __unused float width_;
-  __unused float height;
+  float width_;
+  float height_;
 
   std::set<Wall> walls;
 
-public:
   /**
    * Returns pointer to room in the given direction.
    * @param dir
    * @return
    */
-  Room*& GetRoomPointer(Direction dir);
+  Room*& GetRoomPointer(const Direction& dir);
 
   /**
    * Link this currnt room's portal in the given direction to the give room.
@@ -49,7 +61,24 @@ public:
    * @param room_p
    * @return
    */
-  bool LinkRoom(Direction dir, Room* room_p);
+  bool LinkRoom(const Direction& dir, Room* room_p);
+
+public:
+
+  /**
+   * Always get a room. If not yet connnected, connect it from factory
+   * @param direction
+   * @return
+   */
+  Room* GetConnectedRoom(const Direction& direction);
+
+  float GetWidth() const;
+  float GetHeight() const;
+
+  size_t GetWallCount() const;
+
+  const std::set<Wall>& GetWalls() const;
+
 
 
   friend class RoomFactory;
