@@ -10,6 +10,7 @@
 #include <core/room_factory.h>
 #endif //NONEUCLIDEAN_RAY_CASTER_ROOM_FACTORY_H
 
+#include <core/ray.h>
 #include <core/wall.h>
 
 #include <set>
@@ -80,6 +81,14 @@ public:
 
   bool ConnectedWith(Room* other) const;
 
+
+  /**
+   * Retrieves any  kak
+   * @param pos
+   * @param angle
+   * @return
+   */
+  HitPackage GetVisible(const glm::vec2& pos, const float angle);
 
   // Factory need to be able to populate the private room members
   friend class RoomFactory;
