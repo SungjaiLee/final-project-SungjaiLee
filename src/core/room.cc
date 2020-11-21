@@ -118,6 +118,14 @@ bool Room::ConnectedWith(Room* other) const {
           ConnectedWith(other, kWest);
 }
 
+float Room::GetNSDoorWidth() const {
+  return ns_door_width_;
+}
+
+float Room::GetEWDoorWidth() const {
+  return ew_door_width_;
+}
+
 // End of Room Member handlers =====================================
 
 

@@ -21,7 +21,9 @@ RoomFactory factory = R"aa(
 {
   "room_dimension" : {
     "width" : 500,
-    "height" : 200
+    "height" : 200,
+    "ns_door_width" : 300,
+    "ew_door_width" : 100
   },
   "__comment" : "rooms are assisgned as map of string with value of room template",
   "rooms" : {
@@ -90,6 +92,9 @@ TEST_CASE("Correct Members generated") {
   SECTION("dimension") {
     REQUIRE(room.GetWidth() == 500);
     REQUIRE(room.GetHeight() == 200);
+
+    REQUIRE(room.GetNSDoorWidth() == 300);
+    REQUIRE(room.GetEWDoorWidth() == 100);
   }
 
   SECTION("Walls") {

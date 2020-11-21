@@ -41,6 +41,9 @@ private:
   float width_;
   float height_;
 
+  float ns_door_width_;
+  float ew_door_width_;
+
   std::set<Wall> walls;
 
   /**
@@ -72,6 +75,9 @@ public:
 
   float GetWidth() const;
   float GetHeight() const;
+
+  float GetNSDoorWidth() const;
+  float GetEWDoorWidth() const;
 
   size_t GetWallCount() const;
 

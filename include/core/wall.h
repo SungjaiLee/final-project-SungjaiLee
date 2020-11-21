@@ -6,6 +6,7 @@
 #define NONEUCLIDEAN_RAY_CASTER_WALL_H
 
 
+#include <core/ray.h>
 #include "cinder/gl/gl.h"
 
 #include <nlohmann/json.hpp>
@@ -32,9 +33,24 @@ public:
   bool operator< (const Wall& wall) const;
   bool operator== (const Wall& wall) const;
 
+  /**
+   * Only checks if ray makes contact with this walls
+   * @param pos
+   * @param angle
+   * @return
+   */
+  bool IntersectsWith(const glm::vec2& pos, const float angle);
+  float Distance(const glm::vec2& pos, const float angle);
+
+  HitPackage GetVisible(const glm::vec2& pos, const float angle);
+
+
+  //TODO add fast sin, fast cos which will be just look-up of pre-calculated sin and cos value
 
   friend void from_json(const json& j, Wall& wall);
 };
+
+float GetTheta(const glm::vec2& vec);
 
 void from_json(const json& j, Wall& wall);
 

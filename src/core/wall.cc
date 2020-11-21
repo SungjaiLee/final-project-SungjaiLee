@@ -44,4 +44,54 @@ Wall::Wall(const glm::vec2& head, const glm::vec2& tail) {
   tail_ = tail;
 }
 
+float Wall::Distance(const glm::vec2& pos, const float angle) {
+  //TODO
+  glm::vec2 diff = head_ - tail_;
+
+  //TODO find faster alternatives
+  float cos = glm::cos(angle);
+  float sin = glm::sin(angle);
+  glm::vec2 dir(sin, -cos);
+
+  float denom = glm::dot(diff, dir);
+  if (denom == 0) {
+    // Does not intersect. Parrellel
+    return -1;
+  }
+
+  glm::vec2 m(head_.y, -head_.x);
+
+  float r = glm::dot(diff, m);
+  r /= denom;
+
+  return r;
+}
+
+bool Wall::IntersectsWith(const glm::vec2& pos, const float angle) {
+
+  float theta_0 = GetTheta(head_ - pos);
+  float theta_1 = GetTheta(tail_ - pos);
+  if (theta_1 < theta_0) {
+    //Swapping variables
+    theta_1 = theta_0 + 0 * (theta_1 = theta_0);
+  }
+
+  if (angle < theta_0 || angle > theta_1) {
+    return false;
+  }
+
+  return true;
+}
+
+// static unit methods =================================================
+float GetTheta(const glm::vec2& vec) {
+  //TODO need be funiction
+  float theta = std::atan2(vec.x, vec.y); //
+  if (theta < 0) {
+    theta = 2 * M_PI - theta;
+  }
+  return theta;
+}
+
+
 } // namespace room_explorer

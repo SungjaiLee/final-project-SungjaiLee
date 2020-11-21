@@ -30,7 +30,7 @@ enum HitType {
 class HitPackage {
 
   struct Hit {
-
+    ci::Color
   };
 
   std::map<float, Hit> hits_;
