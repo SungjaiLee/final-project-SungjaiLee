@@ -120,9 +120,9 @@ TEST_CASE("Ray Inmtersection Test") {
     }
 
     SECTION("Parralle") {
-      REQUIRE_FALSE(wall.IntersectsWith(glm::vec2(1, 1), 3 * M_PI / 4));
+      REQUIRE_FALSE(wall.IntersectsWith(glm::vec2(1, 1), 7 * M_PI / 4));
 
-      REQUIRE(wall.Distance(glm::vec2(1, 1),  3 * M_PI / 4) == -1);
+      REQUIRE(wall.Distance(glm::vec2(1, 1),  7 * M_PI / 4) == -1);
     }
   }
 
@@ -171,10 +171,55 @@ TEST_CASE("Ray Inmtersection Test") {
       }
 
       SECTION("Parrallel") {
+        SECTION("Head") {
+          SECTION("Into wall") {
+            REQUIRE(wall.IntersectsWith(glm::vec2(1, 0), 3 * M_PI / 4));
 
+            REQUIRE(wall.Distance(glm::vec2(1, 0), 3* M_PI / 4) == 0);
+          }
+
+          SECTION("Away from wall") {
+            REQUIRE(wall.IntersectsWith(glm::vec2(1, 0), 7 * M_PI / 4));
+
+            REQUIRE(wall.Distance(glm::vec2(1, 0), 7 * M_PI / 4) == 0);
+          }
+        }
+
+        SECTION("Tail") {
+          SECTION("Into wall") {
+            REQUIRE(wall.IntersectsWith(glm::vec2(0, 1), 3 * M_PI / 4));
+
+            REQUIRE(wall.Distance(glm::vec2(0, 1), 3* M_PI / 4) == 0);
+          }
+
+          SECTION("Away from wall") {
+            REQUIRE(wall.IntersectsWith(glm::vec2(0, 1), 7 * M_PI / 4));
+
+            REQUIRE(wall.Distance(glm::vec2(0, 1), 7 * M_PI / 4) == 0);
+          }
+        }
+
+        SECTION("Mid") {
+          REQUIRE(wall.IntersectsWith(glm::vec2(.5f, .5f), 7 * M_PI / 4));
+
+          REQUIRE(wall.Distance(glm::vec2(.5f, .5f), 7 * M_PI / 4) == 0);
+        }
       }
     }
 
+    SECTION("Point wall") {
+      SECTION("Pos = point") {
+
+      }
+      SECTION("pos outside of point") {
+        SECTION("ray hits point") {
+
+        }
+        SECTION("ray misses") {
+
+        }
+      }
+    }
   }
 
 }

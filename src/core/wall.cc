@@ -54,6 +54,12 @@ float Wall::Distance(const glm::vec2& pos, const float angle) const {
 
 
 float Wall::PureDistance(const glm::vec2& pos, const float angle) const {
+  if (head_ == tail_) {
+    if (head_ == pos) {
+      return 0;
+    }
+  }
+
   glm::vec2 diff = head_ - tail_;
 
   //TODO find faster alternatives
@@ -61,30 +67,47 @@ float Wall::PureDistance(const glm::vec2& pos, const float angle) const {
   float sin = glm::sin(angle);
   glm::vec2 dir(sin, -cos);
 
+
+  // perpendicular to head - pos, it is head-pos rotated by 90
+  glm::vec2 m(head_.y - pos.y, pos.x - head_.x);
+  float r = glm::dot(diff, m);
+  // if r is zero, means the pos is on the line, which regardless to directoin, has distance of 0
+  if (r == 0) {
+    return 0;
+  }
+
   float denom = glm::dot(diff, dir);
   if (denom == 0) {
     // Does not intersect. Parrellel
     return -1;
   }
 
-  glm::vec2 m(head_.y - pos.y, pos.x - head_.x);
-
-  float r = glm::dot(diff, m);
   r /= denom;
 
   return r;
 }
 
 bool Wall::IntersectsWith(const glm::vec2& pos, const float angle) const{
+  //head, tail == pos check
+  if (pos == head_ || pos == tail_) {
+    return true;
+  }
+
 
   float theta_0 = GetTheta(head_ - pos);
   float theta_1 = GetTheta(tail_ - pos);
+
+  //Swapping variables so theta_0 is less than theta_1
   if (theta_1 < theta_0) {
-    //Swapping variables
-//    theta_1 = theta_0 + 0 * (theta_1 = theta_0);
     float temp = theta_0;
     theta_0 = theta_1;
     theta_1 = temp;
+  }
+
+  // Check for case pos is in the line, in which case the angle to head and tail will differ by pi
+  // THis also avoids on-line but not segment check, this will only be true if pos is between the head and tail, so theta's differ exactly by pi
+  if (FloatingPointApproximation(theta_1 -theta_0, M_PI)) {
+    return true;
   }
 
   // require head/tail hit check

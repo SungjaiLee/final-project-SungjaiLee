@@ -54,7 +54,8 @@ public:
 
 float GetTheta(const glm::vec2& vec);
 //TODO move to own util file
-bool FloatingPointApproximation(float a, float b, float epsilon = .0001f);
+// Also find a better more precise epsilon
+bool FloatingPointApproximation(float a, float b, float epsilon = .0000001f);
 
 
 void from_json(const json& j, Wall& wall);
