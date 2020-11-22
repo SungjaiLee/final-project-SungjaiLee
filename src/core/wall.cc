@@ -44,8 +44,16 @@ Wall::Wall(const glm::vec2& head, const glm::vec2& tail) {
   tail_ = tail;
 }
 
-float Wall::Distance(const glm::vec2& pos, const float angle) {
-  //TODO
+float Wall::Distance(const glm::vec2& pos, const float angle) const {
+  if (IntersectsWith(pos, angle)) {
+    return PureDistance(pos, angle);
+  } else {
+    return -1;
+  }
+}
+
+
+float Wall::PureDistance(const glm::vec2& pos, const float angle) const {
   glm::vec2 diff = head_ - tail_;
 
   //TODO find faster alternatives
@@ -59,7 +67,7 @@ float Wall::Distance(const glm::vec2& pos, const float angle) {
     return -1;
   }
 
-  glm::vec2 m(head_.y, -head_.x);
+  glm::vec2 m(head_.y - pos.y, pos.x - head_.x);
 
   float r = glm::dot(diff, m);
   r /= denom;
@@ -67,14 +75,25 @@ float Wall::Distance(const glm::vec2& pos, const float angle) {
   return r;
 }
 
-bool Wall::IntersectsWith(const glm::vec2& pos, const float angle) {
+bool Wall::IntersectsWith(const glm::vec2& pos, const float angle) const{
 
   float theta_0 = GetTheta(head_ - pos);
   float theta_1 = GetTheta(tail_ - pos);
   if (theta_1 < theta_0) {
     //Swapping variables
-    theta_1 = theta_0 + 0 * (theta_1 = theta_0);
+//    theta_1 = theta_0 + 0 * (theta_1 = theta_0);
+    float temp = theta_0;
+    theta_0 = theta_1;
+    theta_1 = temp;
   }
+
+  // require head/tail hit check
+  // use knuth approximation
+  // TODO check if necessary
+  if (FloatingPointApproximation(angle, theta_0) || FloatingPointApproximation(angle, theta_1)) {
+    return true;
+  }
+
 
   if (angle < theta_0 || angle > theta_1) {
     return false;
@@ -86,12 +105,36 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const float angle) {
 // static unit methods =================================================
 float GetTheta(const glm::vec2& vec) {
   //TODO need be funiction
-  float theta = std::atan2(vec.x, vec.y); //
+  float theta = std::atan2(vec.y, vec.x); //
   if (theta < 0) {
-    theta = 2 * M_PI - theta;
+    theta = 2 * M_PI + theta;
   }
   return theta;
 }
 
+bool FloatingPointApproximation(float a, float b, float epsilon) {
+  float diff = std::abs(a - b);
+  if (a != 0) {
+    if (diff / std::abs(a) > epsilon) {
+      return false;
+    }
+  } else {
+    if (diff > epsilon) {
+      return false;
+    }
+  }
+
+  if (b != 0) {
+    if (diff / std::abs(b) > epsilon) {
+      return false;
+    }
+  } else {
+    if (diff > epsilon) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 } // namespace room_explorer

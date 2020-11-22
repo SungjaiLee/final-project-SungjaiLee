@@ -70,7 +70,10 @@ TEST_CASE("Load Factory from JSON") {
     {
       "room_dimension" : {
         "width" : 500,
-        "height" : 200
+        "height" : 200,
+        "ns_door_width" : 300,
+        "ew_door_width" : 100
+
       },
       "__comment" : "rooms are assisgned as map of string with value of room template",
       "rooms" : {
@@ -97,7 +100,9 @@ TEST_CASE("Load Factory from JSON") {
       {
         "room_dimension" : {
           "width" : 500,
-          "height" : 200
+          "height" : 200,
+          "ns_door_width" : 300,
+          "ew_door_width" : 100
         },
         "__comment" : "rooms are assisgned as map of string with value of room template",
         "rooms" : {
@@ -139,7 +144,9 @@ TEST_CASE("Load Factory from JSON") {
       {
         "room_dimension" : {
           "width" : 500,
-          "height" : 200
+          "height" : 200,
+          "ns_door_width" : 300,
+          "ew_door_width" : 100
         },
         "__comment" : "rooms are assisgned as map of string with value of room template",
         "rooms" : {
@@ -217,7 +224,9 @@ TEST_CASE("Get Rand ID") {
       {
         "room_dimension" : {
           "width" : 500,
-          "height" : 200
+          "height" : 200,
+          "ns_door_width" : 300,
+          "ew_door_width" : 100
         },
         "__comment" : "rooms are assisgned as map of string with value of room template",
         "rooms" : {}
@@ -231,7 +240,9 @@ TEST_CASE("Get Rand ID") {
       {
         "room_dimension" : {
           "width" : 500,
-          "height" : 200
+          "height" : 200,
+          "ns_door_width" : 300,
+          "ew_door_width" : 100
         },
         "__comment" : "rooms are assisgned as map of string with value of room template",
         "rooms" : {
@@ -264,7 +275,9 @@ TEST_CASE("Get Rand ID") {
       {
         "room_dimension" : {
           "width" : 500,
-          "height" : 200
+          "height" : 200,
+          "ns_door_width" : 300,
+          "ew_door_width" : 100
         },
         "__comment" : "rooms are assisgned as map of string with value of room template",
         "rooms" : {
@@ -333,7 +346,9 @@ TEST_CASE("Generate New Room from template") {
       {
         "room_dimension" : {
           "width" : 500,
-          "height" : 200
+          "height" : 200,
+          "ns_door_width" : 300,
+          "ew_door_width" : 100
         },
         "__comment" : "rooms are assisgned as map of string with value of room template",
         "rooms" : {

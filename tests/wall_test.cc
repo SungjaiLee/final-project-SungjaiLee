@@ -101,3 +101,57 @@ TEST_CASE("Load From JSON") {
     REQUIRE(walls[1].GetTail() == glm::vec2(-1002.34, 0));
   }
 }
+
+TEST_CASE("Ray Inmtersection Test") {
+
+  Wall wall(glm::vec2(1,0), glm::vec2(0,1));
+
+  SECTION("No Intersection") {
+    SECTION("Miss") {
+      REQUIRE_FALSE(wall.IntersectsWith(glm::vec2(1,1), 2));
+
+      REQUIRE(wall.Distance(glm::vec2(1,1), 2) == -1);
+    }
+
+    SECTION("Wrong direction") {
+      REQUIRE_FALSE(wall.IntersectsWith(glm::vec2(0,0), 2 * M_PI));
+
+      REQUIRE(wall.Distance(glm::vec2(0,0), 2 * M_PI) == -1);
+    }
+
+    SECTION("Parralle") {
+      REQUIRE_FALSE(wall.IntersectsWith(glm::vec2(1, 1), 3 * M_PI / 4));
+
+      REQUIRE(wall.Distance(glm::vec2(1, 1),  3 * M_PI / 4) == -1);
+    }
+  }
+
+  SECTION("Intersection") {
+    SECTION("Head Hit") {
+      REQUIRE(wall.IntersectsWith(glm::vec2(1, 1), 3 * M_PI / 2));
+
+      REQUIRE(wall.Distance(glm::vec2(1, 1), 3 * M_PI / 2) == 1);
+//      REQUIRE(FloatingPointApproximation(wall.Distance(glm::vec2(1, 1), 3 * M_PI / 2), 1, .1));
+    }
+
+    SECTION("Tail Hit") {
+      REQUIRE(wall.IntersectsWith(glm::vec2(-1, 1), 0));
+
+//      REQUIRE(wall.Distance(glm::vec2(-1, 1), 0) == 1.f);
+      REQUIRE(FloatingPointApproximation(wall.Distance(glm::vec2(-1, 1), 0), 1));
+    }
+
+    SECTION("Middle Hit") {
+      REQUIRE(wall.IntersectsWith(glm::vec2(1.f/2, 5.f/2), 3 * M_PI / 2));
+
+      REQUIRE(wall.Distance(glm::vec2(1.f/2, 5.f/2 ), 3 * M_PI / 2) == 2);
+
+    }
+
+    SECTION("Ray begin on the wall") {
+
+    }
+
+  }
+
+}

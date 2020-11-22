@@ -20,11 +20,13 @@ private:
   glm::vec2 head_;
   glm::vec2 tail_;
 
+  float PureDistance(const glm::vec2& pos, const float angle) const;
+
 public:
 
   Wall() = default;
 
-  Wall(const glm::vec2&, const glm::vec2&);
+  Wall(const glm::vec2& head, const glm::vec2& tail);
 
   const glm::vec2& GetHead() const;
 
@@ -39,8 +41,8 @@ public:
    * @param angle
    * @return
    */
-  bool IntersectsWith(const glm::vec2& pos, const float angle);
-  float Distance(const glm::vec2& pos, const float angle);
+  bool IntersectsWith(const glm::vec2& pos, const float angle) const;
+  float Distance(const glm::vec2& pos, const float angle) const;
 
   HitPackage GetVisible(const glm::vec2& pos, const float angle);
 
@@ -51,6 +53,9 @@ public:
 };
 
 float GetTheta(const glm::vec2& vec);
+//TODO move to own util file
+bool FloatingPointApproximation(float a, float b, float epsilon = .0001f);
+
 
 void from_json(const json& j, Wall& wall);
 

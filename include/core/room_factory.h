@@ -41,6 +41,7 @@ public:
 
 private:
   float kRoomWidth, kRoomHeight;
+  float kNSDoorWidth, kEWDoorWidth;
 
   std::map<std::string, RoomTemplate> template_rooms_;
 

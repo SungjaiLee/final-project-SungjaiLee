@@ -13,6 +13,9 @@ void from_json(const json& json, RoomFactory& room_factory) {
   room_factory.kRoomWidth = json.at("room_dimension").at("width");
   room_factory.kRoomHeight = json.at("room_dimension").at("height");
 
+  room_factory.kNSDoorWidth = json.at("room_dimension").at("ns_door_width");
+  room_factory.kEWDoorWidth = json.at("room_dimension").at("ew_door_width");
+
   //Use for each items instead of copy to not have to copy id and templates separately
   for (auto& item : json.at("rooms").items()) {
     std::string id = item.key();
@@ -72,6 +75,8 @@ Room* RoomFactory::GenerateRoom(const std::string &id) const {
   Room* room = new Room();
   room->width_ = kRoomWidth;
   room->height_ = kRoomHeight;
+  room->ns_door_width_ = kNSDoorWidth;
+  room->ew_door_width_ = kEWDoorWidth;
 
   room->factory = this;
 
