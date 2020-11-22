@@ -149,7 +149,30 @@ TEST_CASE("Ray Inmtersection Test") {
     }
 
     SECTION("Ray begin on the wall") {
+      SECTION("Not Parralel") {
+        SECTION("Head") {
+          REQUIRE(wall.IntersectsWith(glm::vec2(1, 0), 0));
 
+          REQUIRE(wall.Distance(glm::vec2(1, 0), 0) == 0);
+        }
+
+        SECTION("Tail") {
+          REQUIRE(wall.IntersectsWith(glm::vec2(0, 1), 0));
+
+          REQUIRE(wall.Distance(glm::vec2(0, 1), 0) == 0);
+        }
+
+        SECTION("Mid") {
+          REQUIRE(wall.IntersectsWith(glm::vec2(.5f, .5f), 0));
+
+          REQUIRE(wall.Distance(glm::vec2(.5f, .5f), 0) == 0);
+        }
+
+      }
+
+      SECTION("Parrallel") {
+
+      }
     }
 
   }
