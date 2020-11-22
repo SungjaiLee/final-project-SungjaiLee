@@ -208,15 +208,23 @@ TEST_CASE("Ray Inmtersection Test") {
     }
 
     SECTION("Point wall") {
+      Wall wall2(glm::vec2(1,1), glm::vec2(1,1));
       SECTION("Pos = point") {
+        REQUIRE(wall2.IntersectsWith(glm::vec2(1, 1), 7 * M_PI / 4));
 
+        REQUIRE(wall2.Distance(glm::vec2(1, 1), 7 * M_PI / 4) == 0);
       }
       SECTION("pos outside of point") {
         SECTION("ray hits point") {
+          REQUIRE(wall2.IntersectsWith(glm::vec2(0, 0), M_PI / 4));
 
+//          REQUIRE(wall2.Distance(glm::vec2(0, 0), M_PI / 4) == std::sqrt(2));
+          REQUIRE(FloatingPointApproximation(wall2.Distance(glm::vec2(0, 0), M_PI / 4), std::sqrt(2)));
         }
         SECTION("ray misses") {
+          REQUIRE_FALSE(wall2.IntersectsWith(glm::vec2(0, 0), M_PI));
 
+          REQUIRE(wall2.Distance(glm::vec2(0, 0), M_PI) == -1);
         }
       }
     }

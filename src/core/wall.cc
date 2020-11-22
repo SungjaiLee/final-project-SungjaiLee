@@ -62,19 +62,27 @@ float Wall::PureDistance(const glm::vec2& pos, const float angle) const {
 
   glm::vec2 diff = head_ - tail_;
 
-  //TODO find faster alternatives
-  float cos = glm::cos(angle);
-  float sin = glm::sin(angle);
-  glm::vec2 dir(sin, -cos);
-
 
   // perpendicular to head - pos, it is head-pos rotated by 90
   glm::vec2 m(head_.y - pos.y, pos.x - head_.x);
+
+  if (diff == glm::vec2(0, 0)) {
+    // point wall, need different handling
+    // if angle hits the point, its distance of m,
+    return glm::length(m);
+    // if not it's -1 TODO
+  }
+
   float r = glm::dot(diff, m);
   // if r is zero, means the pos is on the line, which regardless to directoin, has distance of 0
   if (r == 0) {
     return 0;
   }
+
+  //TODO find faster alternatives
+  float cos = glm::cos(angle);
+  float sin = glm::sin(angle);
+  glm::vec2 dir(sin, -cos);
 
   float denom = glm::dot(diff, dir);
   if (denom == 0) {
@@ -92,7 +100,6 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const float angle) const{
   if (pos == head_ || pos == tail_) {
     return true;
   }
-
 
   float theta_0 = GetTheta(head_ - pos);
   float theta_1 = GetTheta(tail_ - pos);
