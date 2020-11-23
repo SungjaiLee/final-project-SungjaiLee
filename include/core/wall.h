@@ -42,6 +42,9 @@ public:
    * @return
    */
   bool IntersectsWith(const glm::vec2& pos, const float angle) const;
+
+  bool IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const;
+
   float Distance(const glm::vec2& pos, const float angle) const;
 
   HitPackage GetVisible(const glm::vec2& pos, const float angle);

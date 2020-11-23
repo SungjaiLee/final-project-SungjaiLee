@@ -114,9 +114,33 @@ TEST_CASE("Ray Inmtersection Test") {
     }
 
     SECTION("Wrong direction") {
-      REQUIRE_FALSE(wall.IntersectsWith(glm::vec2(0,0), 2 * M_PI));
+      SECTION("Mid") {
+        REQUIRE_FALSE(wall.IntersectsWith(glm::vec2(0, 0), 5 * M_PI / 4));
 
-      REQUIRE(wall.Distance(glm::vec2(0,0), 2 * M_PI) == -1);
+        REQUIRE(wall.Distance(glm::vec2(0, 0), 5 * M_PI / 4) == -1);
+      }
+
+      SECTION("Head") {
+        // bad approximation of sin and cos causes massive rounding error
+        // suprisingly other tests manages to catch and result in correct answer, but still is dangerous
+        SECTION("PI") {
+          REQUIRE_FALSE(wall.IntersectsWith(glm::vec2(0, 0), M_PI));
+
+          REQUIRE(wall.Distance(glm::vec2(0, 0), M_PI) == -1);
+        }
+
+        SECTION("0") {
+          REQUIRE_FALSE(wall.IntersectsWith(glm::vec2(2, 0), 0));
+
+          REQUIRE(wall.Distance(glm::vec2(2, 0), 0) == -1);
+        }
+      }
+
+      SECTION("Tail") {
+        REQUIRE_FALSE(wall.IntersectsWith(glm::vec2(1, 1), 0));
+
+        REQUIRE(wall.Distance(glm::vec2(1, 1), 0) == -1);
+      }
     }
 
     SECTION("Parralle") {
@@ -128,9 +152,9 @@ TEST_CASE("Ray Inmtersection Test") {
 
   SECTION("Intersection") {
     SECTION("Head Hit") {
-      REQUIRE(wall.IntersectsWith(glm::vec2(1, 1), 3 * M_PI / 2));
+      REQUIRE(wall.IntersectsWith(glm::vec2(1, 1), 3.f * M_PI / 2));
 
-      REQUIRE(wall.Distance(glm::vec2(1, 1), 3 * M_PI / 2) == 1);
+      REQUIRE(wall.Distance(glm::vec2(1, 1), 3.f * M_PI / 2) == 1);
 //      REQUIRE(FloatingPointApproximation(wall.Distance(glm::vec2(1, 1), 3 * M_PI / 2), 1, .1));
     }
 
@@ -218,7 +242,6 @@ TEST_CASE("Ray Inmtersection Test") {
         SECTION("ray hits point") {
           REQUIRE(wall2.IntersectsWith(glm::vec2(0, 0), M_PI / 4));
 
-//          REQUIRE(wall2.Distance(glm::vec2(0, 0), M_PI / 4) == std::sqrt(2));
           REQUIRE(FloatingPointApproximation(wall2.Distance(glm::vec2(0, 0), M_PI / 4), std::sqrt(2)));
         }
         SECTION("ray misses") {
