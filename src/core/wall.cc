@@ -141,10 +141,12 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const float angle) const{
 }
 
 bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
+  // If position if head or tail itself, will be considered to have intersected with wall as a whole
   if (head_ == pos || tail_ == pos) {
     return true;
   }
 
+  // Calculation is based on relative position to head and tail from the position of ray-head
   glm::vec2 head = head_ - pos;
   glm::vec2 tail = tail_ - pos;
 
@@ -157,20 +159,40 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
     return true;
   }
 
-  if (h_parallel < 0 && t_parallel < 0) {
-    // if both negative. dir cannot be between the head, tail vector
-    // must not intersect
-    return false;
-  }
 
+  // Direction of normal is irrelevant. Simply required that it is normal to direction
   const glm::vec2 normal_dir(dir.y, -dir.x);
   float h_normal = glm::dot(head, normal_dir);
   float t_normal = glm::dot(tail, normal_dir);
 
-  // normal to head and tail must be different sign, or else means normal direction is in the same direction relative to both vectors, meaning outside
+
+  if (h_parallel < 0 || t_parallel < 0) {
+    // if both negative. dir cannot be between the head, tail vector
+    // must not intersect
+
+  if ((FloatingPointApproximation(h_normal, 0) && h_parallel > 0 )|| (FloatingPointApproximation(t_normal, 0) && t_parallel > 0)) {
+    // if either head, tail same direction as dir, means the dir is pointing straight at hed or tail, thus intersects
+    return true;
+  }
+
+    return false;
+  }
+
+  /* The ray intersects with wall if the direction vector is "between" the head and tail vector.
+   * This will obviously require that the normal component of direction vector, when projected to head and tail,
+   *  to point "inwards" and therefore in opposite directions.
+   * For this, we need to find the complement normal vector of the given direction, and its dot product with
+   *  each tail and head will give this normal component. The direction of the normal does not matter, because
+   *  we only need that this product be of opposite sign.
+   * This holds also true if the direction was between the head and tail in the negative direction.
+   *  To avoid this case, we will eliminate the case there
+   */
   if (h_normal * t_normal < 0) {
     return true;
   }
+
+  //!!TODO massive fix needed
+  //   Does nto hold absolutley true
 
 
   // TODO
