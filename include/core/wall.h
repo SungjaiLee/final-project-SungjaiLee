@@ -20,7 +20,8 @@ private:
   glm::vec2 head_;
   glm::vec2 tail_;
 
-  float PureDistance(const glm::vec2& pos, const float angle) const;
+  float PureDistance(const glm::vec2& pos, float angle) const;
+  float PureDistance(const glm::vec2& pos, const glm::vec2& dir) const;
 
 public:
 

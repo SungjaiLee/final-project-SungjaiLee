@@ -55,6 +55,49 @@ float Wall::Distance(const glm::vec2& pos, const float angle) const {
 
 //TODO take in normal direction vector instead of angle, easier to use dot than trig. Calculation already uses trig to obtain direction vector anyway
 float Wall::PureDistance(const glm::vec2& pos, const float angle) const {
+  return PureDistance(pos, glm::vec2(std::cos(angle), std::sin(angle)));
+//  if (head_ == tail_) {
+//    if (head_ == pos) {
+//      return 0;
+//    }
+//  }
+//
+//  glm::vec2 diff = head_ - tail_;
+//
+//
+//  // perpendicular to head - pos, it is head-pos rotated by 90
+//  glm::vec2 m(head_.y - pos.y, pos.x - head_.x);
+//
+//  if (diff == glm::vec2(0, 0)) {
+//    // point wall, need different handling
+//    // if angle hits the point, its distance of m,
+//    // TODO technically does not make sense to have a distance, so it is completely valid to assume distance is to the point wall
+//    return glm::length(m);
+//  }
+//
+//  float r = glm::dot(diff, m);
+//  // if r is zero, means the pos is on the line, which regardless to directoin, has distance of 0
+//  if (r == 0) {
+//    return 0;
+//  }
+//
+//  //TODO find faster alternatives
+//  float cos = glm::cos(angle);
+//  float sin = glm::sin(angle);
+//  glm::vec2 dir(sin, -cos);
+//
+//  float denom = glm::dot(diff, dir);
+//  if (denom == 0) {
+//    // Does not intersect. Parrellel
+//    return -1;
+//  }
+//
+//  r /= denom;
+//
+//  return r;
+}
+
+float Wall::PureDistance(const glm::vec2& pos, const glm::vec2& dir) const {
   if (head_ == tail_) {
     if (head_ == pos) {
       return 0;
@@ -81,11 +124,10 @@ float Wall::PureDistance(const glm::vec2& pos, const float angle) const {
   }
 
   //TODO find faster alternatives
-  float cos = glm::cos(angle);
-  float sin = glm::sin(angle);
-  glm::vec2 dir(sin, -cos);
+  // !!!! REQUIRE NORMALIZED dir
+  glm::vec2 dir_c(dir.y, -dir.x);
 
-  float denom = glm::dot(diff, dir);
+  float denom = glm::dot(diff, dir_c);
   if (denom == 0) {
     // Does not intersect. Parrellel
     return -1;
@@ -141,6 +183,7 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const float angle) const{
 }
 
 bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
+  // Trivial Cases
   // If position if head or tail itself, will be considered to have intersected with wall as a whole
   if (head_ == pos || tail_ == pos) {
     return true;
@@ -224,74 +267,8 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
         // dir in (0, pi)
         return false;
       }
-
     }
   }
-
-
-
-//  const float h_parallel = glm::dot(head, dir);
-//  const float t_parallel = glm::dot(tail, dir);
-//
-//  // if the head and tail are parrellel, must be on the line,
-//  if (FloatingPointApproximation(glm::dot(head, glm::vec2(tail.y, -tail.x)), 0)
-//    && h_parallel * t_parallel < 0) {
-//    return true;
-//  }
-//
-//
-//  // Direction of normal is irrelevant. Simply required that it is normal to direction
-//  const glm::vec2 normal_dir(dir.y, -dir.x);
-//  float h_normal = glm::dot(head, normal_dir);
-//  float t_normal = glm::dot(tail, normal_dir);
-//
-//
-//  if (h_parallel < 0 || t_parallel < 0) {
-//    // if both negative. dir cannot be between the head, tail vector
-//    // must not intersect
-//
-//  if ((FloatingPointApproximation(h_normal, 0) && h_parallel > 0 )|| (FloatingPointApproximation(t_normal, 0) && t_parallel > 0)) {
-//    // if either head, tail same direction as dir, means the dir is pointing straight at hed or tail, thus intersects
-//    return true;
-//  }
-//
-//    return false;
-//  }
-//
-//  /* The ray intersects with wall if the direction vector is "between" the head and tail vector.
-//   * This will obviously require that the normal component of direction vector, when projected to head and tail,
-//   *  to point "inwards" and therefore in opposite directions.
-//   * For this, we need to find the complement normal vector of the given direction, and its dot product with
-//   *  each tail and head will give this normal component. The direction of the normal does not matter, because
-//   *  we only need that this product be of opposite sign.
-//   * This holds also true if the direction was between the head and tail in the negative direction.
-//   *  To avoid this case, we will eliminate the case there
-//   */
-//  if (h_normal * t_normal < 0) {
-//    return true;
-//  }
-//
-//  //!!TODO massive fix needed
-//  //   Does nto hold absolutley true
-//
-//
-//  // TODO
-//  if ((FloatingPointApproximation(h_normal, 0) && h_parallel > 0 )|| (FloatingPointApproximation(t_normal, 0) && t_parallel > 0)) {
-//    // if either head, tail same direction as dir, means the dir is pointing straight at hed or tail, thus intersects
-//    return true;
-//  }
-//
-////  if (FloatingPointApproximation(h_normal, 0) && FloatingPointApproximation(t_normal, 0)) {
-////    // means that pos in the same line as head, tail
-////    // need to check if pos inbetween the two
-////    if (h_parallel * t_parallel < 0) {
-////      // means the parrellel to head and tail is in diffferent diretion, suggesting inbetween
-////      return true;
-////    }
-////    return false;
-////  }
-//
-//  return false;
 }
 
 // static unit methods =================================================
