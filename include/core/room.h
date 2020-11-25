@@ -67,7 +67,6 @@ private:
    */
   bool LinkRoom(const Direction& dir, Room* room_p);
 
-  bool WithinRoom(const glm::vec2& pos, bool wall_inclusive) const;
 
 public:
 
@@ -98,6 +97,7 @@ public:
   Direction GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool point_inclusive = true) const;
   bool PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir) const;
 
+  bool WithinRoom(const glm::vec2& pos, bool wall_inclusive = true) const;
 
   /**
    * Retrieves any  kak

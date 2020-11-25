@@ -256,7 +256,7 @@ bool FloatingPointApproximation(float a, float b, float epsilon) {
   if (diff / std::abs(a) <= epsilon) {
     return true;
   }
-  if (diff / std::abs(b) > epsilon) {
+  if (diff / std::abs(b) <= epsilon) {
     return true;
   }
 

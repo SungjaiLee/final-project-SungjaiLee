@@ -191,3 +191,93 @@ TEST_CASE("Get Room") {
     REQUIRE(room1 == room2);
   }
 }
+
+TEST_CASE("In-Room Check") {
+  Room room = *factory.GenerateRandomRoom();
+  // dimension of 500, 200
+
+  SECTION("Middle") {
+    REQUIRE(room.WithinRoom(glm::vec2(10,10)));
+    REQUIRE(room.WithinRoom(glm::vec2(10,10), false));
+  }
+
+  SECTION("Edge") {
+    SECTION("North") {
+      REQUIRE(room.WithinRoom(glm::vec2(10,200)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(10,200), false));
+    }
+
+    SECTION("South") {
+      REQUIRE(room.WithinRoom(glm::vec2(10,0)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(10,0), false));
+    }
+
+    SECTION("East") {
+      REQUIRE(room.WithinRoom(glm::vec2(500,10)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(500,10), false));
+    }
+
+    SECTION("West") {
+      REQUIRE(room.WithinRoom(glm::vec2(0,10)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(0,10), false));
+    }
+  }
+
+  SECTION("Corner") {
+    SECTION("North East") {
+      REQUIRE(room.WithinRoom(glm::vec2(500,200)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(500,200), false));
+    }
+
+    SECTION("South East") {
+      REQUIRE(room.WithinRoom(glm::vec2(500,0)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(500,0), false));
+    }
+
+    SECTION("North West") {
+      REQUIRE(room.WithinRoom(glm::vec2(0,200)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(0,200), false));
+    }
+
+    SECTION("South West") {
+      REQUIRE(room.WithinRoom(glm::vec2(0,0)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(0,0), false));
+    }
+  }
+
+  SECTION("Outsdie") {
+    SECTION("Nofth") {
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(10,900)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(10,900), false));
+    }
+    SECTION("North East") {
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(1000,900)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(1000,900), false));
+    }
+    SECTION("East") {
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(1000,90)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(1000,90), false));
+    }
+    SECTION("South East") {
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(1000,-90)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(1000,-90), false));
+    }
+    SECTION("South") {
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(10,-90)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(10,-90), false));
+    }
+    SECTION("South west") {
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(-10,-90)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(-10,-90), false));
+    }
+    SECTION("West") {
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(-10,90)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(-10,90), false));
+    }
+    SECTION("North West") {
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(-10,900)));
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(-10,900), false));
+    }
+  }
+
+}

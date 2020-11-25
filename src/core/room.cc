@@ -263,10 +263,11 @@ bool Room::WithinRoom(const glm::vec2& pos, bool wall_inclusive) const {
   if (!wall_inclusive) {
     return (pos.x > 0) && (pos.x < width_) && (pos.y > 0) && (pos.y < height_);
   } else {
-    return WithinRoom(pos, false) || (FloatingPointApproximation(pos.x, 0)
-                                              &&  FloatingPointApproximation(pos.x, width_)
-                                              &&  FloatingPointApproximation(pos.y, 0)
-                                              &&  FloatingPointApproximation(pos.y, height_));
+    return WithinRoom(pos, false)
+        || FloatingPointApproximation(pos.x, 0)
+        || FloatingPointApproximation(pos.x, width_)
+        || FloatingPointApproximation(pos.y, 0)
+        || FloatingPointApproximation(pos.y, height_);
   }
 }
 
