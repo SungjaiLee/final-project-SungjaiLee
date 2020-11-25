@@ -11,7 +11,7 @@ namespace room_explorer {
 
 namespace exceptions {
 
-class NoRoomTemplateException : GeneralExplorerException {
+class NoRoomTemplateException : public GeneralExplorerException {
 
 };
 

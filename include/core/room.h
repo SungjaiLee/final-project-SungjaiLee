@@ -10,6 +10,8 @@
 #include <core/room_factory.h>
 #endif //NONEUCLIDEAN_RAY_CASTER_ROOM_FACTORY_H
 
+#include <exceptions/invalid_direction_exception.h>
+
 #include <core/ray.h>
 #include <core/wall.h>
 
@@ -21,7 +23,8 @@ enum Direction {
   kNorth,
   kSouth,
   kEast,
-  kWest
+  kWest,
+  kUndefined
 };
 
 Direction OppositeDirection(const Direction& direction);
@@ -52,7 +55,7 @@ private:
    * @return
    */
   Room*& GetLinkedRoomPointer(const Direction& direction);
-  Room* GetLinkedRoomPointer(const Direction& direction) const;
+  Room*  GetLinkedRoomPointer(const Direction& direction) const;
 
   /**
    * Link this currnt room's portal in the given direction to the give room.
@@ -63,6 +66,8 @@ private:
    * @return
    */
   bool LinkRoom(const Direction& dir, Room* room_p);
+
+  bool WithinRoom(const glm::vec2& pos, bool wall_inclusive) const;
 
 public:
 
@@ -86,6 +91,12 @@ public:
   bool ConnectedWith(Room* other, Direction direction) const;
 
   bool ConnectedWith(Room* other) const;
+
+  // Point inclusivity just means the position of th ray shoots from is cincluded in consideraiton
+  //  inclusivity should be false from secondary rays.
+  //  this will allow the viewer to shoot and find the wall if the ray stands on the wall, but once non-inclusive ray is shot from the door of the other linekd room, it will ignore the wall/portalt it stands on
+  Direction GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool point_inclusive = true) const;
+  bool PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir) const;
 
 
   /**

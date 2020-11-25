@@ -56,45 +56,6 @@ float Wall::Distance(const glm::vec2& pos, const float angle) const {
 //TODO take in normal direction vector instead of angle, easier to use dot than trig. Calculation already uses trig to obtain direction vector anyway
 float Wall::PureDistance(const glm::vec2& pos, const float angle) const {
   return PureDistance(pos, glm::vec2(std::cos(angle), std::sin(angle)));
-//  if (head_ == tail_) {
-//    if (head_ == pos) {
-//      return 0;
-//    }
-//  }
-//
-//  glm::vec2 diff = head_ - tail_;
-//
-//
-//  // perpendicular to head - pos, it is head-pos rotated by 90
-//  glm::vec2 m(head_.y - pos.y, pos.x - head_.x);
-//
-//  if (diff == glm::vec2(0, 0)) {
-//    // point wall, need different handling
-//    // if angle hits the point, its distance of m,
-//    // TODO technically does not make sense to have a distance, so it is completely valid to assume distance is to the point wall
-//    return glm::length(m);
-//  }
-//
-//  float r = glm::dot(diff, m);
-//  // if r is zero, means the pos is on the line, which regardless to directoin, has distance of 0
-//  if (r == 0) {
-//    return 0;
-//  }
-//
-//  //TODO find faster alternatives
-//  float cos = glm::cos(angle);
-//  float sin = glm::sin(angle);
-//  glm::vec2 dir(sin, -cos);
-//
-//  float denom = glm::dot(diff, dir);
-//  if (denom == 0) {
-//    // Does not intersect. Parrellel
-//    return -1;
-//  }
-//
-//  r /= denom;
-//
-//  return r;
 }
 
 float Wall::PureDistance(const glm::vec2& pos, const glm::vec2& dir) const {

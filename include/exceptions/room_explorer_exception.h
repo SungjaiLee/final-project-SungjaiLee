@@ -22,3 +22,4 @@ class GeneralExplorerException : public std::exception {
 #endif //NONEUCLIDEAN_RAY_CASTER_ROOM_EXPLORER_EXCEPTION_H
 
 #include <exceptions/no_room_template_exception.h>
+#include <exceptions/invalid_direction_exception.h>
