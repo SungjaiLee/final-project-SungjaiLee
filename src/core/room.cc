@@ -132,15 +132,17 @@ float Room::GetEWDoorWidth() const {
   return ew_door_width_;
 }
 
+// Highly inefficent, TODO make faster and cleaner
 Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool point_inclusive) const {
   // what if outside of room?
 
+  // calculated here to allow utility outside of the following if statment
+  bool north = FloatingPointApproximation(pos.y, height_);
+  bool south = FloatingPointApproximation(pos.y, 0);
+  bool east = FloatingPointApproximation(pos.x, width_);
+  bool west = FloatingPointApproximation(pos.x, 0);
   //assume dir is non-zero
   if (point_inclusive) {
-    bool north = FloatingPointApproximation(dir.y, height_);
-    bool south = FloatingPointApproximation(dir.y, 0);
-    bool east = FloatingPointApproximation(dir.x, width_);
-    bool west = FloatingPointApproximation(dir.y, 0);
 
     //if corner, we will prioritieze the walls by "rotation" the corners clockwise
     //  NE corner will be north
@@ -168,9 +170,53 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
   }
 
   //check if in room
-  if (!WithinRoom(pos, true)) {
+  if (!WithinRoom(pos, false)) { // wall exclusive, because if it was touching the wall, would have been caught above
+    // this eliminates uneeded on-edge pointing out while being exclusive problem
+
     // if not within a room, we will not define any direction to the ray
-    throw exceptions::InvalidDirectionException();
+
+    if (!WithinRoom(pos, true)) { //if not within the room wall inclusive, means totally outside of the room
+      // TODO make more clean, combine and distribute to form a more cohrent method to handle this, "on thr wall" case
+      throw exceptions::InvalidDirectionException();
+    }
+
+    // there is still possibility that direction could point "inwards
+    //  for this, we must check here too
+    //  here we will only eliminate the awful kinds
+    //  only eliminate outwards pointers
+    if (north) {
+      if (dir.y > 0) {
+        throw exceptions::InvalidDirectionException();
+      }
+      // if does not move in y direction, must hit thew wall in the rightnext point
+      if (FloatingPointApproximation(dir.y, 0)) {
+        return kNorth;
+      }
+    }
+    if (south) {
+      if (dir.y < 0) {
+        throw exceptions::InvalidDirectionException();
+      }
+      if (FloatingPointApproximation(dir.y, 0)) {
+        return kSouth;
+      }
+    }
+    if (east) {
+      if (dir.x > 0) {
+        throw exceptions::InvalidDirectionException();
+      }
+      if (FloatingPointApproximation(dir.x, 0)) {
+        return kEast;
+      }
+    }
+    if (west) {
+      if (dir.x < 0) {
+        throw exceptions::InvalidDirectionException();
+      }
+      if (FloatingPointApproximation(dir.x, 0)) {
+        return kWest;
+      }
+    }
   }
   // This requires that the ray is within the room, and therefore will guarentee hit a specific wall
 
@@ -198,7 +244,7 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
 
 
       //equal, west
-      if (dir_slope > corner_slope) {
+      if (dir_slope < corner_slope) { // less because this is neagtvie slope, so less means more extreme
         return kNorth;
       } else {
         // if corner hit, this is a west corner
@@ -246,11 +292,11 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
 
   } else {
     // can only be south or north
-    if (dir.y > 0) {
+    if (dir.y < 0) {
       // must be south
       return kSouth;
     }
-    if (dir.y < 0) {
+    if (dir.y > 0) {
       // must be north
       return kNorth;
     }

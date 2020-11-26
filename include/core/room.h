@@ -32,6 +32,7 @@ Direction OppositeDirection(const Direction& direction);
 
 class RoomFactory;
 
+//!!! the (0,0) will be at the SW corner
 class Room {
 private:
   const RoomFactory* factory;

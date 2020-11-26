@@ -279,5 +279,246 @@ TEST_CASE("In-Room Check") {
       REQUIRE_FALSE(room.WithinRoom(glm::vec2(-10,900), false));
     }
   }
+}
 
+TEST_CASE("") {
+  Room room = *factory.GenerateRandomRoom();
+  // (500, 200)
+
+  SECTION("Middle of Room") {
+    SECTION("North") {
+      SECTION("Edge") {
+        SECTION("sloping") {
+          REQUIRE(room.GetSideHit(glm::vec2(20,50), glm::vec2(1,5)) == kNorth);
+          REQUIRE(room.GetSideHit(glm::vec2(20,50), glm::vec2(1,5), false) == kNorth);
+        }
+        SECTION("Vertical") {
+          REQUIRE(room.GetSideHit(glm::vec2(20,50), glm::vec2(0,1)) == kNorth);
+          REQUIRE(room.GetSideHit(glm::vec2(20,50), glm::vec2(0,1), false) == kNorth);
+        }
+      }
+      SECTION("Corner") {
+        REQUIRE(room.GetSideHit(glm::vec2(450,150), glm::vec2(1,1)) == kNorth);
+        REQUIRE(room.GetSideHit(glm::vec2(450,150), glm::vec2(1,1), false) == kNorth);
+      }
+    }
+
+    SECTION("East") {
+      SECTION("Edge") {
+        SECTION("Sloping") {
+          REQUIRE(room.GetSideHit(glm::vec2(400, 50), glm::vec2(1, .5f)) == kEast);
+          REQUIRE(room.GetSideHit(glm::vec2(400, 50), glm::vec2(1, .5f), false) == kEast);
+        }
+        SECTION("Horizontal") {
+          REQUIRE(room.GetSideHit(glm::vec2(20, 50), glm::vec2(1, 0)) == kEast);
+          REQUIRE(room.GetSideHit(glm::vec2(20, 50), glm::vec2(1, 0), false) == kEast);
+        }
+      }
+      SECTION("Corner") {
+        REQUIRE(room.GetSideHit(glm::vec2(450,150), glm::vec2(1,-1)) == kEast);
+        REQUIRE(room.GetSideHit(glm::vec2(450,150), glm::vec2(1,-1), false) == kEast);
+      }
+    }
+
+    SECTION("South") {
+      SECTION("Edge") {
+        SECTION("Sloping") {
+          REQUIRE(room.GetSideHit(glm::vec2(20, 50), glm::vec2(1, -10)) == kSouth);
+          REQUIRE(room.GetSideHit(glm::vec2(20, 50), glm::vec2(1, -10), false) == kSouth);
+        }
+        SECTION("Vertical") {
+          REQUIRE(room.GetSideHit(glm::vec2(20, 50), glm::vec2(0, -1)) == kSouth);
+          REQUIRE(room.GetSideHit(glm::vec2(20, 50), glm::vec2(0, -1), false) == kSouth);
+        }
+      }
+      SECTION("Corner") {
+        REQUIRE(room.GetSideHit(glm::vec2(50,50), glm::vec2(-1,-1)) == kSouth);
+        REQUIRE(room.GetSideHit(glm::vec2(50,50), glm::vec2(-1,-1), false) == kSouth);
+      }
+    }
+
+    SECTION("West") {
+      SECTION("Edgy") {
+        SECTION("Sloping") {
+          REQUIRE(room.GetSideHit(glm::vec2(20, 50), glm::vec2(-4, 1)) == kWest);
+          REQUIRE(room.GetSideHit(glm::vec2(20, 50), glm::vec2(-4, 1), false) == kWest);
+        }
+        SECTION("Horizontal") {
+          REQUIRE(room.GetSideHit(glm::vec2(20, 50), glm::vec2(-1, 0)) == kWest);
+          REQUIRE(room.GetSideHit(glm::vec2(20, 50), glm::vec2(-1, 0), false) == kWest);
+        }
+      }
+      SECTION("Corner") {
+        REQUIRE(room.GetSideHit(glm::vec2(50,150), glm::vec2(-1,1)) == kWest);
+        REQUIRE(room.GetSideHit(glm::vec2(50,150), glm::vec2(-1,1), false) == kWest);
+      }
+    }
+  }
+
+  // check only point-inclusive
+  SECTION("On edge") {
+    SECTION("North") {
+      REQUIRE(room.GetSideHit(glm::vec2(20,room.GetHeight()), glm::vec2(-1,0), true) == kNorth);
+    }
+    SECTION("East") {
+      REQUIRE(room.GetSideHit(glm::vec2(room.GetWidth(),20), glm::vec2(-1,0), true) == kEast);
+    }
+    SECTION("South") {
+      REQUIRE(room.GetSideHit(glm::vec2(10,0), glm::vec2(-1,0), true) == kSouth);
+    }
+    SECTION("West") {
+      REQUIRE(room.GetSideHit(glm::vec2(0,10), glm::vec2(-1,0), true) == kWest);
+    }
+  }
+
+  // only check point inclusive
+  SECTION("On corner") {
+    SECTION("NE") {
+      REQUIRE(room.GetSideHit(glm::vec2(500,200), glm::vec2(-1,0), true) == kNorth);
+    }
+    SECTION("SE") {
+      REQUIRE(room.GetSideHit(glm::vec2(500,0), glm::vec2(-1,0), true) == kEast);
+    }
+    SECTION("SW") {
+      REQUIRE(room.GetSideHit(glm::vec2(0,0), glm::vec2(-1,0), true) == kSouth);
+    }
+    SECTION("NW") {
+      REQUIRE(room.GetSideHit(glm::vec2(0,200), glm::vec2(-1,0), true) == kWest);
+    }
+  }
+
+  SECTION("On edge pointing Point exclusion") {
+    SECTION("On North") {
+      SECTION("Point South") {
+        REQUIRE(room.GetSideHit(glm::vec2(20, 200), glm::vec2(0, -1), false) == kSouth);
+      }
+      SECTION("Point East") {
+        REQUIRE(room.GetSideHit(glm::vec2(200, 200), glm::vec2(10, -1), false) == kEast);
+      }
+
+      SECTION("Point West") {
+        REQUIRE(room.GetSideHit(glm::vec2(1, 200), glm::vec2(-1, -1), false) == kWest);
+      }
+      SECTION("Point north, should be unavailable") {
+        REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(5, 200), glm::vec2(0, 1), false),
+                          exceptions::InvalidDirectionException);
+      }
+      SECTION("Pointing sideways") {
+        SECTION("Point diretly east") {
+          REQUIRE(room.GetSideHit(glm::vec2(1, 200), glm::vec2(1, 0), false) == kNorth);
+        }
+        SECTION("Point directly west") {
+          REQUIRE(room.GetSideHit(glm::vec2(1, 200), glm::vec2(-1, 0), false) == kNorth);
+        }
+      }
+    }
+
+    SECTION("On South") {
+      SECTION("Point North") {
+        REQUIRE(room.GetSideHit(glm::vec2(20, 0), glm::vec2(0, 1), false) == kNorth);
+      }
+      SECTION("Point East") {
+        REQUIRE(room.GetSideHit(glm::vec2(20, 0), glm::vec2(10, 1), false) == kEast);
+      }
+
+      SECTION("Point West") {
+        REQUIRE(room.GetSideHit(glm::vec2(1, 0), glm::vec2(-1, 1), false) == kWest);
+      }
+      SECTION("Point South, should be unavailable") {
+        REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(5, 0), glm::vec2(0, -1), false),
+                          exceptions::InvalidDirectionException);
+      }
+      SECTION("Pointing sideways") {
+        SECTION("Point diretly east") {
+          REQUIRE(room.GetSideHit(glm::vec2(1, 0), glm::vec2(1, 0), false) == kSouth);
+        }
+        SECTION("Point directly west") {
+          REQUIRE(room.GetSideHit(glm::vec2(1, 0), glm::vec2(-1, 0), false) == kSouth);
+        }
+      }
+    }
+
+    SECTION("West") {
+      SECTION("Point East") {
+        REQUIRE(room.GetSideHit(glm::vec2(0, 10), glm::vec2(100, 1), false) == kEast);
+      }
+      SECTION("Point North") {
+        REQUIRE(room.GetSideHit(glm::vec2(0, 10), glm::vec2(1, 1), false) == kNorth);
+      }
+      SECTION("Point South") {
+        REQUIRE(room.GetSideHit(glm::vec2(0, 10), glm::vec2(1, -1), false) == kSouth);
+      }
+      SECTION("Point West, should be unavailable") {
+        REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(0, 10), glm::vec2(-1, -1), false),
+                       exceptions::InvalidDirectionException);
+      }
+      SECTION("Pointing Sideways") {
+        SECTION("Point directly North") {
+          REQUIRE(room.GetSideHit(glm::vec2(0, 10), glm::vec2(0, 1), false) == kWest);
+        }
+        SECTION("Point directly South") {
+          REQUIRE(room.GetSideHit(glm::vec2(0, 10), glm::vec2(0, -1), false) == kWest);
+        }
+      }
+    }
+
+    SECTION("East") {
+      SECTION("Point West") {
+        REQUIRE(room.GetSideHit(glm::vec2(500, 10), glm::vec2(-100, 1), false) == kWest);
+      }
+      SECTION("Point North") {
+        REQUIRE(room.GetSideHit(glm::vec2(500, 10), glm::vec2(-1, 1), false) == kNorth);
+      }
+      SECTION("Point South") {
+        REQUIRE(room.GetSideHit(glm::vec2(500, 10), glm::vec2(-1, -1), false) == kSouth);
+      }
+      SECTION("Point East, should be unavailable") {
+        REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(500, 10), glm::vec2(1, -1), false),
+                       exceptions::InvalidDirectionException);
+      }
+      SECTION("Pointing Sideways") {
+        SECTION("Point directly North") {
+          REQUIRE(room.GetSideHit(glm::vec2(500, 10), glm::vec2(0, 1), false) == kEast);
+        }
+        SECTION("Point directly South") {
+          REQUIRE(room.GetSideHit(glm::vec2(500, 10), glm::vec2(0, -1), false) == kEast);
+        }
+      }
+    }
+  }
+
+  SECTION("Outside Room") {
+    SECTION("N") {
+      REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(0, 1000), glm::vec2(-1, -1), false),
+                        exceptions::InvalidDirectionException);
+    }
+    SECTION("NE") {
+      REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(1000, 1000), glm::vec2(-1, -1), false),
+                        exceptions::InvalidDirectionException);
+    }
+    SECTION("E") {
+      REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(1000, 0), glm::vec2(-1, -1), false),
+                        exceptions::InvalidDirectionException);
+    }
+    SECTION("SE") {
+      REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(1000, -1000), glm::vec2(-1, -1), false),
+                        exceptions::InvalidDirectionException);
+    }
+    SECTION("S") {
+      REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(0, -1000), glm::vec2(-1, -1), false),
+                        exceptions::InvalidDirectionException);
+    }
+    SECTION("SW") {
+      REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(-1000, -1000), glm::vec2(-1, -1), false),
+                        exceptions::InvalidDirectionException);
+    }
+    SECTION("W") {
+      REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(-1000, 0), glm::vec2(-1, -1), false),
+                        exceptions::InvalidDirectionException);
+    }
+    SECTION("NW") {
+      REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(-1000, 1000), glm::vec2(-1, -1), false),
+                        exceptions::InvalidDirectionException);
+    }
+  }
 }
