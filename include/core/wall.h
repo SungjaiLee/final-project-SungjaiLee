@@ -7,6 +7,8 @@
 
 
 #include <core/ray.h>
+#include <core/util.h>
+
 #include "cinder/gl/gl.h"
 
 #include <nlohmann/json.hpp>
@@ -47,6 +49,7 @@ public:
   bool IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const;
 
   float Distance(const glm::vec2& pos, const float angle) const;
+  float Distance(const glm::vec2& pos, const glm::vec2& dir) const;
 
   HitPackage GetVisible(const glm::vec2& pos, const float angle);
 

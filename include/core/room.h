@@ -96,6 +96,9 @@ public:
   //  inclusivity should be false from secondary rays.
   //  this will allow the viewer to shoot and find the wall if the ray stands on the wall, but once non-inclusive ray is shot from the door of the other linekd room, it will ignore the wall/portalt it stands on
   Direction GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool point_inclusive = true) const;
+
+  float RoomWallHitDistance(Direction direction, const glm::vec2& pos, const glm::vec2& dir) const;
+
   bool PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir) const;
 
   bool WithinRoom(const glm::vec2& pos, bool wall_inclusive = true) const;

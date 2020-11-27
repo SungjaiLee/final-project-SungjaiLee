@@ -45,8 +45,12 @@ Wall::Wall(const glm::vec2& head, const glm::vec2& tail) {
 }
 
 float Wall::Distance(const glm::vec2& pos, const float angle) const {
-  if (IntersectsWith(pos, angle)) {
-    return PureDistance(pos, angle);
+  return Distance(pos, glm::vec2(std::cos(angle), std::sin(angle)));
+}
+
+float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
+  if (IntersectsWith(pos, dir)) {
+    return GetRayToLineDistance(head_, tail_, pos, dir);
   } else {
     return -1;
   }
