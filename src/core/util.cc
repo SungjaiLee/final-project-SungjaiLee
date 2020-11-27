@@ -5,46 +5,76 @@
 #include <core/util.h>
 
 namespace room_explorer {
-float GetRayToLineDistance(const glm::vec2& wall_head, const glm::vec2& wall_tail,
-                           const glm::vec2& ray_pos, const glm::vec2& ray_dir) {
-  if (wall_tail == wall_tail) {
-    if (wall_tail == ray_pos) {
-      return 0;
+
+
+bool FloatingPointApproximation(float a, float b, float epsilon) {
+  float diff = std::abs(a - b);
+  // If either is zero, ratio-comparison is invalid. Resort to regular epsilon-Approximation
+  if (a == 0 || b == 0) {
+    if (diff > epsilon) {
+      return false;
+    } else {
+      return true;
     }
   }
 
-  glm::vec2 diff = wall_head - wall_tail;
-
-
-  // perpendicular to head - pos, it is head-pos rotated by 90
-  glm::vec2 m(wall_head.y - ray_pos.y, ray_pos.x - wall_head.x);
-
-  if (diff == glm::vec2(0, 0)) {
-    // point wall, need different handling
-    // if angle hits the point, its distance of m,
-    // TODO technically does not make sense to have a distance, so it is completely valid to assume distance is to the point wall
-    return glm::length(m);
+  // Weak Approximation.
+  //  If either if relatively small enough, passes the approximation.
+  // To avoid using equality, which is at this context invalid, use strict inequality
+  if (  diff / std::abs(a) > epsilon
+    &&  diff / std::abs(b) > epsilon) {
+    return false; // If both relative difference is too large, two are not approximate
   }
+  return true;
+}
 
-  float r = glm::dot(diff, m);
-  // if r is zero, means the pos is on the line, which regardless to directoin, has distance of 0
-  if (r == 0) {
+bool FloatingPointApproximation(const glm::vec2& vec_a, const glm::vec2& vec_b, float epsilon) {
+  return FloatingPointApproximation(vec_a.x, vec_b.x, epsilon)
+      && FloatingPointApproximation(vec_a.y, vec_b.y, epsilon);
+}
+
+
+float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tail,
+                           const glm::vec2& ray_pos, const glm::vec2& ray_dir) {
+
+  // If position already is on head or tail, can by-pass further calculation.
+  if (FloatingPointApproximation(line_head, ray_pos)) {
+    return 0;
+  }
+  if (FloatingPointApproximation(line_tail, ray_pos)) {
     return 0;
   }
 
-  //TODO find faster alternatives
-  // !!!! REQUIRE NORMALIZED dir
-  glm::vec2 dir_c(ray_dir.y, -ray_dir.x);
-
-  float denom = glm::dot(diff, dir_c);
-  if (denom == 0) {
-    // Does not intersect. Parrellel
-    return -1;
+  // Single Point.
+  if (FloatingPointApproximation(line_head, line_tail)) {
+    // Single point does not have valid line-representation.
+    //  If ray not at the point, will assume that line which passes this point and the ray-pos is a valid assumption.
+    //  Thus pure distance to point is a valid length.
+    return glm::length(line_head - ray_pos);
   }
 
-  r /= denom;
+  /* Utilize polar-coordinate representation of linear graph to calculate distance.
+   * distance = (H - T)•<H.y - P.y, P.x - H.x> / (H - T)•<sin(θ), -cos(θ)>
+   * This Calculation is carried out over the following segment in pieces.
+   */
 
-  return r;
+  // (H - T)
+  glm::vec2 diff = line_head - line_tail;
+
+  // <sin(θ), -cos(θ)>
+  //  assume dir is normalized
+  glm::vec2 normal_dir(ray_dir.y, -ray_dir.x);
+
+  float denominator = glm::dot(diff, normal_dir);
+  if (FloatingPointApproximation(denominator, 0)) {
+    // If demon is zero, means that ray and line are parallel, meaning distance should be infinite
+    return std::numeric_limits<float>::infinity();
+  }
+
+  // <H.y - P.y, P.x - H.x>
+  glm::vec2 ref(line_head.y - ray_pos.y, ray_pos.x - line_head.x);
+
+  return glm::dot(diff, ref) / denominator; // Refer to formula above for clarification.
 }
 
 } // namespace room_explorer

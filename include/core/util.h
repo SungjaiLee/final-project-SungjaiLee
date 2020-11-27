@@ -9,7 +9,13 @@
 
 namespace room_explorer {
 
-float GetRayToLineDistance(const glm::vec2& wall_head, const glm::vec2& wall_tail,
+bool FloatingPointApproximation(float a, float b, float epsilon = .0000001f);
+bool FloatingPointApproximation(const glm::vec2& vec_a, const glm::vec2& vec_b, float epsilon = .0000001f);
+
+// pure distance, including negative and -1 as not intersecting, from ray at given position to line defined by
+//  two head and tail
+//
+float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tail,
                            const glm::vec2& ray_pos, const glm::vec2& ray_dir);
 
 }

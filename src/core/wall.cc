@@ -57,52 +57,6 @@ float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
 }
 
 
-//TODO take in normal direction vector instead of angle, easier to use dot than trig. Calculation already uses trig to obtain direction vector anyway
-float Wall::PureDistance(const glm::vec2& pos, const float angle) const {
-  return PureDistance(pos, glm::vec2(std::cos(angle), std::sin(angle)));
-}
-
-float Wall::PureDistance(const glm::vec2& pos, const glm::vec2& dir) const {
-  if (head_ == tail_) {
-    if (head_ == pos) {
-      return 0;
-    }
-  }
-
-  glm::vec2 diff = head_ - tail_;
-
-
-  // perpendicular to head - pos, it is head-pos rotated by 90
-  glm::vec2 m(head_.y - pos.y, pos.x - head_.x);
-
-  if (diff == glm::vec2(0, 0)) {
-    // point wall, need different handling
-    // if angle hits the point, its distance of m,
-    // TODO technically does not make sense to have a distance, so it is completely valid to assume distance is to the point wall
-    return glm::length(m);
-  }
-
-  float r = glm::dot(diff, m);
-  // if r is zero, means the pos is on the line, which regardless to directoin, has distance of 0
-  if (r == 0) {
-    return 0;
-  }
-
-  //TODO find faster alternatives
-  // !!!! REQUIRE NORMALIZED dir
-  glm::vec2 dir_c(dir.y, -dir.x);
-
-  float denom = glm::dot(diff, dir_c);
-  if (denom == 0) {
-    // Does not intersect. Parrellel
-    return -1;
-  }
-
-  r /= denom;
-
-  return r;
-}
-
 // Todo, convert to normal vector dot product computation instead
 //  TODO:: normal computation, find normal of the direction vector
 //         find dot f each head-pos and tail-pos
@@ -244,27 +198,6 @@ float GetTheta(const glm::vec2& vec) {
     theta = 2 * M_PI + theta;
   }
   return theta;
-}
-
-bool FloatingPointApproximation(float a, float b, float epsilon) {
-  float diff = std::abs(a - b);
-  if (a == 0 || b == 0) {
-    if (diff > epsilon) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  // waeaker approximation
-  if (diff / std::abs(a) <= epsilon) {
-    return true;
-  }
-  if (diff / std::abs(b) <= epsilon) {
-    return true;
-  }
-
-  return false;
 }
 
 } // namespace room_explorer

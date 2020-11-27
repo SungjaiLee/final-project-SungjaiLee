@@ -22,9 +22,6 @@ private:
   glm::vec2 head_;
   glm::vec2 tail_;
 
-  float PureDistance(const glm::vec2& pos, float angle) const;
-  float PureDistance(const glm::vec2& pos, const glm::vec2& dir) const;
-
 public:
 
   Wall() = default;
@@ -60,10 +57,6 @@ public:
 };
 
 float GetTheta(const glm::vec2& vec);
-//TODO move to own util file
-// Also find a better more precise epsilon
-bool FloatingPointApproximation(float a, float b, float epsilon = .0000001f);
-
 
 void from_json(const json& j, Wall& wall);
 
