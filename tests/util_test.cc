@@ -33,60 +33,101 @@ TEST_CASE("IsUnitVector") {
 }
 
 TEST_CASE("GetRayToLineDistance") {
-  SECTION("Hit") {
-    SECTION("Mid") {
+  SECTION("Positive Direction") {
+    SECTION("Hit") {
+      SECTION("Mid") {
+        SECTION("Unit dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(.5f, -.5f), glm::vec2(0, 1)) == 1);
+        }SECTION("Non-unit Dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(.5f, -.5f), glm::vec2(0, 5)) == 1);
+        }
+      }SECTION("Head") {
+        SECTION("Unit dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(.5f, 0), glm::vec2(1, 0)) == .5f);
+        }SECTION("Non-unit Dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(.5f, 0), glm::vec2(.1f, 0)) == .5f);
+        }
+      }SECTION("Tail") {
+        SECTION("Unit dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(0, .5f), glm::vec2(0, 1)) == .5f);
+        }SECTION("Non-unit Dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(0, .5f), glm::vec2(0, .1f)) == .5f);
+        }
+      }
+    }SECTION("On Line") {
+      SECTION("Head") {
+        REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                     glm::vec2(0, 1), glm::vec2(0, .1f)) == 0);
+      }SECTION("Tail") {
+        REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                     glm::vec2(1, 0), glm::vec2(0, .1f)) == 0);
+      }SECTION("Mid") {
+        REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                     glm::vec2(.5f, .5f), glm::vec2(0, .1f)) == 0);
+      }
+    }SECTION("Parallel") {
       SECTION("Unit dir") {
-        REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                     glm::vec2(.5f, -.5f), glm::vec2(0, 1)) == 1);
-      }
-      SECTION("Non-unit Dir") {
-        REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                     glm::vec2(.5f, -.5f), glm::vec2(0, 5)) == 1);
-      }
-    }
-    SECTION("Head") {
-      SECTION("Unit dir") {
-        REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                     glm::vec2(.5f, 0), glm::vec2(1, 0)) == .5f);
-      }
-      SECTION("Non-unit Dir") {
-        REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                     glm::vec2(.5f, 0), glm::vec2(.1f, 0)) == .5f);
-      }
-    }
-    SECTION("Tail") {
-      SECTION("Unit dir") {
-        REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                     glm::vec2(0, .5f), glm::vec2(0, 1)) == .5f);
-      }
-      SECTION("Non-unit Dir") {
-        REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                     glm::vec2(0, .5f), glm::vec2(0, .1f)) == .5f);
+        REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                     glm::vec2(0, 0), glm::vec2(1, -1)) == std::numeric_limits<float>::infinity());
+      }SECTION("Non-unit Dir") {
+        REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                     glm::vec2(0, 0), glm::vec2(-.5, .5)) == std::numeric_limits<float>::infinity());
       }
     }
   }
-  SECTION("On Line") {
-    SECTION("Head") {
-      REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                   glm::vec2(0, 1), glm::vec2(0, .1f)) == 0);
-    }
-    SECTION("Tail") {
-      REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                   glm::vec2(1, 0), glm::vec2(0, .1f)) == 0);
-    }
-    SECTION("Mid") {
-      REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                   glm::vec2(.5f, .5f), glm::vec2(0, .1f)) == 0);
-    }
-  }
-  SECTION("Parallel") {
-    SECTION("Unit dir") {
-      REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                   glm::vec2(0, 0), glm::vec2(1, -1)) == std::numeric_limits<float>::infinity());
-    }
-    SECTION("Non-unit Dir") {
-      REQUIRE(GetRayToLineDistance(glm::vec2(0,1), glm::vec2(1,0),
-                                   glm::vec2(0, 0), glm::vec2(-.5, .5)) == std::numeric_limits<float>::infinity());
+
+  SECTION("Negative Direction") {
+    SECTION("Hit") {
+      SECTION("Mid") {
+        SECTION("Unit dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(.5f, -.5f), glm::vec2(0, -1)) == -1);
+        }SECTION("Non-unit Dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(.5f, -.5f), glm::vec2(0, -5)) == -1);
+        }
+      }SECTION("Head") {
+        SECTION("Unit dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(.5f, 0), glm::vec2(-1, 0)) == -.5f);
+        }SECTION("Non-unit Dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(.5f, 0), glm::vec2(-.1f, 0)) == -.5f);
+        }
+      }SECTION("Tail") {
+        SECTION("Unit dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(0, .5f), glm::vec2(0, -1)) == -.5f);
+        }SECTION("Non-unit Dir") {
+          REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                       glm::vec2(0, .5f), glm::vec2(0, -.1f)) == -.5f);
+        }
+      }
+    }SECTION("On Line") {
+      SECTION("Head") {
+        REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                     glm::vec2(0, 1), glm::vec2(0, -.1f)) == 0);
+      }SECTION("Tail") {
+        REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                     glm::vec2(1, 0), glm::vec2(0, -.1f)) == 0);
+      }SECTION("Mid") {
+        REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                     glm::vec2(.5f, .5f), glm::vec2(0, -.1f)) == 0);
+      }
+    }SECTION("Parallel") {
+      SECTION("Unit dir") {
+        REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                     glm::vec2(0, 0), glm::vec2(-1, 1)) == std::numeric_limits<float>::infinity());
+      }SECTION("Non-unit Dir") {
+        REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
+                                     glm::vec2(0, 0), glm::vec2(.5, -.5)) == std::numeric_limits<float>::infinity());
+      }
     }
   }
 }

@@ -92,5 +92,4 @@ float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tai
 // end of Geometric Utilities
 
 
-
 } // namespace room_explorer

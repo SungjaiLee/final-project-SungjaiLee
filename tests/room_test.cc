@@ -281,7 +281,7 @@ TEST_CASE("In-Room Check") {
   }
 }
 
-TEST_CASE("") {
+TEST_CASE("Room hit Diretion") {
   Room room = *factory.GenerateRandomRoom();
   // (500, 200)
 
@@ -520,5 +520,22 @@ TEST_CASE("") {
       REQUIRE_THROWS_AS(room.GetSideHit(glm::vec2(-1000, 1000), glm::vec2(-1, -1), false),
                         exceptions::InvalidDirectionException);
     }
+  }
+}
+
+TEST_CASE("Room Wall Hit Distance") {
+  Room room = *factory.GenerateRandomRoom();
+  SECTION("North") {
+    REQUIRE(room.RoomWallHitDistance(kNorth, glm::vec2(0,0), glm::vec2(0, 1)) == 200);
+  }
+  SECTION("South") {
+    REQUIRE(room.RoomWallHitDistance(kSouth, glm::vec2(0,200), glm::vec2(0, -1)) == 200);
+  }
+  SECTION("East") {
+    REQUIRE(room.RoomWallHitDistance(kEast, glm::vec2(0,200), glm::vec2(1, 0)) == 500);
+  }
+  SECTION("West") {
+    REQUIRE(FloatingPointApproximation(room.RoomWallHitDistance(kWest, glm::vec2(-100,200), glm::vec2(1, -1)),
+                                       141.4213562373f));
   }
 }

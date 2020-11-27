@@ -317,6 +317,24 @@ bool Room::WithinRoom(const glm::vec2& pos, bool wall_inclusive) const {
   }
 }
 
+float Room::RoomWallHitDistance(Direction direction, const glm::vec2& pos, const glm::vec2& dir) const {
+  switch (direction) {
+    case kNorth:
+      return GetRayToLineDistance(glm::vec2(0, height_), glm::vec2(width_, height_), pos, dir);
+    case kSouth:
+      return GetRayToLineDistance(glm::vec2(0, 0), glm::vec2(width_, 0), pos, dir);
+    case kEast:
+      return GetRayToLineDistance(glm::vec2(width_, 0), glm::vec2(width_, height_), pos, dir);
+    case kWest:
+      return GetRayToLineDistance(glm::vec2(0, 0), glm::vec2(0, height_), pos, dir);
+    default:
+    case kUndefined:
+      throw exceptions::InvalidDirectionException();
+  }
+}
+
+
+
 // End of Room Member handlers =====================================
 
 

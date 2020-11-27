@@ -97,6 +97,7 @@ public:
   //  this will allow the viewer to shoot and find the wall if the ray stands on the wall, but once non-inclusive ray is shot from the door of the other linekd room, it will ignore the wall/portalt it stands on
   Direction GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool point_inclusive = true) const;
 
+  // Pure distamce
   float RoomWallHitDistance(Direction direction, const glm::vec2& pos, const glm::vec2& dir) const;
 
   bool PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir) const;
