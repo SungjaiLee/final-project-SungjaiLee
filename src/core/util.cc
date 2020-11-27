@@ -6,7 +6,7 @@
 
 namespace room_explorer {
 
-
+// Numeric Utilities ===================================================================================
 bool FloatingPointApproximation(float a, float b, float epsilon) {
   float diff = std::abs(a - b);
   // If either is zero, ratio-comparison is invalid. Resort to regular epsilon-Approximation
@@ -29,10 +29,19 @@ bool FloatingPointApproximation(float a, float b, float epsilon) {
 }
 
 bool FloatingPointApproximation(const glm::vec2& vec_a, const glm::vec2& vec_b, float epsilon) {
+  // Vectors are equal if both components are equal
   return FloatingPointApproximation(vec_a.x, vec_b.x, epsilon)
       && FloatingPointApproximation(vec_a.y, vec_b.y, epsilon);
 }
 
+// end of Numeric Utilities
+
+
+// Geometric Utilities ======================================================================================
+
+bool IsUnitVector(const glm::vec2& vec) {
+  return FloatingPointApproximation(vec.x * vec.x + vec.y * vec.y, 1);
+}
 
 float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tail,
                            const glm::vec2& ray_pos, const glm::vec2& ray_dir) {
@@ -62,8 +71,11 @@ float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tai
   glm::vec2 diff = line_head - line_tail;
 
   // <sin(θ), -cos(θ)>
-  //  assume dir is normalized
   glm::vec2 normal_dir(ray_dir.y, -ray_dir.x);
+  // Direction needs to be normal for correct calculation
+  if (!IsUnitVector(normal_dir)) {
+    normal_dir = glm::normalize(normal_dir);
+  }
 
   float denominator = glm::dot(diff, normal_dir);
   if (FloatingPointApproximation(denominator, 0)) {
@@ -76,5 +88,9 @@ float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tai
 
   return glm::dot(diff, ref) / denominator; // Refer to formula above for clarification.
 }
+
+// end of Geometric Utilities
+
+
 
 } // namespace room_explorer
