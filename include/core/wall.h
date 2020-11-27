@@ -48,7 +48,11 @@ public:
   float Distance(const glm::vec2& pos, const float angle) const;
   float Distance(const glm::vec2& pos, const glm::vec2& dir) const;
 
-  HitPackage GetVisible(const glm::vec2& pos, const float angle);
+  float TextureIndex(const glm::vec2& pos, const glm::vec2& dir) const; // Texture is calculated from head
+  // bascially just getting distance but treating ray as line, and treating head as ray-head and tail-head as dir
+  // if head=tail, always 0
+
+  Hit GetWallHit(const glm::vec2& pos, const glm::vec2& dir) const;
 
 
   //TODO add fast sin, fast cos which will be just look-up of pre-calculated sin and cos value
@@ -56,7 +60,6 @@ public:
   friend void from_json(const json& j, Wall& wall);
 };
 
-float GetTheta(const glm::vec2& vec);
 
 void from_json(const json& j, Wall& wall);
 

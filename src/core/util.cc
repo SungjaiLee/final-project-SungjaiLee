@@ -77,16 +77,32 @@ float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tai
     normal_dir = glm::normalize(normal_dir);
   }
 
+  // <H.y - P.y, P.x - H.x>
+  glm::vec2 ref(line_head.y - ray_pos.y, ray_pos.x - line_head.x);
+
+  float r = glm::dot(diff, ref);
+  // If (H - T)•<H.y - P.y, P.x - H.x> is zero, regardless of denominator distance will be zero
+  //  This also handles in-line case, where denominator==0 test will fail
+  if(FloatingPointApproximation(r, 0)) {
+    return 0;
+  }
+
   float denominator = glm::dot(diff, normal_dir);
   if (FloatingPointApproximation(denominator, 0)) {
     // If demon is zero, means that ray and line are parallel, meaning distance should be infinite
     return std::numeric_limits<float>::infinity();
   }
 
-  // <H.y - P.y, P.x - H.x>
-  glm::vec2 ref(line_head.y - ray_pos.y, ray_pos.x - line_head.x);
+  return r / denominator; // Refer to formula above for clarification.
+}
 
-  return glm::dot(diff, ref) / denominator; // Refer to formula above for clarification.
+float GetTheta(const glm::vec2& vec) {
+  //TODO need be funiction
+  float theta = std::atan2(vec.y, vec.x); //
+  if (theta < 0) {
+    theta = 2 * M_PI + theta;
+  }
+  return theta;
 }
 
 // end of Geometric Utilities

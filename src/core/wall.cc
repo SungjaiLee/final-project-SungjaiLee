@@ -190,14 +190,18 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
   }
 }
 
-// static unit methods =================================================
-float GetTheta(const glm::vec2& vec) {
-  //TODO need be funiction
-  float theta = std::atan2(vec.y, vec.x); //
-  if (theta < 0) {
-    theta = 2 * M_PI + theta;
+Hit Wall::GetWallHit(const glm::vec2& pos, const glm::vec2& dir) const {
+
+  float wall_intersection_distance = Distance(pos, dir);
+  if (wall_intersection_distance < 0) {
+    return Hit(); // invalid hit
   }
-  return theta;
+
+  //TODO
+
+  return Hit();
 }
+
+// static unit methods =================================================
 
 } // namespace room_explorer

@@ -80,6 +80,15 @@ TEST_CASE("GetRayToLineDistance") {
                                      glm::vec2(0, 0), glm::vec2(-.5, .5)) == std::numeric_limits<float>::infinity());
       }
     }
+
+    SECTION("In-Line") {
+      // direction and line colinear
+      REQUIRE(GetRayToLineDistance(glm::vec2(1, 0), glm::vec2(2, 0),
+                                   glm::vec2(0, 0), glm::vec2(1, 0)) == 0);
+
+      REQUIRE(GetRayToLineDistance(glm::vec2(1, 1), glm::vec2(2, 2),
+                                   glm::vec2(0, 0), glm::vec2(1, 1)) == 0);
+    }
   }
 
   SECTION("Negative Direction") {
@@ -120,7 +129,8 @@ TEST_CASE("GetRayToLineDistance") {
         REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
                                      glm::vec2(.5f, .5f), glm::vec2(0, -.1f)) == 0);
       }
-    }SECTION("Parallel") {
+    }
+    SECTION("Parallel") {
       SECTION("Unit dir") {
         REQUIRE(GetRayToLineDistance(glm::vec2(0, 1), glm::vec2(1, 0),
                                      glm::vec2(0, 0), glm::vec2(-1, 1)) == std::numeric_limits<float>::infinity());

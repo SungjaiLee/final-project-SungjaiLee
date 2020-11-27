@@ -22,16 +22,21 @@ enum HitType : int { // associated value is their priotity, if two hits exist in
   // lower number means highe rpriotity
   kWall = 0,
   kPortal = 1,
-  kVoid = 2
+  kVoid = 2,
+  kInvalid = 3
 };
 
 struct Hit {
+
+  Hit(); // as default, set as invalid
+  Hit(float hit_distance, HitType hit_type, float texture_index);
 
   float hit_distance_;
 
   HitType hit_type_;
   float texture_index_; // loads different location of a texture
 
+  bool IsNoHit() const; // if invalid, ignore this hit
 };
 
 class HitPackage {

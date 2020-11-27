@@ -53,6 +53,7 @@ include("${CINDER_PATH}/proj/cmake/modules/cinderMakeApp.cmake")
 list(APPEND CORE_SOURCE_FILES src/core/room.cc)
 list(APPEND CORE_SOURCE_FILES src/core/room_factory.cc)
 list(APPEND CORE_SOURCE_FILES src/core/wall.cc)
+list(APPEND CORE_SOURCE_FILES src/core/hits.cc)
 list(APPEND CORE_SOURCE_FILES src/core/util.cc)
 
 
