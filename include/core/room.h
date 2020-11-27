@@ -12,7 +12,7 @@
 
 #include <exceptions/invalid_direction_exception.h>
 
-#include <core/ray.h>
+#include <core/hits.h>
 #include <core/wall.h>
 
 #include <set>

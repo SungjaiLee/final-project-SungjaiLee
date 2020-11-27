@@ -6,7 +6,7 @@
 #define NONEUCLIDEAN_RAY_CASTER_WALL_H
 
 
-#include <core/ray.h>
+#include <core/hits.h>
 #include <core/util.h>
 
 #include "cinder/gl/gl.h"
