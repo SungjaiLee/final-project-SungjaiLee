@@ -30,6 +30,8 @@ float GetTheta(const glm::vec2& vec);
 
 bool Collinear(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c);
 
+bool Parallel(const glm::vec2& a, const glm::vec2& b);
+
 // end of Geometric Utilities
 
 }

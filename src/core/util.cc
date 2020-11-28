@@ -110,6 +110,10 @@ bool Collinear(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c) {
   return FloatingPointApproximation(glm::dot(a - b, glm::vec2(b.y - c.y, c.x - b.x)), 0);
 }
 
+bool Parallel(const glm::vec2& a, const glm::vec2& b) {
+  return FloatingPointApproximation(glm::dot(a, glm::vec2(b.y, -b.x)), 0);
+}
+
 // end of Geometric Utilities
 
 
