@@ -102,7 +102,7 @@ TEST_CASE("Load From JSON") {
   }
 }
 
-TEST_CASE("Ray Inmtersection Test") {
+TEST_CASE("Ray Intersection Test") {
 
   Wall wall(glm::vec2(1,0), glm::vec2(0,1));
 
@@ -252,5 +252,83 @@ TEST_CASE("Ray Inmtersection Test") {
       }
     }
   }
+}
 
+TEST_CASE("Texture Index") {
+
+  Wall wall(glm::vec2(0, 1), glm::vec2(1, 0));
+
+  SECTION("Before Head") {
+    // negative
+    SECTION("Positive Dir") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(-2, 1), glm::vec2(1, 1)), -std::sqrt(2)));
+    }
+    SECTION("On Wall") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(-1, 2), glm::vec2(-1, -1)), -std::sqrt(2)));
+    }
+    SECTION("Negative Direction") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(-2, 1), glm::vec2(-1, -1)), -std::sqrt(2)));
+    }
+  }
+
+  SECTION("Head") {
+    // zero
+    SECTION("Positive Dir") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, 0), glm::vec2(0, 1)), 0));
+    }
+    SECTION("On Wall") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, 1), glm::vec2(0, 1)), 0));
+    }
+    SECTION("Negative Direction") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, 2), glm::vec2(0, 1)), 0));
+    }
+  }
+
+  SECTION("Mid") {
+    // between length
+    SECTION("Positive Dir") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, 0), glm::vec2(1, 1)), std::sqrt(2) / 2));
+    }
+    SECTION("On Wall") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(.5f, .5f), glm::vec2(1, 1)), std::sqrt(2) / 2));
+    }
+    SECTION("Negative Direction") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(5, 5), glm::vec2(1, 1)), std::sqrt(2) / 2));
+    }
+  }
+
+  SECTION("Tail") {
+    // length
+    SECTION("Positive Dir") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, -1), glm::vec2(1, 1)), std::sqrt(2) ));
+    }
+    SECTION("On Wall") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(1, 0), glm::vec2(1, 1)), std::sqrt(2) ));
+    }
+    SECTION("Negative Direction") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(2, 1), glm::vec2(1, 1)), std::sqrt(2) ));
+    }
+  }
+  SECTION("Beyond Tail") {
+    // beyond length
+    SECTION("Positive Dir") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, -1), glm::vec2(1, 0)), 2 * std::sqrt(2) ));
+    }
+    SECTION("On Wall") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(2, -1), glm::vec2(1, 0)), 2 * std::sqrt(2) ));
+    }
+    SECTION("Negative Direction") {
+      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(3, -1), glm::vec2(1, 0)), 2 * std::sqrt(2) ));
+    }
+  }
+}
+
+TEST_CASE("Hit") {
+  SECTION("No Hit") {
+
+  }
+
+  SECTION("Valid Hit") {
+
+  }
 }

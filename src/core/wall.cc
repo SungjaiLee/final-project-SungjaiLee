@@ -197,9 +197,14 @@ Hit Wall::GetWallHit(const glm::vec2& pos, const glm::vec2& dir) const {
     return Hit(); // invalid hit
   }
 
-  //TODO
+  // treating ray now as line, and line now as ray, we can calculate the texture index
+  float texture_index = TextureIndex(pos, dir);
 
-  return Hit();
+  return Hit(wall_intersection_distance, kWall, texture_index);
+}
+
+float Wall::TextureIndex(const glm::vec2& pos, const glm::vec2& dir) const {
+  return GetRayToLineDistance(pos, pos + dir, head_, tail_ - head_);
 }
 
 // static unit methods =================================================
