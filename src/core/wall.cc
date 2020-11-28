@@ -189,6 +189,7 @@ float Wall::TextureIndex(const glm::vec2& pos, const glm::vec2& dir) const {
   // must check if parrelel, if it is, then only valid texture distance is if also collinear and distancr to head
 
 
+  //!This shouyld also handle on-wall case
   if (Parallel(dir, head_ - tail_) && Collinear(pos, head_, tail_)) {
     // If ray is already set to intsersect with the wall, the distance of head to ray is 0
     if (glm::dot(dir, head_ - pos) > 0) {
@@ -198,6 +199,7 @@ float Wall::TextureIndex(const glm::vec2& pos, const glm::vec2& dir) const {
     // this suggests that ray is pointing away from the head, meaning that the distance must be actual ray-head distance
     return glm::length(pos - head_);
   }
+
 
   return GetRayToLineDistance(pos, pos + dir, head_, tail_ - head_);
 }

@@ -389,6 +389,7 @@ TEST_CASE("Hit") {
 
         REQUIRE(hit.hit_type_ == kWall);
         REQUIRE(FloatingPointApproximation(hit.hit_distance_, std::sqrt(2)));
+
         REQUIRE(FloatingPointApproximation(hit.texture_index_, 0));
       }
     }
