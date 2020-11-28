@@ -96,6 +96,97 @@ float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tai
   return r / denominator; // Refer to formula above for clarification.
 }
 
+
+bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& segment_tail,
+                              const glm::vec2& ray_pos, const glm::vec2& ray_dir) {
+  // Trivial Cases
+  // If position if head or tail itself, will be considered to have intersected with wall as a whole
+  if (segment_head == ray_pos || segment_tail == ray_pos) {
+    return true;
+  }
+
+  // Calculation is based on relative position to head and tail from the position of ray-head
+  glm::vec2 head = segment_head - ray_pos;
+  glm::vec2 tail = segment_tail - ray_pos;
+
+  // complementarty normals
+  glm::vec2 tail_c(tail.y, -tail.x);
+
+  float a = glm::dot(head, tail_c);
+  if (FloatingPointApproximation(a, 0)) {
+    // head and tail are collinear
+
+
+    if (glm::dot(head, tail) < 0) {
+      // theta is pi, meaning pos is between the head and tail
+      // definitely intersects
+      return true;
+    } else {
+      // theta is 0
+      // head and tail are collinear with the pos, or worse a point wall
+      glm::vec2 dir_c(ray_dir.y, -ray_dir.x);
+
+      if (FloatingPointApproximation(glm::dot(head, dir_c), 0)) {
+        if (glm::dot(head, ray_dir) > 0) {
+          // direction is 0
+          return true;
+        } else {
+          // direction is pi
+          //  wrong direction
+          return false;
+        }
+      } else {
+        // direction not 0 or pi
+        // not facing either of correct orrientaiotn
+        return false;
+      }
+    }
+
+  } else {
+    glm::vec2 dir_c(ray_dir.y, -ray_dir.x);
+    float b = glm::dot(head, dir_c);
+    // not colinear, either in I, II quad or III, IV quad
+    if (a > 0) {
+      // theta in (0, pi)
+      if (b > 0 || FloatingPointApproximation(b, 0)) {
+        // dir in [0, pi]
+
+        float c = glm::dot(tail, dir_c);
+        if (c < 0 || FloatingPointApproximation(c, 0)) {
+          // dir <= theat
+          // dir in [0, theta]
+          return true;
+        } else {
+          return false;
+        }
+
+      } else {
+        // dir in (pi, 2pi)
+        return false;
+      }
+    } else {
+      // theta in (pi, 2pi)
+
+      if (b < 0 || FloatingPointApproximation(b, 0)) {
+        // dir in [pi, 2pi]
+        float c = glm::dot(tail, dir_c);
+
+        if (c > 0 || FloatingPointApproximation(c, 0)) {
+          // dir >= theta
+          // dir in [theta, 2pi]
+          return true;
+        } else {
+          return false;
+        }
+
+      } else {
+        // dir in (0, pi)
+        return false;
+      }
+    }
+  }
+}
+
 float GetTheta(const glm::vec2& vec) {
   //TODO need be funiction
   float theta = std::atan2(vec.y, vec.x); //

@@ -25,6 +25,9 @@ bool IsUnitVector(const glm::vec2& vec);
 float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tail,
                            const glm::vec2& ray_pos, const glm::vec2& ray_dir);
 
+//TODO??
+bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& segment_tail,
+                              const glm::vec2& ray_pos, const glm::vec2& ray_dir);
 
 float GetTheta(const glm::vec2& vec);
 

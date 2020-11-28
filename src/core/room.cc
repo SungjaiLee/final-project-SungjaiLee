@@ -333,6 +333,38 @@ float Room::RoomWallHitDistance(Direction direction, const glm::vec2& pos, const
   }
 }
 
+bool Room::PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir) const {
+
+  float ns_begin = (width_ - ns_door_width_) / 2;
+  float ew_begin = (height_ - ew_door_width_) / 2;
+
+  switch (side) {
+
+    case kNorth:
+      return RayIntersectsWithSegment(glm::vec2(ns_begin, height_),
+                                      glm::vec2(ns_begin + ns_door_width_, height_),
+                                      pos, dir);
+
+    case kSouth:
+      return RayIntersectsWithSegment(glm::vec2(ns_begin, 0),
+                                      glm::vec2(ns_begin + ns_door_width_, 0),
+                                      pos, dir);
+
+    case kEast:
+      return RayIntersectsWithSegment(glm::vec2(width_, ew_begin),
+                                      glm::vec2(width_, ew_begin + ew_door_width_),
+                                      pos, dir);
+
+    case kWest:
+      return RayIntersectsWithSegment(glm::vec2(0, ew_begin),
+                                      glm::vec2(0, ew_begin + ew_door_width_),
+                                      pos, dir);
+
+    case kUndefined:
+      throw exceptions::InvalidDirectionException();
+  }
+}
+
 
 
 // End of Room Member handlers =====================================
