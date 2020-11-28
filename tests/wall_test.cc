@@ -172,6 +172,19 @@ TEST_CASE("Ray Intersection Test") {
 
     }
 
+    SECTION("In-Line") {
+      SECTION("To Head") {
+        REQUIRE(wall.IntersectsWith(glm::vec2(2, -1), 3 * M_PI / 4));
+
+        REQUIRE(FloatingPointApproximation(wall.Distance(glm::vec2(2, -1), 3 * M_PI / 4), std::sqrt(2)));
+      }
+      SECTION("To tail") {
+        REQUIRE(wall.IntersectsWith(glm::vec2(-1, 2), 7 * M_PI / 4));
+
+        REQUIRE(FloatingPointApproximation(wall.Distance(glm::vec2(-1, 2), 7 * M_PI / 4), std::sqrt(2)));
+      }
+    }
+
     SECTION("Ray begin on the wall") {
       SECTION("Not Parralel") {
         SECTION("Head") {
@@ -324,11 +337,67 @@ TEST_CASE("Texture Index") {
 }
 
 TEST_CASE("Hit") {
-  SECTION("No Hit") {
 
+  Wall wall(glm::vec2(0, 1), glm::vec2(1, 0));
+
+  SECTION("No Hit") {
+    SECTION("Miss") {
+
+    }
+    SECTION("Parallel") {
+
+    }
   }
 
   SECTION("Valid Hit") {
+    SECTION("Shoot and Hit") {
+      SECTION("Head") {
+        Hit hit = wall.GetWallHit(glm::vec2(0,0), glm::vec2(0,1));
 
+        REQUIRE_FALSE(hit.IsNoHit());
+
+        REQUIRE(hit.hit_type_ == kWall);
+        REQUIRE(hit.hit_distance_ == 1);
+        REQUIRE(hit.texture_index_ == 0);
+      }
+      SECTION("Tail") {
+        Hit hit = wall.GetWallHit(glm::vec2(0, 0), glm::vec2(1, 0));
+
+        REQUIRE_FALSE(hit.IsNoHit());
+
+        REQUIRE(hit.hit_type_ == kWall);
+        REQUIRE(hit.hit_distance_ == 1);
+        REQUIRE(FloatingPointApproximation(hit.texture_index_, std::sqrt(2)));
+      }
+      SECTION("Mid") {
+        Hit hit = wall.GetWallHit(glm::vec2(0, 0), glm::vec2(1, 1));
+
+        REQUIRE_FALSE(hit.IsNoHit());
+
+        REQUIRE(hit.hit_type_ == kWall);
+        REQUIRE(FloatingPointApproximation(hit.hit_distance_, std::sqrt(2)/2 ));
+        REQUIRE(FloatingPointApproximation(hit.texture_index_, std::sqrt(2)/2));
+      }
+      SECTION("In-Line") {
+        Hit hit = wall.GetWallHit(glm::vec2(-1, 2), glm::vec2(1, -1));
+
+        REQUIRE_FALSE(hit.IsNoHit());
+
+        REQUIRE(hit.hit_type_ == kWall);
+        REQUIRE(FloatingPointApproximation(hit.hit_distance_, std::sqrt(2)));
+        REQUIRE(FloatingPointApproximation(hit.texture_index_, 0));
+      }
+    }
+    SECTION("On wall") {
+      SECTION("Head") {
+
+      }
+      SECTION("Mid") {
+
+      }
+      SECTION("Tail") {
+
+      }
+    }
   }
 }

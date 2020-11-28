@@ -10,7 +10,7 @@
 namespace room_explorer {
 
 // Numeric Utilities ===================================================================================
-bool FloatingPointApproximation(float a, float b, float epsilon = .0000001f);
+bool FloatingPointApproximation(float a, float b, float epsilon = .000001f);
 bool FloatingPointApproximation(const glm::vec2& vec_a, const glm::vec2& vec_b, float epsilon = .0000001f);
 // end of Numeric Utilities
 
@@ -25,7 +25,10 @@ bool IsUnitVector(const glm::vec2& vec);
 float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tail,
                            const glm::vec2& ray_pos, const glm::vec2& ray_dir);
 
+
 float GetTheta(const glm::vec2& vec);
+
+bool Collinear(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c);
 
 // end of Geometric Utilities
 

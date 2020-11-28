@@ -50,7 +50,22 @@ float Wall::Distance(const glm::vec2& pos, const float angle) const {
 
 float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
   if (IntersectsWith(pos, dir)) {
+
+    if (Collinear(pos, head_, tail_)) {
+      //in-line. Pure distance will give 0, whereas a segment needs to yield distance to head or tail
+      // Intserection assumes that direction is in correct orientation
+      // return the closer of the two
+
+      // need to be sure that position is outside of the wall segment
+      if (glm::dot(head_ - pos, tail_ - pos) > 0) {
+        return std::min(glm::length(head_ - pos), glm::length(tail_ - pos));
+      } else {
+        return 0;
+      }
+    }
+
     return GetRayToLineDistance(head_, tail_, pos, dir);
+
   } else {
     return -1;
   }
@@ -64,41 +79,6 @@ float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
 //         this will then require orientation check, which can be done by checking if both dot of just direciton vectpr with wall vector is both positve, else wrong direction
 bool Wall::IntersectsWith(const glm::vec2& pos, const float angle) const{
   return IntersectsWith(pos, glm::vec2(std::cos(angle), std::sin(angle)));
-
-//  //head, tail == pos check
-//  if (pos == head_ || pos == tail_) {
-//    return true;
-//  }
-//
-//  float theta_0 = GetTheta(head_ - pos);
-//  float theta_1 = GetTheta(tail_ - pos);
-//
-//  //Swapping variables so theta_0 is less than theta_1
-//  if (theta_1 < theta_0) {
-//    float temp = theta_0;
-//    theta_0 = theta_1;
-//    theta_1 = temp;
-//  }
-//
-//  // Check for case pos is in the line, in which case the angle to head and tail will differ by pi
-//  // THis also avoids on-line but not segment check, this will only be true if pos is between the head and tail, so theta's differ exactly by pi
-//  if (FloatingPointApproximation(theta_1 -theta_0, M_PI)) {
-//    return true;
-//  }
-//
-//  // require head/tail hit check
-//  // use knuth approximation
-//  // TODO check if necessary
-//  if (FloatingPointApproximation(angle, theta_0) || FloatingPointApproximation(angle, theta_1)) {
-//    return true;
-//  }
-//
-//
-//  if (angle < theta_0 || angle > theta_1) {
-//    return false;
-//  }
-//
-//  return true;
 }
 
 bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
@@ -117,7 +97,7 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
 
   float a = glm::dot(head, tail_c);
   if (FloatingPointApproximation(a, 0)) {
-    // head and tail are colinear
+    // head and tail are collinear
 
 
     if (glm::dot(head, tail) < 0) {
@@ -126,7 +106,7 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
       return true;
     } else {
       // theta is 0
-      // head and tail are colinear with the pos, or worse a point wall
+      // head and tail are collinear with the pos, or worse a point wall
       glm::vec2 dir_c(dir.y, -dir.x);
 
       if (FloatingPointApproximation(glm::dot(head, dir_c), 0)) {

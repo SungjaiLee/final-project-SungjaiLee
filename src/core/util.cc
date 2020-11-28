@@ -105,6 +105,11 @@ float GetTheta(const glm::vec2& vec) {
   return theta;
 }
 
+bool Collinear(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c) {
+  // if two are same, always colinear
+  return FloatingPointApproximation(glm::dot(a - b, glm::vec2(b.y - c.y, c.x - b.x)), 0);
+}
+
 // end of Geometric Utilities
 
 
