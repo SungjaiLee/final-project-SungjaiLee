@@ -424,6 +424,107 @@ float Room::WallTextureIndex(Direction direction, bool portal, const glm::vec2& 
   }
 }
 
+glm::vec2 Room::GetHead(Direction dir, bool portal) const {
+  if (portal) {
+    return GetPortalHead(dir);
+  } else {
+    return GetWallHead(dir);
+  }
+}
+
+glm::vec2 Room::GetTail(Direction dir, bool portal) const {
+  if (portal) {
+    return GetPortalTail(dir);
+  } else {
+    return GetWallTail(dir);
+  }
+}
+
+glm::vec2 Room::GetPortalHead(Direction dir) const {
+  using glm::vec2;
+
+  switch (dir) {
+    case kNorth:
+      return vec2(ns_door_begin_ + ns_door_width_, height_);
+
+    case kSouth:
+      return vec2(ns_door_begin_, 0);
+
+    case kEast:
+      return vec2(width_, ew_door_begin_);
+
+    case kWest:
+      return vec2(0, ew_door_begin_ + ew_door_width_);
+
+    case kUndefined:
+      throw exceptions::InvalidDirectionException();
+  }
+}
+
+glm::vec2 Room::GetPortalTail(Direction dir) const {
+  using glm::vec2;
+
+  switch (dir) {
+    case kNorth:
+      return vec2(ns_door_begin_, height_);
+
+    case kSouth:
+      return vec2(ns_door_begin_ + ns_door_width_, 0);
+
+    case kEast:
+      return vec2(width_, ew_door_begin_ + ew_door_width_);
+
+    case kWest:
+      return vec2(0, ew_door_begin_);
+
+    case kUndefined:
+      throw exceptions::InvalidDirectionException();
+  }
+}
+
+glm::vec2 Room::GetWallHead(Direction dir) const {
+  using glm::vec2;
+
+  switch (dir) {
+    case kNorth:
+      return vec2(width_, height_);
+
+    case kSouth:
+      return vec2(0, 0);
+
+    case kEast:
+      return vec2(width_, 0);
+
+    case kWest:
+      return vec2(0, height_);
+
+    case kUndefined:
+      throw exceptions::InvalidDirectionException();
+  }
+}
+
+glm::vec2 Room::GetWallTail(Direction dir) const {
+  using glm::vec2;
+
+  switch (dir) {
+    case kNorth:
+      return vec2(0, height_);
+
+    case kSouth:
+      return vec2(width_, 0);
+
+    case kEast:
+      return vec2(width_, height_);
+
+    case kWest:
+      return vec2(0, 0);
+
+    case kUndefined:
+      throw exceptions::InvalidDirectionException();
+  }
+}
+
+
 
 // End of Room Member handlers =====================================
 

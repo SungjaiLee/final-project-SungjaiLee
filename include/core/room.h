@@ -71,6 +71,11 @@ private:
    */
   bool LinkRoom(const Direction& dir, Room* room_p);
 
+  glm::vec2 GetPortalHead(Direction dir) const;
+  glm::vec2 GetPortalTail(Direction dir) const;
+
+  glm::vec2 GetWallHead(Direction dir) const;
+  glm::vec2 GetWallTail(Direction dir) const;
 
 public:
 
@@ -94,6 +99,10 @@ public:
   bool ConnectedWith(Room* other, Direction direction) const;
 
   bool ConnectedWith(Room* other) const;
+
+  //!Retireves head and tail of portal or wall
+  glm::vec2 GetHead(Direction dir, bool portal) const;
+  glm::vec2 GetTail(Direction dir, bool portal) const;
 
   // Point inclusivity just means the position of th ray shoots from is cincluded in consideraiton
   //  inclusivity should be false from secondary rays.

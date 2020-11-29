@@ -685,3 +685,67 @@ TEST_CASE("Portal Hit") {
   }
 }
 
+TEST_CASE("Get Wall/ Portal Head") {
+  Room room = *factory.GenerateRandomRoom();
+
+  SECTION("Portal") {
+    SECTION("North") {
+      REQUIRE(room.GetHead(kNorth, true) == glm::vec2(400, 200));
+    }
+    SECTION("East") {
+      REQUIRE(room.GetHead(kEast, true) == glm::vec2(500, 50));
+    }
+    SECTION("South") {
+      REQUIRE(room.GetHead(kSouth, true) == glm::vec2(100, 0));
+    }
+    SECTION("West") {
+      REQUIRE(room.GetHead(kWest, true) == glm::vec2(0, 150));
+    }
+  }
+  SECTION("Wall") {
+    SECTION("North") {
+      REQUIRE(room.GetHead(kNorth, false) == glm::vec2(500, 200));
+    }
+    SECTION("East") {
+      REQUIRE(room.GetHead(kEast, false) == glm::vec2(500, 0));
+    }
+    SECTION("South") {
+      REQUIRE(room.GetHead(kSouth, false) == glm::vec2(0, 0));
+    }
+    SECTION("West") {
+      REQUIRE(room.GetHead(kWest, false) == glm::vec2(0, 200));
+    }
+  }
+}
+
+TEST_CASE("Get Wall/Portal Tail") {
+  Room room = *factory.GenerateRandomRoom();
+  SECTION("Wall") {
+    SECTION("North") {
+      REQUIRE(room.GetTail(kNorth, false) == glm::vec2(0, 200));
+    }
+    SECTION("East") {
+      REQUIRE(room.GetTail(kEast, false) == glm::vec2(500, 200));
+    }
+    SECTION("South") {
+      REQUIRE(room.GetTail(kSouth, false) == glm::vec2(500, 0));
+    }
+    SECTION("West") {
+      REQUIRE(room.GetTail(kWest, false) == glm::vec2(0, 0));
+    }
+  }
+  SECTION("Portal") {
+    SECTION("North") {
+      REQUIRE(room.GetTail(kNorth, true) == glm::vec2(100, 200));
+    }
+    SECTION("East") {
+      REQUIRE(room.GetTail(kEast, true) == glm::vec2(500, 150));
+    }
+    SECTION("South") {
+      REQUIRE(room.GetTail(kSouth, true) == glm::vec2(400, 0));
+    }
+    SECTION("West") {
+      REQUIRE(room.GetTail(kWest, true) == glm::vec2(0, 50));
+    }
+  }
+}
