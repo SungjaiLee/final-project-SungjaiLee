@@ -99,7 +99,7 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
 //  glm::vec2 tail_c(tail.y, -tail.x);
 //
 //  float a = glm::dot(head, tail_c);
-//  if (FloatingPointApproximation(a, 0)) {
+//  if (FloatApproximation(a, 0)) {
 //    // head and tail are collinear
 //
 //
@@ -112,7 +112,7 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
 //      // head and tail are collinear with the pos, or worse a point wall
 //      glm::vec2 dir_c(dir.y, -dir.x);
 //
-//      if (FloatingPointApproximation(glm::dot(head, dir_c), 0)) {
+//      if (FloatApproximation(glm::dot(head, dir_c), 0)) {
 //        if (glm::dot(head, dir) > 0) {
 //          // direction is 0
 //          return true;
@@ -134,11 +134,11 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
 //    // not colinear, either in I, II quad or III, IV quad
 //    if (a > 0) {
 //      // theta in (0, pi)
-//      if (b > 0 || FloatingPointApproximation(b, 0)) {
+//      if (b > 0 || FloatApproximation(b, 0)) {
 //        // dir in [0, pi]
 //
 //        float c = glm::dot(tail, dir_c);
-//        if (c < 0 || FloatingPointApproximation(c, 0)) {
+//        if (c < 0 || FloatApproximation(c, 0)) {
 //          // dir <= theat
 //          // dir in [0, theta]
 //          return true;
@@ -153,11 +153,11 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
 //    } else {
 //      // theta in (pi, 2pi)
 //
-//      if (b < 0 || FloatingPointApproximation(b, 0)) {
+//      if (b < 0 || FloatApproximation(b, 0)) {
 //        // dir in [pi, 2pi]
 //        float c = glm::dot(tail, dir_c);
 //
-//        if (c > 0 || FloatingPointApproximation(c, 0)) {
+//        if (c > 0 || FloatApproximation(c, 0)) {
 //          // dir >= theta
 //          // dir in [theta, 2pi]
 //          return true;
@@ -187,24 +187,30 @@ Hit Wall::GetWallHit(const glm::vec2& pos, const glm::vec2& dir) const {
 }
 
 float Wall::TextureIndex(const glm::vec2& pos, const glm::vec2& dir) const {
+
+  return TextureIndexOnLineOfRay(head_, tail_,
+                                 pos, dir);
+
   // if collinear, do not consider direction/parrellel ray adn line
   // just return distance to pos, where true intersecction occurs
   // must check if parrelel, if it is, then only valid texture distance is if also collinear and distancr to head
 
 
   //!This shouyld also handle on-wall case
-  if (Parallel(dir, head_ - tail_) && Collinear(pos, head_, tail_)) {
-    // If ray is already set to intsersect with the wall, the distance of head to ray is 0
-    if (glm::dot(dir, head_ - pos) > 0) {
-      return 0;
-    }
-
-    // this suggests that ray is pointing away from the head, meaning that the distance must be actual ray-head distance
-    return glm::length(pos - head_);
-  }
-
-
-  return GetRayToLineDistance(pos, pos + dir, head_, tail_ - head_);
+//  if (Parallel(dir, head_ - tail_)) {
+//    if (Collinear(pos, head_, tail_)) {
+//        // If ray is already set to intsersect with the wall, the distance of head to ray is 0
+//        if (glm::dot(dir, head_ - pos) > 0) {
+//          return 0;
+//        }
+//
+//      // this suggests that ray is pointing away from the head, meaning that the distance must be actual ray-head distance
+//      return glm::length(pos - head_);
+//    }
+//  }
+//
+//
+//  return GetRayToLineDistance(pos, pos + dir, head_, tail_ - head_);
 }
 
 // static unit methods =================================================

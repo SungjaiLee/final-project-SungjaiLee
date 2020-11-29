@@ -20,10 +20,11 @@ namespace room_explorer {
 
 enum HitType : int { // associated value is their priotity, if two hits exist in the same distanmce, which should overcome what
   // lower number means highe rpriotity
-  kWall = 0,
-  kPortal = 1,
-  kVoid = 2,
-  kInvalid = 3
+  kRoomWall = 0,
+  kWall = 1,
+  kPortal = 2,
+  kVoid = 3,
+  kInvalid = 4
 };
 
 struct Hit {

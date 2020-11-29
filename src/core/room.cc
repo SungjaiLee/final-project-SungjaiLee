@@ -137,10 +137,10 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
   // what if outside of room?
 
   // calculated here to allow utility outside of the following if statment
-  bool north = FloatingPointApproximation(pos.y, height_);
-  bool south = FloatingPointApproximation(pos.y, 0);
-  bool east = FloatingPointApproximation(pos.x, width_);
-  bool west = FloatingPointApproximation(pos.x, 0);
+  bool north = FloatApproximation(pos.y, height_);
+  bool south = FloatApproximation(pos.y, 0);
+  bool east = FloatApproximation(pos.x, width_);
+  bool west = FloatApproximation(pos.x, 0);
   //assume dir is non-zero
   if (point_inclusive) {
 
@@ -189,7 +189,7 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
         throw exceptions::InvalidDirectionException();
       }
       // if does not move in y direction, must hit thew wall in the rightnext point
-      if (FloatingPointApproximation(dir.y, 0)) {
+      if (FloatApproximation(dir.y, 0)) {
         return kNorth;
       }
     }
@@ -197,7 +197,7 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
       if (dir.y < 0) {
         throw exceptions::InvalidDirectionException();
       }
-      if (FloatingPointApproximation(dir.y, 0)) {
+      if (FloatApproximation(dir.y, 0)) {
         return kSouth;
       }
     }
@@ -205,7 +205,7 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
       if (dir.x > 0) {
         throw exceptions::InvalidDirectionException();
       }
-      if (FloatingPointApproximation(dir.x, 0)) {
+      if (FloatApproximation(dir.x, 0)) {
         return kEast;
       }
     }
@@ -213,7 +213,7 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
       if (dir.x < 0) {
         throw exceptions::InvalidDirectionException();
       }
-      if (FloatingPointApproximation(dir.x, 0)) {
+      if (FloatApproximation(dir.x, 0)) {
         return kWest;
       }
     }
@@ -310,10 +310,10 @@ bool Room::WithinRoom(const glm::vec2& pos, bool wall_inclusive) const {
     return (pos.x > 0) && (pos.x < width_) && (pos.y > 0) && (pos.y < height_);
   } else {
     return WithinRoom(pos, false)
-        || FloatingPointApproximation(pos.x, 0)
-        || FloatingPointApproximation(pos.x, width_)
-        || FloatingPointApproximation(pos.y, 0)
-        || FloatingPointApproximation(pos.y, height_);
+           || FloatApproximation(pos.x, 0)
+           || FloatApproximation(pos.x, width_)
+           || FloatApproximation(pos.y, 0)
+           || FloatApproximation(pos.y, height_);
   }
 }
 
@@ -366,6 +366,66 @@ bool Room::PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir)
   }
 }
 
+float Room::WallTextureIndex(Direction direction, bool portal, const glm::vec2& pos, const glm::vec2& dir) const {
+// TODO make a global variable
+  float ns_begin = (width_ - ns_door_width_) / 2;
+  float ew_begin = (height_ - ew_door_width_) / 2;
+
+  switch (direction) {
+    case kNorth:
+      if (portal) {
+        return TextureIndexOnLineOfRay(glm::vec2(ns_begin + ns_door_width_, height_),
+                                       glm::vec2(ns_begin, height_),
+                                       pos,
+                                       dir);
+      } else {
+        return TextureIndexOnLineOfRay(glm::vec2(width_, height_),
+                                       glm::vec2(0, height_),
+                                       pos,
+                                       dir);
+      }
+
+    case kSouth:
+      if (portal) {
+        return TextureIndexOnLineOfRay(glm::vec2(ns_begin, 0),
+                                       glm::vec2(ns_begin + ns_door_width_, 0),
+                                       pos,
+                                       dir);
+      } else {
+        return TextureIndexOnLineOfRay(glm::vec2(0, 0),
+                                       glm::vec2(width_, 0),
+                                       pos,
+                                       dir);
+      }
+
+    case kEast:
+      if (portal) {
+        return TextureIndexOnLineOfRay(glm::vec2(width_, ew_begin),
+                                       glm::vec2(width_, ew_begin + ew_door_width_),
+                                       pos,
+                                       dir);
+      } else {
+        return TextureIndexOnLineOfRay(glm::vec2(width_, 0),
+                                       glm::vec2(width_, height_),
+                                       pos,
+                                       dir);
+      }
+    case kWest:
+      if (portal) {
+        return TextureIndexOnLineOfRay(glm::vec2(0, ew_begin + ew_door_width_),
+                                       glm::vec2(0, ew_begin),
+                                       pos,
+                                       dir);
+      } else {
+        return TextureIndexOnLineOfRay(glm::vec2(0, height_),
+                                       glm::vec2(0, 0),
+                                       pos,
+                                       dir);
+      }
+    case kUndefined:
+      throw exceptions::InvalidDirectionException();
+  }
+}
 
 
 // End of Room Member handlers =====================================

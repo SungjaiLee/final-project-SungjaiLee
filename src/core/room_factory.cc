@@ -78,6 +78,8 @@ Room* RoomFactory::GenerateRoom(const std::string &id) const {
   room->ns_door_width_ = kNSDoorWidth;
   room->ew_door_width_ = kEWDoorWidth;
 
+
+
   room->factory = this;
 
   RoomTemplate room_temp = template_rooms_.at(id);

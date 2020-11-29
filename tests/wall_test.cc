@@ -155,14 +155,14 @@ TEST_CASE("Ray Intersection Test") {
       REQUIRE(wall.IntersectsWith(glm::vec2(1, 1), 3.f * M_PI / 2));
 
       REQUIRE(wall.Distance(glm::vec2(1, 1), 3.f * M_PI / 2) == 1);
-//      REQUIRE(FloatingPointApproximation(wall.Distance(glm::vec2(1, 1), 3 * M_PI / 2), 1, .1));
+//      REQUIRE(FloatApproximation(wall.Distance(glm::vec2(1, 1), 3 * M_PI / 2), 1, .1));
     }
 
     SECTION("Tail Hit") {
       REQUIRE(wall.IntersectsWith(glm::vec2(-1, 1), 0));
 
 //      REQUIRE(wall.Distance(glm::vec2(-1, 1), 0) == 1.f);
-      REQUIRE(FloatingPointApproximation(wall.Distance(glm::vec2(-1, 1), 0), 1));
+      REQUIRE(FloatApproximation(wall.Distance(glm::vec2(-1, 1), 0), 1));
     }
 
     SECTION("Middle Hit") {
@@ -176,12 +176,12 @@ TEST_CASE("Ray Intersection Test") {
       SECTION("To Head") {
         REQUIRE(wall.IntersectsWith(glm::vec2(2, -1), 3 * M_PI / 4));
 
-        REQUIRE(FloatingPointApproximation(wall.Distance(glm::vec2(2, -1), 3 * M_PI / 4), std::sqrt(2)));
+        REQUIRE(FloatApproximation(wall.Distance(glm::vec2(2, -1), 3 * M_PI / 4), std::sqrt(2)));
       }
       SECTION("To tail") {
         REQUIRE(wall.IntersectsWith(glm::vec2(-1, 2), 7 * M_PI / 4));
 
-        REQUIRE(FloatingPointApproximation(wall.Distance(glm::vec2(-1, 2), 7 * M_PI / 4), std::sqrt(2)));
+        REQUIRE(FloatApproximation(wall.Distance(glm::vec2(-1, 2), 7 * M_PI / 4), std::sqrt(2)));
       }
     }
 
@@ -255,7 +255,7 @@ TEST_CASE("Ray Intersection Test") {
         SECTION("ray hits point") {
           REQUIRE(wall2.IntersectsWith(glm::vec2(0, 0), M_PI / 4));
 
-          REQUIRE(FloatingPointApproximation(wall2.Distance(glm::vec2(0, 0), M_PI / 4), std::sqrt(2)));
+          REQUIRE(FloatApproximation(wall2.Distance(glm::vec2(0, 0), M_PI / 4), std::sqrt(2)));
         }
         SECTION("ray misses") {
           REQUIRE_FALSE(wall2.IntersectsWith(glm::vec2(0, 0), M_PI));
@@ -274,64 +274,64 @@ TEST_CASE("Texture Index") {
   SECTION("Before Head") {
     // negative
     SECTION("Positive Dir") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(-2, 1), glm::vec2(1, 1)), -std::sqrt(2)));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(-2, 1), glm::vec2(1, 1)), -std::sqrt(2)));
     }
     SECTION("On Wall") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(-1, 2), glm::vec2(-1, -1)), -std::sqrt(2)));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(-1, 2), glm::vec2(-1, -1)), -std::sqrt(2)));
     }
     SECTION("Negative Direction") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(-2, 1), glm::vec2(-1, -1)), -std::sqrt(2)));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(-2, 1), glm::vec2(-1, -1)), -std::sqrt(2)));
     }
   }
 
   SECTION("Head") {
     // zero
     SECTION("Positive Dir") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, 0), glm::vec2(0, 1)), 0));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(0, 0), glm::vec2(0, 1)), 0));
     }
     SECTION("On Wall") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, 1), glm::vec2(0, 1)), 0));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(0, 1), glm::vec2(0, 1)), 0));
     }
     SECTION("Negative Direction") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, 2), glm::vec2(0, 1)), 0));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(0, 2), glm::vec2(0, 1)), 0));
     }
   }
 
   SECTION("Mid") {
     // between length
     SECTION("Positive Dir") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, 0), glm::vec2(1, 1)), std::sqrt(2) / 2));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(0, 0), glm::vec2(1, 1)), std::sqrt(2) / 2));
     }
     SECTION("On Wall") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(.5f, .5f), glm::vec2(1, 1)), std::sqrt(2) / 2));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(.5f, .5f), glm::vec2(1, 1)), std::sqrt(2) / 2));
     }
     SECTION("Negative Direction") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(5, 5), glm::vec2(1, 1)), std::sqrt(2) / 2));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(5, 5), glm::vec2(1, 1)), std::sqrt(2) / 2));
     }
   }
 
   SECTION("Tail") {
     // length
     SECTION("Positive Dir") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, -1), glm::vec2(1, 1)), std::sqrt(2) ));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(0, -1), glm::vec2(1, 1)), std::sqrt(2)));
     }
     SECTION("On Wall") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(1, 0), glm::vec2(1, 1)), std::sqrt(2) ));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(1, 0), glm::vec2(1, 1)), std::sqrt(2)));
     }
     SECTION("Negative Direction") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(2, 1), glm::vec2(1, 1)), std::sqrt(2) ));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(2, 1), glm::vec2(1, 1)), std::sqrt(2)));
     }
   }
   SECTION("Beyond Tail") {
     // beyond length
     SECTION("Positive Dir") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(0, -1), glm::vec2(1, 0)), 2 * std::sqrt(2) ));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(0, -1), glm::vec2(1, 0)), 2 * std::sqrt(2)));
     }
     SECTION("On Wall") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(2, -1), glm::vec2(1, 0)), 2 * std::sqrt(2) ));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(2, -1), glm::vec2(1, 0)), 2 * std::sqrt(2)));
     }
     SECTION("Negative Direction") {
-      REQUIRE(FloatingPointApproximation(wall.TextureIndex(glm::vec2(3, -1), glm::vec2(1, 0)), 2 * std::sqrt(2) ));
+      REQUIRE(FloatApproximation(wall.TextureIndex(glm::vec2(3, -1), glm::vec2(1, 0)), 2 * std::sqrt(2)));
     }
   }
 }
@@ -371,7 +371,7 @@ TEST_CASE("Hit") {
 
         REQUIRE(hit.hit_type_ == kWall);
         REQUIRE(hit.hit_distance_ == 1);
-        REQUIRE(FloatingPointApproximation(hit.texture_index_, std::sqrt(2)));
+        REQUIRE(FloatApproximation(hit.texture_index_, std::sqrt(2)));
       }
       SECTION("Mid") {
         Hit hit = wall.GetWallHit(glm::vec2(0, 0), glm::vec2(1, 1));
@@ -379,8 +379,8 @@ TEST_CASE("Hit") {
         REQUIRE_FALSE(hit.IsNoHit());
 
         REQUIRE(hit.hit_type_ == kWall);
-        REQUIRE(FloatingPointApproximation(hit.hit_distance_, std::sqrt(2)/2 ));
-        REQUIRE(FloatingPointApproximation(hit.texture_index_, std::sqrt(2)/2));
+        REQUIRE(FloatApproximation(hit.hit_distance_, std::sqrt(2) / 2));
+        REQUIRE(FloatApproximation(hit.texture_index_, std::sqrt(2) / 2));
       }
       SECTION("In-Line") {
         Hit hit = wall.GetWallHit(glm::vec2(-1, 2), glm::vec2(1, -1));
@@ -388,9 +388,9 @@ TEST_CASE("Hit") {
         REQUIRE_FALSE(hit.IsNoHit());
 
         REQUIRE(hit.hit_type_ == kWall);
-        REQUIRE(FloatingPointApproximation(hit.hit_distance_, std::sqrt(2)));
+        REQUIRE(FloatApproximation(hit.hit_distance_, std::sqrt(2)));
 
-        REQUIRE(FloatingPointApproximation(hit.texture_index_, 0));
+        REQUIRE(FloatApproximation(hit.texture_index_, 0));
       }
     }
     SECTION("On wall") {
@@ -400,8 +400,8 @@ TEST_CASE("Hit") {
         REQUIRE_FALSE(hit.IsNoHit());
 
         REQUIRE(hit.hit_type_ == kWall);
-        REQUIRE(FloatingPointApproximation(hit.hit_distance_, 0));
-        REQUIRE(FloatingPointApproximation(hit.texture_index_, 0));
+        REQUIRE(FloatApproximation(hit.hit_distance_, 0));
+        REQUIRE(FloatApproximation(hit.texture_index_, 0));
       }
       SECTION("Mid") {
         Hit hit = wall.GetWallHit(glm::vec2(.5f, .5f), glm::vec2(1, -1));
@@ -409,8 +409,8 @@ TEST_CASE("Hit") {
         REQUIRE_FALSE(hit.IsNoHit());
 
         REQUIRE(hit.hit_type_ == kWall);
-        REQUIRE(FloatingPointApproximation(hit.hit_distance_, 0));
-        REQUIRE(FloatingPointApproximation(hit.texture_index_, std::sqrt(2)/2));
+        REQUIRE(FloatApproximation(hit.hit_distance_, 0));
+        REQUIRE(FloatApproximation(hit.texture_index_, std::sqrt(2) / 2));
       }
       SECTION("Tail") {
         Hit hit = wall.GetWallHit(glm::vec2(1, 0), glm::vec2(1, -1));
@@ -418,8 +418,8 @@ TEST_CASE("Hit") {
         REQUIRE_FALSE(hit.IsNoHit());
 
         REQUIRE(hit.hit_type_ == kWall);
-        REQUIRE(FloatingPointApproximation(hit.hit_distance_, 0));
-        REQUIRE(FloatingPointApproximation(hit.texture_index_, std::sqrt(2)));
+        REQUIRE(FloatApproximation(hit.hit_distance_, 0));
+        REQUIRE(FloatApproximation(hit.texture_index_, std::sqrt(2)));
       }
     }
   }

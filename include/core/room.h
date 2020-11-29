@@ -100,7 +100,12 @@ public:
   // Pure distamce
   float RoomWallHitDistance(Direction direction, const glm::vec2& pos, const glm::vec2& dir) const;
 
+  float WallTextureIndex(Direction direction, bool portal,
+                            const glm::vec2& pos, const glm::vec2& dir) const;
+
   bool PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir) const;
+
+
 
   bool WithinRoom(const glm::vec2& pos, bool wall_inclusive = true) const;
 

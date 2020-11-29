@@ -535,8 +535,8 @@ TEST_CASE("Room Wall Hit Distance") {
     REQUIRE(room.RoomWallHitDistance(kEast, glm::vec2(0,200), glm::vec2(1, 0)) == 500);
   }
   SECTION("West") {
-    REQUIRE(FloatingPointApproximation(room.RoomWallHitDistance(kWest, glm::vec2(-100,200), glm::vec2(1, -1)),
-                                       141.4213562373f));
+    REQUIRE(FloatApproximation(room.RoomWallHitDistance(kWest, glm::vec2(-100, 200), glm::vec2(1, -1)),
+                               141.4213562373f));
   }
 }
 
