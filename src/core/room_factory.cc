@@ -78,7 +78,8 @@ Room* RoomFactory::GenerateRoom(const std::string &id) const {
   room->ns_door_width_ = kNSDoorWidth;
   room->ew_door_width_ = kEWDoorWidth;
 
-
+  room->ns_door_begin_ = (kRoomWidth - kNSDoorWidth) / 2;
+  room->ew_door_begin_ = (kRoomHeight - kEWDoorWidth) / 2;
 
   room->factory = this;
 

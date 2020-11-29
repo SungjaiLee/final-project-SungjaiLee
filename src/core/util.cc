@@ -207,6 +207,8 @@ bool Parallel(const glm::vec2& a, const glm::vec2& b) {
   return FloatApproximation(glm::dot(a, glm::vec2(b.y, -b.x)), 0);
 }
 
+
+// Render Geometry related Methods =======
 float TextureIndexOnLineOfRay(const glm::vec2& line_head, const glm::vec2& line_tail,
                               const glm::vec2& ray_pos, const glm::vec2& ray_dir) {
 

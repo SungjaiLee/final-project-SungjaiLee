@@ -335,30 +335,30 @@ float Room::RoomWallHitDistance(Direction direction, const glm::vec2& pos, const
 
 bool Room::PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir) const {
 
-  float ns_begin = (width_ - ns_door_width_) / 2;
-  float ew_begin = (height_ - ew_door_width_) / 2;
+//  float ns_begin = (width_ - ns_door_width_) / 2;
+//  float ew_begin = (height_ - ew_door_width_) / 2;
 
   // TODO break down into simpler calculation. No need to check for unmet conditions when cases are much more specifed
   switch (side) {
 
     case kNorth:
-      return RayIntersectsWithSegment(glm::vec2(ns_begin, height_),
-                                      glm::vec2(ns_begin + ns_door_width_, height_),
+      return RayIntersectsWithSegment(glm::vec2(ns_door_begin_, height_),
+                                      glm::vec2(ns_door_begin_ + ns_door_width_, height_),
                                       pos, dir);
 
     case kSouth:
-      return RayIntersectsWithSegment(glm::vec2(ns_begin, 0),
-                                      glm::vec2(ns_begin + ns_door_width_, 0),
+      return RayIntersectsWithSegment(glm::vec2(ns_door_begin_, 0),
+                                      glm::vec2(ns_door_begin_ + ns_door_width_, 0),
                                       pos, dir);
 
     case kEast:
-      return RayIntersectsWithSegment(glm::vec2(width_, ew_begin),
-                                      glm::vec2(width_, ew_begin + ew_door_width_),
+      return RayIntersectsWithSegment(glm::vec2(width_, ew_door_begin_),
+                                      glm::vec2(width_, ew_door_begin_ + ew_door_width_),
                                       pos, dir);
 
     case kWest:
-      return RayIntersectsWithSegment(glm::vec2(0, ew_begin),
-                                      glm::vec2(0, ew_begin + ew_door_width_),
+      return RayIntersectsWithSegment(glm::vec2(0, ew_door_begin_),
+                                      glm::vec2(0, ew_door_begin_ + ew_door_width_),
                                       pos, dir);
 
     case kUndefined:
@@ -367,15 +367,12 @@ bool Room::PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir)
 }
 
 float Room::WallTextureIndex(Direction direction, bool portal, const glm::vec2& pos, const glm::vec2& dir) const {
-// TODO make a global variable
-  float ns_begin = (width_ - ns_door_width_) / 2;
-  float ew_begin = (height_ - ew_door_width_) / 2;
 
   switch (direction) {
     case kNorth:
       if (portal) {
-        return TextureIndexOnLineOfRay(glm::vec2(ns_begin + ns_door_width_, height_),
-                                       glm::vec2(ns_begin, height_),
+        return TextureIndexOnLineOfRay(glm::vec2(ns_door_begin_ + ns_door_width_, height_),
+                                       glm::vec2(ns_door_begin_, height_),
                                        pos,
                                        dir);
       } else {
@@ -387,8 +384,8 @@ float Room::WallTextureIndex(Direction direction, bool portal, const glm::vec2& 
 
     case kSouth:
       if (portal) {
-        return TextureIndexOnLineOfRay(glm::vec2(ns_begin, 0),
-                                       glm::vec2(ns_begin + ns_door_width_, 0),
+        return TextureIndexOnLineOfRay(glm::vec2(ns_door_begin_, 0),
+                                       glm::vec2(ns_door_begin_ + ns_door_width_, 0),
                                        pos,
                                        dir);
       } else {
@@ -400,8 +397,8 @@ float Room::WallTextureIndex(Direction direction, bool portal, const glm::vec2& 
 
     case kEast:
       if (portal) {
-        return TextureIndexOnLineOfRay(glm::vec2(width_, ew_begin),
-                                       glm::vec2(width_, ew_begin + ew_door_width_),
+        return TextureIndexOnLineOfRay(glm::vec2(width_, ew_door_begin_),
+                                       glm::vec2(width_, ew_door_begin_ + ew_door_width_),
                                        pos,
                                        dir);
       } else {
@@ -412,8 +409,8 @@ float Room::WallTextureIndex(Direction direction, bool portal, const glm::vec2& 
       }
     case kWest:
       if (portal) {
-        return TextureIndexOnLineOfRay(glm::vec2(0, ew_begin + ew_door_width_),
-                                       glm::vec2(0, ew_begin),
+        return TextureIndexOnLineOfRay(glm::vec2(0, ew_door_begin_ + ew_door_width_),
+                                       glm::vec2(0, ew_door_begin_),
                                        pos,
                                        dir);
       } else {

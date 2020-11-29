@@ -48,6 +48,9 @@ private:
   float ns_door_width_;
   float ew_door_width_;
 
+  float ns_door_begin_;
+  float ew_door_begin_;
+
   std::set<Wall> walls;
 
   /**
