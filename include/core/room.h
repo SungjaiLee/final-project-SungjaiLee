@@ -74,7 +74,7 @@ public:
    * @return    Pointer to the adjacent room in the given direction.
    *            Will never be a nullptr. Always a room-pointer that is linked to this room as well.
    */
-  Room* GetConnectedRoom(const Direction& direction);
+  Room* GetConnectedRoom(const Direction& direction) ;
 
   /**
    * Checks if the given room is connected with the current room in one specific direction.
@@ -109,19 +109,19 @@ public:
    * Retrieves point considered the "head" of segment that defines the portal/room-wall in a given direction.
    *    Head is considered the more clock-wise point of a given segment, relative to the inside of the room.
    *    ie) On the northern portal/room-wall, the right-edge is considered the head.
-   * @param dir Direction of portal/room-wall.
+   * @param direction Direction of portal/room-wall.
    * @param of_portal Whether head if that of portal or room-wall of given direction.
    * @return 2D Vector describing head of portal/room-wall.
    */
-  glm::vec2 GetHead(Direction dir, bool of_portal) const;
+  glm::vec2 GetHead(Direction direction, bool of_portal) const;
   /**
    * Retrieves point considered the "tail" of segment that defines the portal/room-wall in a given direction.
    *    Tail is considered the more counter-clock-wise point of a given segment, relative to the inside of the room.
    *    ie) On the northern portal/room-wall, the left-edge is considered the tail.
-   * @param dir Direction of portal/room-wall.
+   * @param direction Direction of portal/room-wall.
    * @return 2D Vector describing tail of portal/room-wall.
    */
-  glm::vec2 GetTail(Direction dir, bool of_portal) const;
+  glm::vec2 GetTail(Direction direction, bool of_portal) const;
 
   // End of getters ===============
 
@@ -249,14 +249,14 @@ private:
   /**
    * Link the current room with the given room in the direction relative to the current room.
    *    Only link of both rooms have not yet defined the adjacent room in the given direction yet.
-   * @param dir     Direction relative to the current room.
+   * @param direction     Direction relative to the current room.
    *                The opposite direction will be linked in the other room.
    * @param room_p  Pointer to the other room being linked.
    *                It should not have been linked in the opposite direction yet.
    * @return If the linkage was able to be completed properly.
    *                Link only occurs if both rooms are not already linked in the given direction.
    */
-  bool LinkRoom(const Direction& dir, Room* room_p);
+  bool LinkRoom(const Direction& direction, Room* room_p);
 
   /**
    * Retrieves point considered the "head" of segment that defines the portal in a given direction.
