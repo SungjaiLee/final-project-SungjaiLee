@@ -107,21 +107,21 @@ Room* Room::GetConnectedRoom(const Direction& direction) {
 }
 
 
-bool Room::ConnectedWith(Room* other, Direction direction) const {
-  if (other != GetLinkedRoomPointer(direction)) {
+bool Room::IsConnectedWith(Room* other_p, const Direction& direction) const {
+  if (other_p != GetLinkedRoomPointer(direction)) {
     return false;
   }
-  if (this != other->GetLinkedRoomPointer(OppositeDirection(direction))) {
+  if (this != other_p->GetLinkedRoomPointer(OppositeDirection(direction))) {
     return false;
   }
   return true;
 }
 
-bool Room::ConnectedWith(Room* other) const {
-  return  ConnectedWith(other, kNorth)  ||
-          ConnectedWith(other, kSouth)  ||
-          ConnectedWith(other, kEast)   ||
-          ConnectedWith(other, kWest);
+bool Room::IsConnectedWith(Room* other_p) const {
+  return IsConnectedWith(other_p, kNorth) ||
+         IsConnectedWith(other_p, kSouth) ||
+         IsConnectedWith(other_p, kEast) ||
+         IsConnectedWith(other_p, kWest);
 }
 
 float Room::GetNSDoorWidth() const {
@@ -133,14 +133,14 @@ float Room::GetEWDoorWidth() const {
 }
 
 // Highly inefficent, TODO make faster and cleaner
-Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool point_inclusive) const {
+Direction Room::GetSideHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool point_inclusive) const {
   // what if outside of room?
 
   // calculated here to allow utility outside of the following if statment
-  bool north = FloatApproximation(pos.y, height_);
-  bool south = FloatApproximation(pos.y, 0);
-  bool east = FloatApproximation(pos.x, width_);
-  bool west = FloatApproximation(pos.x, 0);
+  bool north = FloatApproximation(ray_pos.y, height_);
+  bool south = FloatApproximation(ray_pos.y, 0);
+  bool east = FloatApproximation(ray_pos.x, width_);
+  bool west = FloatApproximation(ray_pos.x, 0);
   //assume dir is non-zero
   if (point_inclusive) {
 
@@ -170,12 +170,12 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
   }
 
   //check if in room
-  if (!WithinRoom(pos, false)) { // wall exclusive, because if it was touching the wall, would have been caught above
+  if (!WithinRoom(ray_pos, false)) { // wall exclusive, because if it was touching the wall, would have been caught above
     // this eliminates uneeded on-edge pointing out while being exclusive problem
 
     // if not within a room, we will not define any direction to the ray
 
-    if (!WithinRoom(pos, true)) { //if not within the room wall inclusive, means totally outside of the room
+    if (!WithinRoom(ray_pos, true)) { //if not within the room wall inclusive, means totally outside of the room
       // TODO make more clean, combine and distribute to form a more cohrent method to handle this, "on thr wall" case
       throw exceptions::InvalidDirectionException();
     }
@@ -185,35 +185,35 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
     //  here we will only eliminate the awful kinds
     //  only eliminate outwards pointers
     if (north) {
-      if (dir.y > 0) {
+      if (ray_dir.y > 0) {
         throw exceptions::InvalidDirectionException();
       }
       // if does not move in y direction, must hit thew wall in the rightnext point
-      if (FloatApproximation(dir.y, 0)) {
+      if (FloatApproximation(ray_dir.y, 0)) {
         return kNorth;
       }
     }
     if (south) {
-      if (dir.y < 0) {
+      if (ray_dir.y < 0) {
         throw exceptions::InvalidDirectionException();
       }
-      if (FloatApproximation(dir.y, 0)) {
+      if (FloatApproximation(ray_dir.y, 0)) {
         return kSouth;
       }
     }
     if (east) {
-      if (dir.x > 0) {
+      if (ray_dir.x > 0) {
         throw exceptions::InvalidDirectionException();
       }
-      if (FloatApproximation(dir.x, 0)) {
+      if (FloatApproximation(ray_dir.x, 0)) {
         return kEast;
       }
     }
     if (west) {
-      if (dir.x < 0) {
+      if (ray_dir.x < 0) {
         throw exceptions::InvalidDirectionException();
       }
-      if (FloatApproximation(dir.x, 0)) {
+      if (FloatApproximation(ray_dir.x, 0)) {
         return kWest;
       }
     }
@@ -221,13 +221,13 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
   // This requires that the ray is within the room, and therefore will guarentee hit a specific wall
 
   // if point if not inclusive, have to
-  if (dir.x < 0) {
+  if (ray_dir.x < 0) {
     // can only be west
-    if (dir.y < 0) {
+    if (ray_dir.y < 0) {
       //coult be south
       // must check against South West (0, 0)
-      float corner_slope = (-pos.y) / (-pos.x); // valid because we know the pos to not be 0
-      float dir_slope = dir.y / dir.x;
+      float corner_slope = (-ray_pos.y) / (-ray_pos.x); // valid because we know the pos to not be 0
+      float dir_slope = ray_dir.y / ray_dir.x;
 
       if (dir_slope < corner_slope) {
         return kWest;
@@ -236,11 +236,11 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
         return kSouth;
       }
 
-    } else if (dir.y > 0) {
+    } else if (ray_dir.y > 0) {
       //could be north
       // Must check against North West (0, height)
-      float corner_slope = (height_ - pos.y) / (-pos.x); // valid because we know the pos to not be 0
-      float dir_slope = dir.y / dir.x;
+      float corner_slope = (height_ - ray_pos.y) / (-ray_pos.x); // valid because we know the pos to not be 0
+      float dir_slope = ray_dir.y / ray_dir.x;
 
 
       //equal, west
@@ -256,15 +256,15 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
       return kWest;
     }
 
-  } else if (dir.x > 0) {
+  } else if (ray_dir.x > 0) {
     // can only be east
-    if (dir.y < 0) {
+    if (ray_dir.y < 0) {
       //coult be south
       // must check against south east corner (width, 0)
 
 
-      float corner_slope = (-pos.y) / (width_ - pos.x); // valid because we know the pos to not be 0
-      float dir_slope = dir.y / dir.x;
+      float corner_slope = (-ray_pos.y) / (width_ - ray_pos.x); // valid because we know the pos to not be 0
+      float dir_slope = ray_dir.y / ray_dir.x;
 
       if (dir_slope < corner_slope) {
         return kSouth;
@@ -272,12 +272,12 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
         return kEast;
       }
 
-    } else if (dir.y > 0) {
+    } else if (ray_dir.y > 0) {
       //could be north
       // must check agsint east north (width, height)
 
-      float corner_slope = (height_ - pos.y) / (width_ - pos.x); // valid because we know the pos to not be 0
-      float dir_slope = dir.y / dir.x;
+      float corner_slope = (height_ - ray_pos.y) / (width_ - ray_pos.x); // valid because we know the pos to not be 0
+      float dir_slope = ray_dir.y / ray_dir.x;
 
       if (dir_slope < corner_slope) {
         return kEast;
@@ -292,11 +292,11 @@ Direction Room::GetSideHit(const glm::vec2& pos, const glm::vec2& dir, bool poin
 
   } else {
     // can only be south or north
-    if (dir.y < 0) {
+    if (ray_dir.y < 0) {
       // must be south
       return kSouth;
     }
-    if (dir.y > 0) {
+    if (ray_dir.y > 0) {
       // must be north
       return kNorth;
     }
@@ -317,70 +317,60 @@ bool Room::WithinRoom(const glm::vec2& pos, bool wall_inclusive) const {
   }
 }
 
-float Room::RoomWallHitDistance(Direction direction, const glm::vec2& pos, const glm::vec2& dir) const {
-  switch (direction) {
-    case kNorth:
-      return GetRayToLineDistance(glm::vec2(0, height_), glm::vec2(width_, height_), pos, dir);
-    case kSouth:
-      return GetRayToLineDistance(glm::vec2(0, 0), glm::vec2(width_, 0), pos, dir);
-    case kEast:
-      return GetRayToLineDistance(glm::vec2(width_, 0), glm::vec2(width_, height_), pos, dir);
-    case kWest:
-      return GetRayToLineDistance(glm::vec2(0, 0), glm::vec2(0, height_), pos, dir);
-    default:
-    case kUndefined:
-      throw exceptions::InvalidDirectionException();
-  }
+float Room::GetRoomWallHitDistance(const Direction& direction, const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
+  return GetRayToLineDistance(GetHead(direction, false),
+                              GetTail(direction, false),
+                              ray_pos, ray_dir);
 }
 
-bool Room::PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir) const {
+bool Room::RayHitsPortal(const Direction& direction, const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
 
 //  float ns_begin = (width_ - ns_door_width_) / 2;
 //  float ew_begin = (height_ - ew_door_width_) / 2;
 
   // TODO break down into simpler calculation. No need to check for unmet conditions when cases are much more specifed
-  switch (side) {
+  switch (direction) {
 
     case kNorth:
       return RayIntersectsWithSegment(glm::vec2(ns_door_begin_, height_),
                                       glm::vec2(ns_door_begin_ + ns_door_width_, height_),
-                                      pos, dir);
+                                      ray_pos, ray_dir);
 
     case kSouth:
       return RayIntersectsWithSegment(glm::vec2(ns_door_begin_, 0),
                                       glm::vec2(ns_door_begin_ + ns_door_width_, 0),
-                                      pos, dir);
+                                      ray_pos, ray_dir);
 
     case kEast:
       return RayIntersectsWithSegment(glm::vec2(width_, ew_door_begin_),
                                       glm::vec2(width_, ew_door_begin_ + ew_door_width_),
-                                      pos, dir);
+                                      ray_pos, ray_dir);
 
     case kWest:
       return RayIntersectsWithSegment(glm::vec2(0, ew_door_begin_),
                                       glm::vec2(0, ew_door_begin_ + ew_door_width_),
-                                      pos, dir);
+                                      ray_pos, ray_dir);
 
     case kUndefined:
       throw exceptions::InvalidDirectionException();
   }
 }
 
-float Room::WallTextureIndex(Direction direction, bool portal, const glm::vec2& pos, const glm::vec2& dir) const {
+float Room::GetWallTextureIndex(const Direction& direction, bool of_portal, const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
 
-  return TextureIndexOnLineOfRay(GetHead(direction, portal), GetTail(direction, portal), pos, dir);
+  return TextureIndexOnLineOfRay(GetHead(direction, of_portal), GetTail(direction, of_portal), ray_pos, ray_dir);
 }
 
-glm::vec2 Room::GetHead(Direction dir, bool portal) const {
-  if (portal) {
+glm::vec2 Room::GetHead(Direction dir, bool of_portal) const {
+  if (of_portal) {
     return GetPortalHead(dir);
   } else {
     return GetWallHead(dir);
   }
 }
 
-glm::vec2 Room::GetTail(Direction dir, bool portal) const {
-  if (portal) {
+glm::vec2 Room::GetTail(Direction dir, bool of_portal) const {
+  if (of_portal) {
     return GetPortalTail(dir);
   } else {
     return GetWallTail(dir);

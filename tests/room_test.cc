@@ -140,11 +140,11 @@ TEST_CASE("Get Room") {
 
     REQUIRE(next != nullptr);
 
-    REQUIRE(room->ConnectedWith(next, kNorth));
-    REQUIRE(!room->ConnectedWith(next, kSouth));
-    REQUIRE(!room->ConnectedWith(next, kEast));
-    REQUIRE(!room->ConnectedWith(next, kWest));
-    REQUIRE(room->ConnectedWith(next));
+    REQUIRE(room->IsConnectedWith(next, kNorth));
+    REQUIRE(!room->IsConnectedWith(next, kSouth));
+    REQUIRE(!room->IsConnectedWith(next, kEast));
+    REQUIRE(!room->IsConnectedWith(next, kWest));
+    REQUIRE(room->IsConnectedWith(next));
   }
 
   SECTION("South") {
@@ -152,11 +152,11 @@ TEST_CASE("Get Room") {
 
     REQUIRE(next != nullptr);
 
-    REQUIRE(!room->ConnectedWith(next, kNorth));
-    REQUIRE(room->ConnectedWith(next, kSouth));
-    REQUIRE(!room->ConnectedWith(next, kEast));
-    REQUIRE(!room->ConnectedWith(next, kWest));
-    REQUIRE(room->ConnectedWith(next));
+    REQUIRE(!room->IsConnectedWith(next, kNorth));
+    REQUIRE(room->IsConnectedWith(next, kSouth));
+    REQUIRE(!room->IsConnectedWith(next, kEast));
+    REQUIRE(!room->IsConnectedWith(next, kWest));
+    REQUIRE(room->IsConnectedWith(next));
   }
 
   SECTION("East") {
@@ -164,11 +164,11 @@ TEST_CASE("Get Room") {
 
     REQUIRE(next != nullptr);
 
-    REQUIRE(!room->ConnectedWith(next, kNorth));
-    REQUIRE(!room->ConnectedWith(next, kSouth));
-    REQUIRE(room->ConnectedWith(next, kEast));
-    REQUIRE(!room->ConnectedWith(next, kWest));
-    REQUIRE(room->ConnectedWith(next));
+    REQUIRE(!room->IsConnectedWith(next, kNorth));
+    REQUIRE(!room->IsConnectedWith(next, kSouth));
+    REQUIRE(room->IsConnectedWith(next, kEast));
+    REQUIRE(!room->IsConnectedWith(next, kWest));
+    REQUIRE(room->IsConnectedWith(next));
   }
 
   SECTION("West") {
@@ -176,11 +176,11 @@ TEST_CASE("Get Room") {
 
     REQUIRE(next != nullptr);
 
-    REQUIRE(!room->ConnectedWith(next, kNorth));
-    REQUIRE(!room->ConnectedWith(next, kSouth));
-    REQUIRE(!room->ConnectedWith(next, kEast));
-    REQUIRE(room->ConnectedWith(next, kWest));
-    REQUIRE(room->ConnectedWith(next));
+    REQUIRE(!room->IsConnectedWith(next, kNorth));
+    REQUIRE(!room->IsConnectedWith(next, kSouth));
+    REQUIRE(!room->IsConnectedWith(next, kEast));
+    REQUIRE(room->IsConnectedWith(next, kWest));
+    REQUIRE(room->IsConnectedWith(next));
 
   }
 
@@ -526,16 +526,16 @@ TEST_CASE("Room hit Diretion") {
 TEST_CASE("Room Wall Hit Distance") {
   Room room = *factory.GenerateRandomRoom();
   SECTION("North") {
-    REQUIRE(room.RoomWallHitDistance(kNorth, glm::vec2(0,0), glm::vec2(0, 1)) == 200);
+    REQUIRE(room.GetRoomWallHitDistance(kNorth, glm::vec2(0, 0), glm::vec2(0, 1)) == 200);
   }
   SECTION("South") {
-    REQUIRE(room.RoomWallHitDistance(kSouth, glm::vec2(0,200), glm::vec2(0, -1)) == 200);
+    REQUIRE(room.GetRoomWallHitDistance(kSouth, glm::vec2(0, 200), glm::vec2(0, -1)) == 200);
   }
   SECTION("East") {
-    REQUIRE(room.RoomWallHitDistance(kEast, glm::vec2(0,200), glm::vec2(1, 0)) == 500);
+    REQUIRE(room.GetRoomWallHitDistance(kEast, glm::vec2(0, 200), glm::vec2(1, 0)) == 500);
   }
   SECTION("West") {
-    REQUIRE(FloatApproximation(room.RoomWallHitDistance(kWest, glm::vec2(-100, 200), glm::vec2(1, -1)),
+    REQUIRE(FloatApproximation(room.GetRoomWallHitDistance(kWest, glm::vec2(-100, 200), glm::vec2(1, -1)),
                                141.4213562373f));
   }
 }
@@ -548,33 +548,33 @@ TEST_CASE("Portal Hit") {
     SECTION("Portal") {
       SECTION("On Portal") {
         SECTION("left_edge") {
-          REQUIRE(room.PortalHit(kNorth, glm::vec2(100, 200), glm::vec2(1,1)));
+          REQUIRE(room.RayHitsPortal(kNorth, glm::vec2(100, 200), glm::vec2(1, 1)));
         }
         SECTION("right_edge") {
-          REQUIRE(room.PortalHit(kNorth, glm::vec2(400, 200), glm::vec2(-1,1)));
+          REQUIRE(room.RayHitsPortal(kNorth, glm::vec2(400, 200), glm::vec2(-1, 1)));
         }
         SECTION("Middle") {
-          REQUIRE(room.PortalHit(kNorth, glm::vec2(200, 200), glm::vec2(1,0)));
+          REQUIRE(room.RayHitsPortal(kNorth, glm::vec2(200, 200), glm::vec2(1, 0)));
         }
       }
       SECTION("Hits Portal") {
         SECTION("left_edge") {
-          REQUIRE(room.PortalHit(kNorth, glm::vec2(150, 150), glm::vec2(-1,1)));
+          REQUIRE(room.RayHitsPortal(kNorth, glm::vec2(150, 150), glm::vec2(-1, 1)));
         }
         SECTION("right_edge") {
-          REQUIRE(room.PortalHit(kNorth, glm::vec2(350, 150), glm::vec2(1,1)));
+          REQUIRE(room.RayHitsPortal(kNorth, glm::vec2(350, 150), glm::vec2(1, 1)));
         }
         SECTION("middle") {
-          REQUIRE(room.PortalHit(kNorth, glm::vec2(350, 150), glm::vec2(0,1)));
+          REQUIRE(room.RayHitsPortal(kNorth, glm::vec2(350, 150), glm::vec2(0, 1)));
         }
       }
     }
     SECTION("Misses Portal") {
       SECTION("Hits in negative direction") {
-        REQUIRE_FALSE(room.PortalHit(kNorth, glm::vec2(100,100), glm::vec2(0, -1)));
+        REQUIRE_FALSE(room.RayHitsPortal(kNorth, glm::vec2(100, 100), glm::vec2(0, -1)));
       }
       SECTION("Misses completely") {
-        REQUIRE_FALSE(room.PortalHit(kNorth, glm::vec2(0, 0), glm::vec2(-1,1)));
+        REQUIRE_FALSE(room.RayHitsPortal(kNorth, glm::vec2(0, 0), glm::vec2(-1, 1)));
       }
     }
   }
@@ -583,33 +583,33 @@ TEST_CASE("Portal Hit") {
     SECTION("Portal") {
       SECTION("On Portal") {
         SECTION("left_edge") {
-          REQUIRE(room.PortalHit(kSouth, glm::vec2(100, 0), glm::vec2(1,1)));
+          REQUIRE(room.RayHitsPortal(kSouth, glm::vec2(100, 0), glm::vec2(1, 1)));
         }
         SECTION("right_edge") {
-          REQUIRE(room.PortalHit(kSouth, glm::vec2(400, 0), glm::vec2(-1,1)));
+          REQUIRE(room.RayHitsPortal(kSouth, glm::vec2(400, 0), glm::vec2(-1, 1)));
         }
         SECTION("middle") {
-          REQUIRE(room.PortalHit(kSouth, glm::vec2(200, 0), glm::vec2(1,0)));
+          REQUIRE(room.RayHitsPortal(kSouth, glm::vec2(200, 0), glm::vec2(1, 0)));
         }
       }
       SECTION("Hits Portal") {
         SECTION("left_edge") {
-          REQUIRE(room.PortalHit(kSouth, glm::vec2(150, 50), glm::vec2(-1,-1)));
+          REQUIRE(room.RayHitsPortal(kSouth, glm::vec2(150, 50), glm::vec2(-1, -1)));
         }
         SECTION("right_edge") {
-          REQUIRE(room.PortalHit(kSouth, glm::vec2(350, 50), glm::vec2(1,-1)));
+          REQUIRE(room.RayHitsPortal(kSouth, glm::vec2(350, 50), glm::vec2(1, -1)));
         }
         SECTION("middle") {
-          REQUIRE(room.PortalHit(kSouth, glm::vec2(350, 150), glm::vec2(0,-1)));
+          REQUIRE(room.RayHitsPortal(kSouth, glm::vec2(350, 150), glm::vec2(0, -1)));
         }
       }
     }
     SECTION("Misses Portal") {
       SECTION("Hits in negative direction") {
-        REQUIRE_FALSE(room.PortalHit(kSouth, glm::vec2(0, 150), glm::vec2(0,-1)));
+        REQUIRE_FALSE(room.RayHitsPortal(kSouth, glm::vec2(0, 150), glm::vec2(0, -1)));
       }
       SECTION("Misses completely") {
-        REQUIRE_FALSE(room.PortalHit(kSouth, glm::vec2(350, 150), glm::vec2(0, 1)));
+        REQUIRE_FALSE(room.RayHitsPortal(kSouth, glm::vec2(350, 150), glm::vec2(0, 1)));
       }
     }
   }
@@ -618,33 +618,33 @@ TEST_CASE("Portal Hit") {
     SECTION("Portal") {
       SECTION("Hits Portal") {
         SECTION("top_edge") {
-          REQUIRE(room.PortalHit(kEast, glm::vec2(450, 200), glm::vec2(1, -1)));
+          REQUIRE(room.RayHitsPortal(kEast, glm::vec2(450, 200), glm::vec2(1, -1)));
         }
         SECTION("bottom_edge") {
-          REQUIRE(room.PortalHit(kEast, glm::vec2(450, 0), glm::vec2(1, 1)));
+          REQUIRE(room.RayHitsPortal(kEast, glm::vec2(450, 0), glm::vec2(1, 1)));
         }
         SECTION("Middle") {
-          REQUIRE(room.PortalHit(kEast, glm::vec2(100, 100), glm::vec2(1, 0)));
+          REQUIRE(room.RayHitsPortal(kEast, glm::vec2(100, 100), glm::vec2(1, 0)));
         }
       }
       SECTION("On Portal") {
         SECTION("top_edge") {
-          REQUIRE(room.PortalHit(kEast, glm::vec2(500, 150), glm::vec2(1, -1)));
+          REQUIRE(room.RayHitsPortal(kEast, glm::vec2(500, 150), glm::vec2(1, -1)));
         }
         SECTION("bottom_edge") {
-          REQUIRE(room.PortalHit(kEast, glm::vec2(500, 50), glm::vec2(1, -1)));
+          REQUIRE(room.RayHitsPortal(kEast, glm::vec2(500, 50), glm::vec2(1, -1)));
         }
         SECTION("Middle") {
-          REQUIRE(room.PortalHit(kEast, glm::vec2(500, 100), glm::vec2(1, 0)));
+          REQUIRE(room.RayHitsPortal(kEast, glm::vec2(500, 100), glm::vec2(1, 0)));
         }
       }
     }
     SECTION("Misses Portal") {
       SECTION("Hits in negative direction") {
-        REQUIRE_FALSE(room.PortalHit(kEast, glm::vec2(100, 100), glm::vec2(-1, 0)));
+        REQUIRE_FALSE(room.RayHitsPortal(kEast, glm::vec2(100, 100), glm::vec2(-1, 0)));
       }
       SECTION("Misses completely") {
-        REQUIRE_FALSE(room.PortalHit(kEast, glm::vec2(100, 0), glm::vec2(1, 0)));
+        REQUIRE_FALSE(room.RayHitsPortal(kEast, glm::vec2(100, 0), glm::vec2(1, 0)));
       }
     }
   }
@@ -653,33 +653,33 @@ TEST_CASE("Portal Hit") {
     SECTION("Portal") {
       SECTION("Hits Portal") {
         SECTION("top_edge") {
-          REQUIRE(room.PortalHit(kWest, glm::vec2(50, 200), glm::vec2(-1, -1)));
+          REQUIRE(room.RayHitsPortal(kWest, glm::vec2(50, 200), glm::vec2(-1, -1)));
         }
         SECTION("bottom_edge") {
-          REQUIRE(room.PortalHit(kWest, glm::vec2(50, 0), glm::vec2(-1, 1)));
+          REQUIRE(room.RayHitsPortal(kWest, glm::vec2(50, 0), glm::vec2(-1, 1)));
         }
         SECTION("Middle") {
-          REQUIRE(room.PortalHit(kWest, glm::vec2(50, 100), glm::vec2(-1, 0)));
+          REQUIRE(room.RayHitsPortal(kWest, glm::vec2(50, 100), glm::vec2(-1, 0)));
         }
       }
       SECTION("On Portal") {
         SECTION("top_edge") {
-          REQUIRE(room.PortalHit(kWest, glm::vec2(0, 150), glm::vec2(-1, -1)));
+          REQUIRE(room.RayHitsPortal(kWest, glm::vec2(0, 150), glm::vec2(-1, -1)));
         }
         SECTION("bottom_edge") {
-          REQUIRE(room.PortalHit(kWest, glm::vec2(0, 50), glm::vec2(-1, 1)));
+          REQUIRE(room.RayHitsPortal(kWest, glm::vec2(0, 50), glm::vec2(-1, 1)));
         }
         SECTION("Middle") {
-          REQUIRE(room.PortalHit(kWest, glm::vec2(0, 100), glm::vec2(-1, 0)));
+          REQUIRE(room.RayHitsPortal(kWest, glm::vec2(0, 100), glm::vec2(-1, 0)));
         }
       }
     }
     SECTION("Misses Portal") {
       SECTION("Hits in negative direction") {
-        REQUIRE_FALSE(room.PortalHit(kWest, glm::vec2(60, 100), glm::vec2(1, 0)));
+        REQUIRE_FALSE(room.RayHitsPortal(kWest, glm::vec2(60, 100), glm::vec2(1, 0)));
       }
       SECTION("Misses completely") {
-        REQUIRE_FALSE(room.PortalHit(kWest, glm::vec2(60, 100), glm::vec2(-1, 10)));
+        REQUIRE_FALSE(room.RayHitsPortal(kWest, glm::vec2(60, 100), glm::vec2(-1, 10)));
       }
     }
   }
@@ -746,6 +746,148 @@ TEST_CASE("Get Wall/Portal Tail") {
     }
     SECTION("West") {
       REQUIRE(room.GetTail(kWest, true) == glm::vec2(0, 50));
+    }
+  }
+}
+
+TEST_CASE("Get Wall Texture Index") {
+  Room room = *factory.GenerateRandomRoom();
+  SECTION("North") {
+    SECTION("Portal") {
+      SECTION("Hit") {
+        REQUIRE(room.GetWallTextureIndex(kNorth, true,
+                                         glm::vec2(399, 0), glm::vec2(0, 1)) == 1);
+      }
+      SECTION("In Line") {
+        SECTION("Ray hits head") {
+          REQUIRE(room.GetWallTextureIndex(kNorth, true,
+                                           glm::vec2(0, 200), glm::vec2(1, 0)) == 0);
+        }
+        SECTION("Does not hit head") {
+          REQUIRE(room.GetWallTextureIndex(kNorth, true,
+                                           glm::vec2(0, 200), glm::vec2(-1, 0)) == 400);
+        }
+      }
+    }
+    SECTION("Wall") {
+      SECTION("Hit") {
+        REQUIRE(room.GetWallTextureIndex(kNorth, false,
+                                         glm::vec2(499, 0), glm::vec2(0, 1)) == 1);
+      }
+      SECTION("In Line") {
+        SECTION("Ray hits head") {
+          REQUIRE(room.GetWallTextureIndex(kNorth, false,
+                                           glm::vec2(0, 200), glm::vec2(1, 0)) == 0);
+        }
+        SECTION("Does not hit head") {
+          REQUIRE(room.GetWallTextureIndex(kNorth, false,
+                                           glm::vec2(0, 200), glm::vec2(-1, 0)) == 500);
+        }
+      }
+    }
+  }
+  SECTION("South") {
+    SECTION("Portal") {
+      SECTION("Hit") {
+        REQUIRE(room.GetWallTextureIndex(kSouth, true,
+                                         glm::vec2(101, 50), glm::vec2(0, -1)) == 1);
+      }
+      SECTION("In Line") {
+        SECTION("Ray hits head") {
+          REQUIRE(room.GetWallTextureIndex(kSouth, true,
+                                           glm::vec2(0, 0), glm::vec2(1, 0)) == 0);
+        }
+        SECTION("Does not hit head") {
+          REQUIRE(room.GetWallTextureIndex(kSouth, true,
+                                           glm::vec2(0, 0), glm::vec2(-1, 0)) == 100);
+        }
+      }
+    }
+    SECTION("Wall") {
+      SECTION("Hit") {
+        REQUIRE(room.GetWallTextureIndex(kSouth, false,
+                                         glm::vec2(1, 0), glm::vec2(0, -1)) == 1);
+      }
+      SECTION("In Line") {
+        SECTION("Ray hits head") {
+          REQUIRE(room.GetWallTextureIndex(kSouth, false,
+                                           glm::vec2(0, 0), glm::vec2(-1, 0)) == 0);
+        }
+        SECTION("Does not hit head") {
+          REQUIRE(room.GetWallTextureIndex(kSouth, false,
+                                           glm::vec2(-10, 0), glm::vec2(-1, 0)) == 10);
+        }
+      }
+    }
+  }
+  SECTION("East") {
+
+    SECTION("Portal") {
+      SECTION("Hit") {
+        REQUIRE(room.GetWallTextureIndex(kEast, true,
+                                         glm::vec2(51, 51), glm::vec2(1, 0)) == 1);
+      }
+      SECTION("In Line") {
+        SECTION("Ray hits head") {
+          REQUIRE(room.GetWallTextureIndex(kEast, true,
+                                           glm::vec2(500, 51), glm::vec2(0, -1)) == 0);
+        }
+        SECTION("Does not hit head") {
+          REQUIRE(room.GetWallTextureIndex(kEast, true,
+                                           glm::vec2(500, 51), glm::vec2(0, 1)) == 1);
+        }
+      }
+    }
+    SECTION("Wall") {
+      SECTION("Hit") {
+        REQUIRE(room.GetWallTextureIndex(kEast, false,
+                                         glm::vec2(1, 1), glm::vec2(1, 0)) == 1);
+      }
+      SECTION("In Line") {
+        SECTION("Ray hits head") {
+          REQUIRE(room.GetWallTextureIndex(kEast, false,
+                                           glm::vec2(500, 1), glm::vec2(0, -1)) == 0);
+        }
+        SECTION("Does not hit head") {
+          REQUIRE(room.GetWallTextureIndex(kEast, false,
+                                           glm::vec2(500, 10), glm::vec2(0, 10)) == 10);
+        }
+      }
+    }
+  }
+  SECTION("West") {
+
+    SECTION("Portal") {
+      SECTION("Hit") {
+        REQUIRE(room.GetWallTextureIndex(kWest, true,
+                                         glm::vec2(51, 149), glm::vec2(-1, 0)) == 1);
+      }
+      SECTION("In Line") {
+        SECTION("Ray hits head") {
+          REQUIRE(room.GetWallTextureIndex(kWest, true,
+                                           glm::vec2(0, 149), glm::vec2(0, 1)) == 0);
+        }
+        SECTION("Does not hit head") {
+          REQUIRE(room.GetWallTextureIndex(kWest, true,
+                                           glm::vec2(0, 50), glm::vec2(0, -1)) == 100);
+        }
+      }
+    }
+    SECTION("Wall") {
+      SECTION("Hit") {
+        REQUIRE(room.GetWallTextureIndex(kWest, false,
+                                         glm::vec2(1, 199), glm::vec2(-1, 0)) == 1);
+      }
+      SECTION("In Line") {
+        SECTION("Ray hits head") {
+          REQUIRE(room.GetWallTextureIndex(kWest, false,
+                                           glm::vec2(0, 0), glm::vec2(0, 1)) == 0);
+        }
+        SECTION("Does not hit head") {
+          REQUIRE(room.GetWallTextureIndex(kWest, false,
+                                           glm::vec2(0, 0), glm::vec2(0, -1)) == 200);
+        }
+      }
     }
   }
 }
