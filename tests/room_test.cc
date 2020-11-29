@@ -539,3 +539,149 @@ TEST_CASE("Room Wall Hit Distance") {
                                        141.4213562373f));
   }
 }
+
+TEST_CASE("Portal Hit") {
+  Room room = *factory.GenerateRandomRoom();
+  // 5,2,3,1
+  // (500, 200), [100, 400], [50, 150]
+  SECTION("North") {
+    SECTION("Portal") {
+      SECTION("On Portal") {
+        SECTION("left_edge") {
+          REQUIRE(room.PortalHit(kNorth, glm::vec2(100, 200), glm::vec2(1,1)));
+        }
+        SECTION("right_edge") {
+          REQUIRE(room.PortalHit(kNorth, glm::vec2(400, 200), glm::vec2(-1,1)));
+        }
+        SECTION("Middle") {
+          REQUIRE(room.PortalHit(kNorth, glm::vec2(200, 200), glm::vec2(1,0)));
+        }
+      }
+      SECTION("Hits Portal") {
+        SECTION("left_edge") {
+          REQUIRE(room.PortalHit(kNorth, glm::vec2(150, 150), glm::vec2(-1,1)));
+        }
+        SECTION("right_edge") {
+          REQUIRE(room.PortalHit(kNorth, glm::vec2(350, 150), glm::vec2(1,1)));
+        }
+        SECTION("middle") {
+          REQUIRE(room.PortalHit(kNorth, glm::vec2(350, 150), glm::vec2(0,1)));
+        }
+      }
+    }
+    SECTION("Misses Portal") {
+      SECTION("Hits in negative direction") {
+        REQUIRE_FALSE(room.PortalHit(kNorth, glm::vec2(100,100), glm::vec2(0, -1)));
+      }
+      SECTION("Misses completely") {
+        REQUIRE_FALSE(room.PortalHit(kNorth, glm::vec2(0, 0), glm::vec2(-1,1)));
+      }
+    }
+  }
+
+  SECTION("South") {
+    SECTION("Portal") {
+      SECTION("On Portal") {
+        SECTION("left_edge") {
+          REQUIRE(room.PortalHit(kSouth, glm::vec2(100, 0), glm::vec2(1,1)));
+        }
+        SECTION("right_edge") {
+          REQUIRE(room.PortalHit(kSouth, glm::vec2(400, 0), glm::vec2(-1,1)));
+        }
+        SECTION("middle") {
+          REQUIRE(room.PortalHit(kSouth, glm::vec2(200, 0), glm::vec2(1,0)));
+        }
+      }
+      SECTION("Hits Portal") {
+        SECTION("left_edge") {
+          REQUIRE(room.PortalHit(kSouth, glm::vec2(150, 50), glm::vec2(-1,-1)));
+        }
+        SECTION("right_edge") {
+          REQUIRE(room.PortalHit(kSouth, glm::vec2(350, 50), glm::vec2(1,-1)));
+        }
+        SECTION("middle") {
+          REQUIRE(room.PortalHit(kSouth, glm::vec2(350, 150), glm::vec2(0,-1)));
+        }
+      }
+    }
+    SECTION("Misses Portal") {
+      SECTION("Hits in negative direction") {
+        REQUIRE_FALSE(room.PortalHit(kSouth, glm::vec2(0, 150), glm::vec2(0,-1)));
+      }
+      SECTION("Misses completely") {
+        REQUIRE_FALSE(room.PortalHit(kSouth, glm::vec2(350, 150), glm::vec2(0, 1)));
+      }
+    }
+  }
+
+  SECTION("East") {
+    SECTION("Portal") {
+      SECTION("Hits Portal") {
+        SECTION("top_edge") {
+          REQUIRE(room.PortalHit(kEast, glm::vec2(450, 200), glm::vec2(1, -1)));
+        }
+        SECTION("bottom_edge") {
+          REQUIRE(room.PortalHit(kEast, glm::vec2(450, 0), glm::vec2(1, 1)));
+        }
+        SECTION("Middle") {
+          REQUIRE(room.PortalHit(kEast, glm::vec2(100, 100), glm::vec2(1, 0)));
+        }
+      }
+      SECTION("On Portal") {
+        SECTION("top_edge") {
+          REQUIRE(room.PortalHit(kEast, glm::vec2(500, 150), glm::vec2(1, -1)));
+        }
+        SECTION("bottom_edge") {
+          REQUIRE(room.PortalHit(kEast, glm::vec2(500, 50), glm::vec2(1, -1)));
+        }
+        SECTION("Middle") {
+          REQUIRE(room.PortalHit(kEast, glm::vec2(500, 100), glm::vec2(1, 0)));
+        }
+      }
+    }
+    SECTION("Misses Portal") {
+      SECTION("Hits in negative direction") {
+        REQUIRE_FALSE(room.PortalHit(kEast, glm::vec2(100, 100), glm::vec2(-1, 0)));
+      }
+      SECTION("Misses completely") {
+        REQUIRE_FALSE(room.PortalHit(kEast, glm::vec2(100, 0), glm::vec2(1, 0)));
+      }
+    }
+  }
+
+  SECTION("West") {
+    SECTION("Portal") {
+      SECTION("Hits Portal") {
+        SECTION("top_edge") {
+          REQUIRE(room.PortalHit(kWest, glm::vec2(50, 200), glm::vec2(-1, -1)));
+        }
+        SECTION("bottom_edge") {
+          REQUIRE(room.PortalHit(kWest, glm::vec2(50, 0), glm::vec2(-1, 1)));
+        }
+        SECTION("Middle") {
+          REQUIRE(room.PortalHit(kWest, glm::vec2(50, 100), glm::vec2(-1, 0)));
+        }
+      }
+      SECTION("On Portal") {
+        SECTION("top_edge") {
+          REQUIRE(room.PortalHit(kWest, glm::vec2(0, 150), glm::vec2(-1, -1)));
+        }
+        SECTION("bottom_edge") {
+          REQUIRE(room.PortalHit(kWest, glm::vec2(0, 50), glm::vec2(-1, 1)));
+        }
+        SECTION("Middle") {
+          REQUIRE(room.PortalHit(kWest, glm::vec2(0, 100), glm::vec2(-1, 0)));
+        }
+      }
+    }
+    SECTION("Misses Portal") {
+      SECTION("Hits in negative direction") {
+        REQUIRE_FALSE(room.PortalHit(kWest, glm::vec2(60, 100), glm::vec2(1, 0)));
+      }
+      SECTION("Misses completely") {
+        REQUIRE_FALSE(room.PortalHit(kWest, glm::vec2(60, 100), glm::vec2(-1, 10)));
+      }
+    }
+  }
+}
+

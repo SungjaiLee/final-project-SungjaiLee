@@ -17,7 +17,7 @@ using json = nlohmann::json;
 
 namespace room_explorer {
 
-class Wall {
+class Wall : std::string {
 private:
   glm::vec2 head_;
   glm::vec2 tail_;
@@ -30,7 +30,7 @@ public:
 
   const glm::vec2& GetHead() const;
 
-  const glm::vec2 &GetTail() const;
+  const glm::vec2& GetTail() const;
 
   bool operator< (const Wall& wall) const;
   bool operator== (const Wall& wall) const;

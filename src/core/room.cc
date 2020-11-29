@@ -338,6 +338,7 @@ bool Room::PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir)
   float ns_begin = (width_ - ns_door_width_) / 2;
   float ew_begin = (height_ - ew_door_width_) / 2;
 
+  // TODO break down into simpler calculation. No need to check for unmet conditions when cases are much more specifed
   switch (side) {
 
     case kNorth:
