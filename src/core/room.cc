@@ -368,60 +368,7 @@ bool Room::PortalHit(Direction side, const glm::vec2& pos, const glm::vec2& dir)
 
 float Room::WallTextureIndex(Direction direction, bool portal, const glm::vec2& pos, const glm::vec2& dir) const {
 
-  switch (direction) {
-    case kNorth:
-      if (portal) {
-        return TextureIndexOnLineOfRay(glm::vec2(ns_door_begin_ + ns_door_width_, height_),
-                                       glm::vec2(ns_door_begin_, height_),
-                                       pos,
-                                       dir);
-      } else {
-        return TextureIndexOnLineOfRay(glm::vec2(width_, height_),
-                                       glm::vec2(0, height_),
-                                       pos,
-                                       dir);
-      }
-
-    case kSouth:
-      if (portal) {
-        return TextureIndexOnLineOfRay(glm::vec2(ns_door_begin_, 0),
-                                       glm::vec2(ns_door_begin_ + ns_door_width_, 0),
-                                       pos,
-                                       dir);
-      } else {
-        return TextureIndexOnLineOfRay(glm::vec2(0, 0),
-                                       glm::vec2(width_, 0),
-                                       pos,
-                                       dir);
-      }
-
-    case kEast:
-      if (portal) {
-        return TextureIndexOnLineOfRay(glm::vec2(width_, ew_door_begin_),
-                                       glm::vec2(width_, ew_door_begin_ + ew_door_width_),
-                                       pos,
-                                       dir);
-      } else {
-        return TextureIndexOnLineOfRay(glm::vec2(width_, 0),
-                                       glm::vec2(width_, height_),
-                                       pos,
-                                       dir);
-      }
-    case kWest:
-      if (portal) {
-        return TextureIndexOnLineOfRay(glm::vec2(0, ew_door_begin_ + ew_door_width_),
-                                       glm::vec2(0, ew_door_begin_),
-                                       pos,
-                                       dir);
-      } else {
-        return TextureIndexOnLineOfRay(glm::vec2(0, height_),
-                                       glm::vec2(0, 0),
-                                       pos,
-                                       dir);
-      }
-    case kUndefined:
-      throw exceptions::InvalidDirectionException();
-  }
+  return TextureIndexOnLineOfRay(GetHead(direction, portal), GetTail(direction, portal), pos, dir);
 }
 
 glm::vec2 Room::GetHead(Direction dir, bool portal) const {
