@@ -7,7 +7,6 @@
 namespace room_explorer {
 
 // Direction Enum Methods ===================================================
-
 Direction OppositeDirection(const Direction& direction) {
   switch (direction) {
     case kNorth:
@@ -22,20 +21,12 @@ Direction OppositeDirection(const Direction& direction) {
       throw exceptions::InvalidDirectionException();
   }
 }
-
-// End of Direction Enum Method =========
-
-// Room Member handlers =========================================================
+// End of Direction Enum Method =============================================
 
 
-float Room::GetWidth() const {
-  return width_;
-}
+// Public Room functions ===============================================================================================
 
-float Room::GetHeight() const {
-  return height_;
-}
-
+// Elementary Getters ===========================================================================
 size_t Room::GetWallCount() const {
   return walls.size();
 }
@@ -43,40 +34,10 @@ size_t Room::GetWallCount() const {
 const std::set<Wall>& Room::GetWalls() const {
   return walls;
 }
+// End of elementary getters ====================================================================
 
 
-Room*& Room::GetLinkedRoomPointer(const Direction& direction) {
-  switch (direction) {
-    case kNorth:
-      return north_;
-    case kSouth:
-      return south_;
-    case kEast:
-      return east_;
-    case kWest:
-      return west_;
-    default:
-      throw exceptions::InvalidDirectionException();
-  }
-}
-
-Room* Room::GetLinkedRoomPointer(const Direction& direction) const {
-  // This repetition is necessary to allow simple manipulation for both const and non-const context
-  switch (direction) {
-    case kNorth:
-      return north_;
-    case kSouth:
-      return south_;
-    case kEast:
-      return east_;
-    case kWest:
-      return west_;
-    default:
-      throw exceptions::InvalidDirectionException();
-  }
-}
-
-
+// Room Connectivity Functions ==================================================================
 bool Room::LinkRoom(const Direction& dir, Room* room_p) {
 
   // If either room-connection is already populated, aboard linking
@@ -96,7 +57,6 @@ bool Room::LinkRoom(const Direction& dir, Room* room_p) {
   return true;
 }
 
-
 Room* Room::GetConnectedRoom(const Direction& direction) {
   Room* room = GetLinkedRoomPointer(direction);
   if (room == nullptr) {
@@ -105,7 +65,6 @@ Room* Room::GetConnectedRoom(const Direction& direction) {
   }
   return room;
 }
-
 
 bool Room::IsConnectedWith(Room* other_p, const Direction& direction) const {
   if (other_p != GetLinkedRoomPointer(direction)) {
@@ -123,6 +82,19 @@ bool Room::IsConnectedWith(Room* other_p) const {
          IsConnectedWith(other_p, kEast) ||
          IsConnectedWith(other_p, kWest);
 }
+// End of Connectivity Functions ================================================================
+
+
+// Room Geometric Functions =====================================================================
+
+// Getters ==================================================================
+float Room::GetWidth() const {
+  return width_;
+}
+
+float Room::GetHeight() const {
+  return height_;
+}
 
 float Room::GetNSDoorWidth() const {
   return ns_door_width_;
@@ -132,8 +104,39 @@ float Room::GetEWDoorWidth() const {
   return ew_door_width_;
 }
 
-// Highly inefficent, TODO make faster and cleaner
-Direction Room::GetSideHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool point_inclusive) const {
+glm::vec2 Room::GetHead(Direction dir, bool of_portal) const {
+  if (of_portal) {
+    return GetPortalHead(dir);
+  } else {
+    return GetWallHead(dir);
+  }
+}
+
+glm::vec2 Room::GetTail(Direction dir, bool of_portal) const {
+  if (of_portal) {
+    return GetPortalTail(dir);
+  } else {
+    return GetWallTail(dir);
+  }
+}
+// End of getters ==========================================================
+
+bool Room::WithinRoom(const glm::vec2& pos, bool wall_inclusive) const {
+  if (!wall_inclusive) {
+    return (pos.x > 0) && (pos.x < width_) && (pos.y > 0) && (pos.y < height_);
+  } else {
+    return WithinRoom(pos, false)
+           || FloatApproximation(pos.x, 0)
+           || FloatApproximation(pos.x, width_)
+           || FloatApproximation(pos.y, 0)
+           || FloatApproximation(pos.y, height_);
+  }
+}
+
+// TODO make more efficent
+Direction Room::GetSideHit(const glm::vec2& ray_pos,
+                           const glm::vec2& ray_dir,
+                           bool point_inclusive) const {
   // what if outside of room?
 
   // calculated here to allow utility outside of the following if statment
@@ -305,28 +308,17 @@ Direction Room::GetSideHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, b
   throw exceptions::InvalidDirectionException();
 }
 
-bool Room::WithinRoom(const glm::vec2& pos, bool wall_inclusive) const {
-  if (!wall_inclusive) {
-    return (pos.x > 0) && (pos.x < width_) && (pos.y > 0) && (pos.y < height_);
-  } else {
-    return WithinRoom(pos, false)
-           || FloatApproximation(pos.x, 0)
-           || FloatApproximation(pos.x, width_)
-           || FloatApproximation(pos.y, 0)
-           || FloatApproximation(pos.y, height_);
-  }
-}
-
-float Room::GetRoomWallHitDistance(const Direction& direction, const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
+float Room::GetRoomWallHitDistance(const Direction& direction,
+                                   const glm::vec2& ray_pos,
+                                   const glm::vec2& ray_dir) const {
   return GetRayToLineDistance(GetHead(direction, false),
                               GetTail(direction, false),
                               ray_pos, ray_dir);
 }
 
-bool Room::RayHitsPortal(const Direction& direction, const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
-
-//  float ns_begin = (width_ - ns_door_width_) / 2;
-//  float ew_begin = (height_ - ew_door_width_) / 2;
+bool Room::RayHitsPortal(const Direction& direction,
+                         const glm::vec2& ray_pos,
+                         const glm::vec2& ray_dir) const {
 
   // TODO break down into simpler calculation. No need to check for unmet conditions when cases are much more specifed
   switch (direction) {
@@ -356,27 +348,55 @@ bool Room::RayHitsPortal(const Direction& direction, const glm::vec2& ray_pos, c
   }
 }
 
-float Room::GetWallTextureIndex(const Direction& direction, bool of_portal, const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
-
-  return TextureIndexOnLineOfRay(GetHead(direction, of_portal), GetTail(direction, of_portal), ray_pos, ray_dir);
+float Room::GetWallTextureIndex(const Direction& direction, bool of_portal,
+                                const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
+  return TextureIndexOnLineOfRay(GetHead(direction, of_portal),
+                                 GetTail(direction, of_portal),
+                                 ray_pos,
+                                 ray_dir);
 }
+// End of Room geometric functions ==============================================================
 
-glm::vec2 Room::GetHead(Direction dir, bool of_portal) const {
-  if (of_portal) {
-    return GetPortalHead(dir);
-  } else {
-    return GetWallHead(dir);
+// End of public room functions ========================================================================================
+
+
+// Private Room Functions ==============================================================================================
+
+// Getters ======================================================================================
+Room*& Room::GetLinkedRoomPointer(const Direction& direction) {
+  switch (direction) {
+    case kNorth:
+      return north_;
+    case kSouth:
+      return south_;
+    case kEast:
+      return east_;
+    case kWest:
+      return west_;
+    default:
+      throw exceptions::InvalidDirectionException();
   }
 }
 
-glm::vec2 Room::GetTail(Direction dir, bool of_portal) const {
-  if (of_portal) {
-    return GetPortalTail(dir);
-  } else {
-    return GetWallTail(dir);
+Room* Room::GetLinkedRoomPointer(const Direction& direction) const {
+  // This repetition is necessary to allow simple manipulation for both const and non-const context
+  switch (direction) {
+    case kNorth:
+      return north_;
+    case kSouth:
+      return south_;
+    case kEast:
+      return east_;
+    case kWest:
+      return west_;
+    default:
+      throw exceptions::InvalidDirectionException();
   }
 }
+// End of Getters ===============================================================================
 
+
+// Private Geometric Functions ==================================================================
 glm::vec2 Room::GetPortalHead(Direction dir) const {
   using glm::vec2;
 
@@ -460,15 +480,8 @@ glm::vec2 Room::GetWallTail(Direction dir) const {
       throw exceptions::InvalidDirectionException();
   }
 }
+// end of private geometric functions ===========================================================
 
-
-
-// End of Room Member handlers =====================================
-
-
-
-//======================================================================================================================
-
-
+// End of Private Room Functions =======================================================================================
 
 } //namespace room_explorer

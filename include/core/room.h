@@ -295,8 +295,6 @@ private:
   // End of Private Member Functions ===========================
 
 
-  // Factory need to be able to populate the private room members
-
   // Friend Classes/Functions =====================================================
 
   //! Factory needs to be able to initialize private members of room object
