@@ -129,25 +129,30 @@ bool Room::WithinRoom(const glm::vec2& pos, bool wall_inclusive) const {
   }
 }
 
-// TODO make more efficent
 Direction Room::GetSideHit(const glm::vec2& ray_pos,
                            const glm::vec2& ray_dir,
                            bool point_inclusive) const {
-
-
-  // TODO reorganize to reduce repeated calcualtion
-  //  We can jst calculate uninclusive within
-  //  rely on inidividual north, south,... for wall intersection, derive wall hiinclusve from there
-
+  // Edge border cases are checked first.
   bool touch_north = FloatApproximation(ray_pos.y, height_);
   bool touch_south = FloatApproximation(ray_pos.y, 0);
   bool touch_east = FloatApproximation(ray_pos.x, width_);
   bool touch_west = FloatApproximation(ray_pos.x, 0);
 
+  // Exclusively on-wall condition will be combined with strictly within room check to yield
+  //  Wall inclusive within-room check. However, by separating steps like this allows recycling of calculation
+  //  and reduce repeating loss of information after calculation.
   bool on_wall_bounds = touch_north || touch_south || touch_east || touch_west;
 
+  // If not wall-inclusively within room, wall-hit should not be valid.
+  if (!WithinRoom(ray_pos, false) && !on_wall_bounds) { // logically equivalent to !WithinRoom(ray_pos)
+    throw exceptions::InvalidDirectionException();
+  }
+
   if (on_wall_bounds) {
+    // If point-inclusive, means that current wall on which the ray begins on should be considered a hit.
     if (point_inclusive) {
+      // Heads are included as being hart of the wall, but tails aren't.
+      //  Tails are detected by being at a corner, indicated by 2 invalid touch-condition.
       if (!touch_west && touch_north) {
         return kNorth;
       }
@@ -160,311 +165,143 @@ Direction Room::GetSideHit(const glm::vec2& ray_pos,
       if (!touch_south && touch_west) {
         return kWest;
       }
-    }
 
-    // can elimiate more cases
-    // on wall, and cannot return the current on wall
-    if (touch_north) {
-      if (ray_dir.y > 0) {
-        throw exceptions::InvalidDirectionException();
-      }
-      // if does not move in y direction, must hit thew wall in the rightnext point
-      if (FloatApproximation(ray_dir.y, 0)) {
-        return kNorth;
-      }
-    }
+    } else {
+      // If not point inclusive, but still on-wall, there are few more cases that can be immediately handled
+      //  by simple direction-check
 
-    if (touch_south) {
-      if (ray_dir.y < 0) {
-        throw exceptions::InvalidDirectionException();
-      }
-      if (FloatApproximation(ray_dir.y, 0)) {
-        return kSouth;
-      }
-    }
+      // If on wall and ray points out-wards, ray will never hit a wall, and should throw exception.
+      // If on wall and  ray points directly parallel to the wall, ray will intersect with the current wall.
 
-    if (touch_east) {
-      if (ray_dir.x > 0) {
-        throw exceptions::InvalidDirectionException();
+      if (touch_north) {
+        if (ray_dir.y > 0) {
+          throw exceptions::InvalidDirectionException();
+        }
+        // If y = 0, ray must move only in x-direction, directly parallel to north wall.
+        if (FloatApproximation(ray_dir.y, 0)) {
+          return kNorth;
+        }
       }
-      if (FloatApproximation(ray_dir.x, 0)) {
-        return kEast;
+      if (touch_south) {
+        if (ray_dir.y < 0) {
+          throw exceptions::InvalidDirectionException();
+        }
+        // If y = 0, ray must move only in x-direction, directly parallel to south wall.
+        if (FloatApproximation(ray_dir.y, 0)) {
+          return kSouth;
+        }
       }
+      if (touch_east) {
+        if (ray_dir.x > 0) {
+          throw exceptions::InvalidDirectionException();
+        }
+        // If x = 0, ray must move only in y-direction, directly parallel to east wall.
+        if (FloatApproximation(ray_dir.x, 0)) {
+          return kEast;
+        }
+      }
+      if (touch_west) {
+        if (ray_dir.x < 0) {
+          throw exceptions::InvalidDirectionException();
+        }
+        // If x = 0, ray must move only in y-direction, directly parallel to west wall.
+        if (FloatApproximation(ray_dir.x, 0)) {
+          return kWest;
+        }
+      }
+      // Else, ray is either pointing into the current wall, and nor pointing out into invalid void.
+      //  Rest can be computed through non-on-wall conditions.
     }
-
-    if (touch_west) {
-      if (ray_dir.x < 0) {
-        throw exceptions::InvalidDirectionException();
-      }
-      if (FloatApproximation(ray_dir.x, 0)) {
-        return kWest;
-      }
-    }
-
   }
 
+  // All other cases can be handled by observing cardinal direction, then slope of ray-dir/
+  // Basic concept: if the ray is pointing to the right, there should be no need to check for left-wall.
+  //  Continue eliminating possibilities through this process.
+  //  When only two adjacent walls are left as possibilities, compare slope of direction to needed slope to the corner.
 
-  if (!WithinRoom(ray_pos, false) && !on_wall_bounds) {
-    throw exceptions::InvalidDirectionException();
-  }
-
-  // if point if not inclusive, have to
-  if (ray_dir.x < 0) {
-    // can only be west
-    if (ray_dir.y < 0) {
-      //coult be south
-      // must check against South West (0, 0)
-      float corner_slope = (-ray_pos.y) / (-ray_pos.x); // valid because we know the pos to not be 0
+  if (ray_dir.x < 0) { // Must be in westwards direction.
+    if (ray_dir.y < 0) { // Must be southern direction.
+      // Check slope against SW corner (0, 0)
+      float corner_slope = (-ray_pos.y) / (-ray_pos.x); // ray.pos = 0 is eliminated through on-wall checks.
       float dir_slope = ray_dir.y / ray_dir.x;
 
+      // SW corner is part of Southern Wall.
+      //  If slope is less than slope to corner, must mean Western wall is strictly hit.
       if (dir_slope < corner_slope) {
         return kWest;
       } else {
-        // if hits the corcner, consdiered south
+        // Includes both strictly southern, and also hitting southern-head.
         return kSouth;
       }
 
-    } else if (ray_dir.y > 0) {
-      //could be north
-      // Must check against North West (0, height)
-      float corner_slope = (height_ - ray_pos.y) / (-ray_pos.x); // valid because we know the pos to not be 0
+    } else if (ray_dir.y > 0) { // Must be northern direction.
+      // Check slope against NW corner (0, height)
+      float corner_slope = (height_ - ray_pos.y) / (-ray_pos.x); // ray.pos = 0 is eliminated through on-wall checks.
       float dir_slope = ray_dir.y / ray_dir.x;
 
-
-      //equal, west
-      if (dir_slope < corner_slope) { // less because this is neagtvie slope, so less means more extreme
+      // NW corner is part of Western Wall.
+      //  If slope is greater than slope to corner, must mean Northern wall is strictly hit.
+      if (dir_slope < corner_slope) {
         return kNorth;
       } else {
-        // if corner hit, this is a west corner
+        // Includes both strictly western, and also hitting western-head.
         return kWest;
       }
 
     } else {
-      //dir.y == 0, not moving up or down
+      // If y = 0, is not moving up or down, meaning must be moving towards the western wall.
       return kWest;
     }
 
-  } else if (ray_dir.x > 0) {
-    // can only be east
-    if (ray_dir.y < 0) {
-      //coult be south
-      // must check against south east corner (width, 0)
-
-
-      float corner_slope = (-ray_pos.y) / (width_ - ray_pos.x); // valid because we know the pos to not be 0
+  } else if (ray_dir.x > 0) { // Must be in eastern direction.
+    if (ray_dir.y < 0) { // Must be southern direction.
+      // Check slope against SE corner (width, 0)
+      float corner_slope = (-ray_pos.y) / (width_ - ray_pos.x); // width - x = 0 is eliminated through on-wall checks.
       float dir_slope = ray_dir.y / ray_dir.x;
 
+      // SE corner is part of Eastern Wall.
+      //  If slope is greater than slope to corner, must mean Southern wall is strictly hit.
       if (dir_slope < corner_slope) {
         return kSouth;
       } else {
+        // Includes both strictly eastern, and also hitting eastern-head.
         return kEast;
       }
 
-    } else if (ray_dir.y > 0) {
-      //could be north
-      // must check agsint east north (width, height)
-
-      float corner_slope = (height_ - ray_pos.y) / (width_ - ray_pos.x); // valid because we know the pos to not be 0
+    } else if (ray_dir.y > 0) { // Must be northern direction.
+      // Check slope against NE corner (width, height)
+      float corner_slope = (height_ - ray_pos.y) / (width_ - ray_pos.x);
+      // width - x = 0 is eliminated through on-wall checks.
       float dir_slope = ray_dir.y / ray_dir.x;
 
+      // NE corner is part of Northern Wall.
+      //  If the slope is less than slope to the corner, must mean Eastern wall is strictly hit.
       if (dir_slope < corner_slope) {
         return kEast;
       } else {
+        // Includes both strictly northern, and also hitting northern-head.
         return kNorth;
       }
 
     } else {
-      //dir.y == 0 not moving up or down
+      // If y = 0, is not moving up or down, meaning must move towards the eastern wall.
       return kEast;
     }
 
   } else {
-    // can only be south or north
+    // If x = 0, cannot hit either Eastern or Western walls. Only Northern and Southern and possible
     if (ray_dir.y < 0) {
-      // must be south
+      // Ray moving down, must hit southern wall.
       return kSouth;
     }
     if (ray_dir.y > 0) {
-      // must be north
+      // Ray moving up, must hit northern wall.
       return kNorth;
     }
   }
 
+  // Suggests ray is a zero-ray. Invalid direction.
   throw exceptions::InvalidDirectionException();
-
-
-
-
-
-//  // what if outside of room?
-//
-//  // calculated here to allow utility outside of the following if statment
-//  bool north = FloatApproximation(ray_pos.y, height_);
-//  bool south = FloatApproximation(ray_pos.y, 0);
-//  bool east = FloatApproximation(ray_pos.x, width_);
-//  bool west = FloatApproximation(ray_pos.x, 0);
-//  //assume dir is non-zero
-//  if (point_inclusive) {
-//
-//    //if corner, we will prioritieze the walls by "rotation" the corners clockwise
-//    //  NE corner will be north
-//    //  SE will be EAST
-//    //  WS will be south
-//    //  NW will be west
-//
-//    // This means that the edge is north if not west and north
-//    // east is not north adn east
-//    // south if not east and south
-//    // west if not sotuh and west
-//
-//    if (!west && north) {
-//      return kNorth;
-//    }
-//    if (!north && east) {
-//      return kEast;
-//    }
-//    if (!east && south) {
-//      return kSouth;
-//    }
-//    if (!south && west) {
-//      return kWest;
-//    }
-//  }
-//
-//  //check if in room
-//  if (!WithinRoom(ray_pos, false)) { // wall exclusive, because if it was touching the wall, would have been caught above
-//    // this eliminates uneeded on-edge pointing out while being exclusive problem
-//
-//    // if not within a room, we will not define any direction to the ray
-//
-//    if (!WithinRoom(ray_pos, true)) { //if not within the room wall inclusive, means totally outside of the room
-//      // TODO make more clean, combine and distribute to form a more cohrent method to handle this, "on thr wall" case
-//      throw exceptions::InvalidDirectionException();
-//    }
-//
-//    // there is still possibility that direction could point "inwards
-//    //  for this, we must check here too
-//    //  here we will only eliminate the awful kinds
-//    //  only eliminate outwards pointers
-//    if (north) {
-//      if (ray_dir.y > 0) {
-//        throw exceptions::InvalidDirectionException();
-//      }
-//      // if does not move in y direction, must hit thew wall in the rightnext point
-//      if (FloatApproximation(ray_dir.y, 0)) {
-//        return kNorth;
-//      }
-//    }
-//    if (south) {
-//      if (ray_dir.y < 0) {
-//        throw exceptions::InvalidDirectionException();
-//      }
-//      if (FloatApproximation(ray_dir.y, 0)) {
-//        return kSouth;
-//      }
-//    }
-//    if (east) {
-//      if (ray_dir.x > 0) {
-//        throw exceptions::InvalidDirectionException();
-//      }
-//      if (FloatApproximation(ray_dir.x, 0)) {
-//        return kEast;
-//      }
-//    }
-//    if (west) {
-//      if (ray_dir.x < 0) {
-//        throw exceptions::InvalidDirectionException();
-//      }
-//      if (FloatApproximation(ray_dir.x, 0)) {
-//        return kWest;
-//      }
-//    }
-//  }
-//  // This requires that the ray is within the room, and therefore will guarentee hit a specific wall
-//
-//  // if point if not inclusive, have to
-//  if (ray_dir.x < 0) {
-//    // can only be west
-//    if (ray_dir.y < 0) {
-//      //coult be south
-//      // must check against South West (0, 0)
-//      float corner_slope = (-ray_pos.y) / (-ray_pos.x); // valid because we know the pos to not be 0
-//      float dir_slope = ray_dir.y / ray_dir.x;
-//
-//      if (dir_slope < corner_slope) {
-//        return kWest;
-//      } else {
-//        // if hits the corcner, consdiered south
-//        return kSouth;
-//      }
-//
-//    } else if (ray_dir.y > 0) {
-//      //could be north
-//      // Must check against North West (0, height)
-//      float corner_slope = (height_ - ray_pos.y) / (-ray_pos.x); // valid because we know the pos to not be 0
-//      float dir_slope = ray_dir.y / ray_dir.x;
-//
-//
-//      //equal, west
-//      if (dir_slope < corner_slope) { // less because this is neagtvie slope, so less means more extreme
-//        return kNorth;
-//      } else {
-//        // if corner hit, this is a west corner
-//        return kWest;
-//      }
-//
-//    } else {
-//      //dir.y == 0, not moving up or down
-//      return kWest;
-//    }
-//
-//  } else if (ray_dir.x > 0) {
-//    // can only be east
-//    if (ray_dir.y < 0) {
-//      //coult be south
-//      // must check against south east corner (width, 0)
-//
-//
-//      float corner_slope = (-ray_pos.y) / (width_ - ray_pos.x); // valid because we know the pos to not be 0
-//      float dir_slope = ray_dir.y / ray_dir.x;
-//
-//      if (dir_slope < corner_slope) {
-//        return kSouth;
-//      } else {
-//        return kEast;
-//      }
-//
-//    } else if (ray_dir.y > 0) {
-//      //could be north
-//      // must check agsint east north (width, height)
-//
-//      float corner_slope = (height_ - ray_pos.y) / (width_ - ray_pos.x); // valid because we know the pos to not be 0
-//      float dir_slope = ray_dir.y / ray_dir.x;
-//
-//      if (dir_slope < corner_slope) {
-//        return kEast;
-//      } else {
-//        return kNorth;
-//      }
-//
-//    } else {
-//      //dir.y == 0 not moving up or down
-//      return kEast;
-//    }
-//
-//  } else {
-//    // can only be south or north
-//    if (ray_dir.y < 0) {
-//      // must be south
-//      return kSouth;
-//    }
-//    if (ray_dir.y > 0) {
-//      // must be north
-//      return kNorth;
-//    }
-//  }
-//
-//  throw exceptions::InvalidDirectionException();
 }
 
 float Room::GetRoomWallHitDistance(const Direction& direction,
