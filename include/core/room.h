@@ -193,7 +193,8 @@ public:
    * @param of_portal Whether head if that of portal or room-wall of given direction.
    * @param ray_pos Initial position of the ray.
    * @param ray_dir Direction of the ray.
-   * @return
+   * @return Index of texture that should be loaded.
+   *            Synonymous with distance of intersection from the segment-head.
    */
   float GetWallTextureIndex(const Direction& direction, bool of_portal,
                             const glm::vec2& ray_pos, const glm::vec2& ray_dir) const;

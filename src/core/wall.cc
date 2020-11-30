@@ -44,8 +44,8 @@ Wall::Wall(const glm::vec2& head, const glm::vec2& tail) {
   tail_ = tail;
 }
 
-float Wall::Distance(const glm::vec2& pos, const float angle) const {
-  return Distance(pos, glm::vec2(std::cos(angle), std::sin(angle)));
+float Wall::Distance(const glm::vec2& ray_pos, float dir_angle) const {
+  return Distance(ray_pos, glm::vec2(std::cos(dir_angle), std::sin(dir_angle)));
 }
 
 float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
@@ -77,13 +77,13 @@ float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
 //         find dot f each head-pos and tail-pos
 //         if the two dots of different sign, means that angle must be inside
 //         this will then require orientation check, which can be done by checking if both dot of just direciton vectpr with wall vector is both positve, else wrong direction
-bool Wall::IntersectsWith(const glm::vec2& pos, const float angle) const{
-  return IntersectsWith(pos, glm::vec2(std::cos(angle), std::sin(angle)));
+bool Wall::IntersectsWith(const glm::vec2& ray_pos, float dir_angle) const{
+  return IntersectsWith(ray_pos, glm::vec2(std::cos(dir_angle), std::sin(dir_angle)));
 }
 
-bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
+bool Wall::IntersectsWith(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
 
-  return RayIntersectsWithSegment(head_, tail_, pos, dir);
+  return RayIntersectsWithSegment(head_, tail_, ray_pos, ray_dir);
 
 //  // Trivial Cases
 //  // If position if head or tail itself, will be considered to have intersected with wall as a whole
@@ -173,23 +173,23 @@ bool Wall::IntersectsWith(const glm::vec2& pos, const glm::vec2& dir) const {
 //  }
 }
 
-Hit Wall::GetWallHit(const glm::vec2& pos, const glm::vec2& dir) const {
+Hit Wall::GetWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
 
-  float wall_intersection_distance = Distance(pos, dir);
+  float wall_intersection_distance = Distance(ray_pos, ray_dir);
   if (wall_intersection_distance < 0) {
     return Hit(); // invalid hit
   }
 
   // treating ray now as line, and line now as ray, we can calculate the texture index
-  float texture_index = TextureIndex(pos, dir);
+  float texture_index = TextureIndex(ray_pos, ray_dir);
 
   return Hit(wall_intersection_distance, kWall, texture_index);
 }
 
-float Wall::TextureIndex(const glm::vec2& pos, const glm::vec2& dir) const {
+float Wall::TextureIndex(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
 
   return TextureIndexOnLineOfRay(head_, tail_,
-                                 pos, dir);
+                                 ray_pos, ray_dir);
 
   // if collinear, do not consider direction/parrellel ray adn line
   // just return distance to pos, where true intersecction occurs

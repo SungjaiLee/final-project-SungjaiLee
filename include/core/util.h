@@ -19,8 +19,9 @@ bool FloatApproximation(const glm::vec2& vec_a, const glm::vec2& vec_b, float ep
 bool IsUnitVector(const glm::vec2& vec);
 
 // TODO write javadoc
-//  pure distance, including negative and -1 as not intersecting, from ray at given position to line defined by
+//  pure distance, including negative and infty as not intersecting, from ray at given position to line defined by
 //  two head and tail
+//  Negatvie distance allowed
 //
 float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tail,
                            const glm::vec2& ray_pos, const glm::vec2& ray_dir);
@@ -41,6 +42,8 @@ bool Collinear(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c);
 bool Parallel(const glm::vec2& a, const glm::vec2& b);
 
 // end of Geometric Utilities
+
+// TODO add quicker look-pu trig object
 
 }
 
