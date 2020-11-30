@@ -307,45 +307,25 @@ Direction Room::GetSideHit(const glm::vec2& ray_pos,
 float Room::GetRoomWallHitDistance(const Direction& direction,
                                    const glm::vec2& ray_pos,
                                    const glm::vec2& ray_dir) const {
-  return GetRayToLineDistance(GetHead(direction, false),
-                              GetTail(direction, false),
+  // Out-sourced to general util function. Line is defined by head and tail of wall, on which the ray itself lies on.
+  return GetRayToLineDistance(GetWallHead(direction),
+                              GetWallTail(direction),
                               ray_pos, ray_dir);
 }
 
 bool Room::RayHitsPortal(const Direction& direction,
                          const glm::vec2& ray_pos,
                          const glm::vec2& ray_dir) const {
-
-  // TODO break down into simpler calculation. No need to check for unmet conditions when cases are much more specifed
-  switch (direction) {
-
-    case kNorth:
-      return RayIntersectsWithSegment(glm::vec2(ns_door_begin_, height_),
-                                      glm::vec2(ns_door_begin_ + ns_door_width_, height_),
-                                      ray_pos, ray_dir);
-
-    case kSouth:
-      return RayIntersectsWithSegment(glm::vec2(ns_door_begin_, 0),
-                                      glm::vec2(ns_door_begin_ + ns_door_width_, 0),
-                                      ray_pos, ray_dir);
-
-    case kEast:
-      return RayIntersectsWithSegment(glm::vec2(width_, ew_door_begin_),
-                                      glm::vec2(width_, ew_door_begin_ + ew_door_width_),
-                                      ray_pos, ray_dir);
-
-    case kWest:
-      return RayIntersectsWithSegment(glm::vec2(0, ew_door_begin_),
-                                      glm::vec2(0, ew_door_begin_ + ew_door_width_),
-                                      ray_pos, ray_dir);
-
-    case kUndefined:
-      throw exceptions::InvalidDirectionException();
-  }
+  // Out-source to general util method. Retrieves if ray intersects with the segment defined by portal head and tail.
+  return RayIntersectsWithSegment(GetPortalHead(direction),
+                                  GetPortalTail(direction),
+                                  ray_pos, ray_dir);
 }
 
 float Room::GetWallTextureIndex(const Direction& direction, bool of_portal,
                                 const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
+  // Out-sourced to general util texture-index getter.
+  // Retrieves distance ot intersection from the head of either portal or wall in given direction.
   return TextureIndexOnLineOfRay(GetHead(direction, of_portal),
                                  GetTail(direction, of_portal),
                                  ray_pos,
@@ -375,7 +355,7 @@ Room*& Room::GetLinkedRoomPointer(const Direction& direction) {
 }
 
 Room* Room::GetLinkedRoomPointer(const Direction& direction) const {
-  // This repetition is necessary to allow simple manipulation for both const and non-const context
+  // Returns copy of pointer rather than reference to it.
   switch (direction) {
     case kNorth:
       return north_;
