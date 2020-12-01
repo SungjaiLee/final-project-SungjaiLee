@@ -145,32 +145,32 @@ TEST_CASE("GetRayToLineDistance") {
 TEST_CASE("Collinear") {
   SECTION("Collinear") {
     SECTION("All different points") {
-      REQUIRE(Collinear(glm::vec2(1,2), glm::vec2(2,4), glm::vec2(3,6)));
+      REQUIRE(AreCollinear(glm::vec2(1, 2), glm::vec2(2, 4), glm::vec2(3, 6)));
     }
     SECTION("Two same points") {
       SECTION("a,b") {
-        REQUIRE(Collinear(glm::vec2(1,2), glm::vec2(1,2), glm::vec2(3,6)));
+        REQUIRE(AreCollinear(glm::vec2(1, 2), glm::vec2(1, 2), glm::vec2(3, 6)));
       }
       SECTION("b,c") {
-        REQUIRE(Collinear(glm::vec2(1,2), glm::vec2(2,4), glm::vec2(2,4)));
+        REQUIRE(AreCollinear(glm::vec2(1, 2), glm::vec2(2, 4), glm::vec2(2, 4)));
       }
       SECTION("a,c") {
-        REQUIRE(Collinear(glm::vec2(1,2), glm::vec2(2,4), glm::vec2(1,2)));
+        REQUIRE(AreCollinear(glm::vec2(1, 2), glm::vec2(2, 4), glm::vec2(1, 2)));
       }
     }
     SECTION("All same Points") {
-      REQUIRE(Collinear(glm::vec2(5,2), glm::vec2(5,2), glm::vec2(5,2)));
+      REQUIRE(AreCollinear(glm::vec2(5, 2), glm::vec2(5, 2), glm::vec2(5, 2)));
     }
   }
   SECTION("Not Collinear") {
     SECTION("a out of line") {
-      REQUIRE_FALSE(Collinear(glm::vec2(4,2), glm::vec2(2,4), glm::vec2(3,6)));
+      REQUIRE_FALSE(AreCollinear(glm::vec2(4, 2), glm::vec2(2, 4), glm::vec2(3, 6)));
     }
     SECTION("b ut of line") {
-      REQUIRE_FALSE(Collinear(glm::vec2(1,2), glm::vec2(2,5), glm::vec2(3,6)));
+      REQUIRE_FALSE(AreCollinear(glm::vec2(1, 2), glm::vec2(2, 5), glm::vec2(3, 6)));
     }
     SECTION("c out of line") {
-      REQUIRE_FALSE(Collinear(glm::vec2(1,2), glm::vec2(2,4), glm::vec2(9,6)));
+      REQUIRE_FALSE(AreCollinear(glm::vec2(1, 2), glm::vec2(2, 4), glm::vec2(9, 6)));
     }
   }
 }

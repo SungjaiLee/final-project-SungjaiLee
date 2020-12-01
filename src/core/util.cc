@@ -6,7 +6,7 @@
 
 namespace room_explorer {
 
-// Numeric Utilities ===================================================================================
+// Numeric Utilities ===================================================================================================
 bool FloatApproximation(float a, float b, float epsilon) {
   float diff = std::abs(a - b);
   // If either is zero, ratio-comparison is invalid. Resort to regular epsilon-Approximation
@@ -21,8 +21,8 @@ bool FloatApproximation(float a, float b, float epsilon) {
   // Weak Approximation.
   //  If either if relatively small enough, passes the approximation.
   // To avoid using equality, which is at this context invalid, use strict inequality
-  if (  diff / std::abs(a) > epsilon
-    &&  diff / std::abs(b) > epsilon) {
+  if (diff / std::abs(a) > epsilon &&
+      diff / std::abs(b) > epsilon) {
     return false; // If both relative difference is too large, two are not approximate
   }
   return true;
@@ -30,36 +30,41 @@ bool FloatApproximation(float a, float b, float epsilon) {
 
 bool FloatApproximation(const glm::vec2& vec_a, const glm::vec2& vec_b, float epsilon) {
   // Vectors are equal if both components are equal
-  return FloatApproximation(vec_a.x, vec_b.x, epsilon)
-         && FloatApproximation(vec_a.y, vec_b.y, epsilon);
+  return FloatApproximation(vec_a.x, vec_b.x, epsilon) &&
+         FloatApproximation(vec_a.y, vec_b.y, epsilon);
 }
+// end of Numeric Utilities ============================================================================================
 
-// end of Numeric Utilities
 
-
-// Geometric Utilities ======================================================================================
-
+// Geometric Utilities =================================================================================================
 bool IsUnitVector(const glm::vec2& vec) {
+  // Dot with self yields distance squared, which, in case of unit vector, should remain 1.
   return FloatApproximation(vec.x * vec.x + vec.y * vec.y, 1);
 }
 
+bool AreCollinear(const glm::vec2& point_a, const glm::vec2& point_b, const glm::vec2& point_c) {
+  // Collinearity is implied by 2 vectors being parallel.
+  //  This also satisfies co-point condition.
+  return AreParallel(point_a - point_b, point_c - point_b);
+}
+
+bool AreParallel(const glm::vec2& vec_a, const glm::vec2& vec_b) {
+  // Vectors are parallel if dot of one with the normal of other is zero.
+  //  Also satisfies zero-vector condition.
+  return FloatApproximation(glm::dot(vec_a, glm::vec2(vec_b.y, -vec_b.x)), 0);
+}
+
+
 float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tail,
                            const glm::vec2& ray_pos, const glm::vec2& ray_dir) {
-
-  // If position already is on head or tail, can by-pass further calculation.
-  if (FloatApproximation(line_head, ray_pos)) {
+  // If position already is on head or tail, trivially 0 distance
+  if (FloatApproximation(line_head, ray_pos) ||
+      FloatApproximation(line_tail, ray_pos)) {
     return 0;
   }
-  if (FloatApproximation(line_tail, ray_pos)) {
-    return 0;
-  }
-
-  // Single Point.
+  // Single Point. Assume line passes through ray-pos.
   if (FloatApproximation(line_head, line_tail)) {
-    // Single point does not have valid line-representation.
-    //  If ray not at the point, will assume that line which passes this point and the ray-pos is a valid assumption.
-    //  Thus pure distance to point is a valid length.
-    return glm::length(line_head - ray_pos);
+    return 0;
   }
 
   /* Utilize polar-coordinate representation of linear graph to calculate distance.
@@ -68,7 +73,7 @@ float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tai
    */
 
   // (H - T)
-  glm::vec2 diff = line_head - line_tail;
+  glm::vec2 diff = line_head - line_tail; // Not zero-vector. Such case is already caught in pre-processing.
 
   // <sin(θ), -cos(θ)>
   glm::vec2 normal_dir(ray_dir.y, -ray_dir.x);
@@ -82,7 +87,7 @@ float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tai
 
   float r = glm::dot(diff, ref);
   // If (H - T)•<H.y - P.y, P.x - H.x> is zero, regardless of denominator distance will be zero
-  //  This also handles in-line case, where denominator==0 test will fail
+  //  This also handles in-line case, where denominator == 0 test will fail
   if(FloatApproximation(r, 0)) {
     return 0;
   }
@@ -106,22 +111,27 @@ bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& se
     return true;
   }
 
+  //TODO calculation based on flowchart I created. Post will be up on my math blog later,
+  // but current implementation is purely based on the dot-product representation,
+  // which has valid geometric interpretation, but such are not yet implemented in this version
+  //TODO make this more readable
+
   // Calculation is based on relative position to head and tail from the position of ray-head
   glm::vec2 head = segment_head - ray_pos;
   glm::vec2 tail = segment_tail - ray_pos;
 
-  // complementarty normals
+  // Complementary normals
   glm::vec2 tail_c(tail.y, -tail.x);
 
   float a = glm::dot(head, tail_c);
   if (FloatApproximation(a, 0)) {
     // head and tail are collinear
 
-
     if (glm::dot(head, tail) < 0) {
       // theta is pi, meaning pos is between the head and tail
       // definitely intersects
       return true;
+
     } else {
       // theta is 0
       // head and tail are collinear with the pos, or worse a point wall
@@ -129,15 +139,15 @@ bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& se
 
       if (FloatApproximation(glm::dot(head, dir_c), 0)) {
         if (glm::dot(head, ray_dir) > 0) {
-          // direction is 0
+          // direction is 0 rad
           return true;
         } else {
-          // direction is pi
+          // direction is pi rad
           //  wrong direction
           return false;
         }
       } else {
-        // direction not 0 or pi
+        // direction not 0 or pi rad
         // not facing either of correct orrientaiotn
         return false;
       }
@@ -146,107 +156,78 @@ bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& se
   } else {
     glm::vec2 dir_c(ray_dir.y, -ray_dir.x);
     float b = glm::dot(head, dir_c);
-    // not colinear, either in I, II quad or III, IV quad
+    // not collinear, either in I, II quad or III, IV quad
     if (a > 0) {
-      // theta in (0, pi)
+      // theta in (0, pi) rad
       if (b > 0 || FloatApproximation(b, 0)) {
-        // dir in [0, pi]
+        // dir in [0, pi] rad
 
         float c = glm::dot(tail, dir_c);
         if (c < 0 || FloatApproximation(c, 0)) {
-          // dir <= theat
-          // dir in [0, theta]
+          // dir <= theat rad
+          // dir in [0, theta] rad
           return true;
         } else {
           return false;
         }
 
       } else {
-        // dir in (pi, 2pi)
+        // dir in (pi, 2pi) rad
         return false;
       }
     } else {
-      // theta in (pi, 2pi)
+      // theta in (pi, 2pi) rad
 
       if (b < 0 || FloatApproximation(b, 0)) {
-        // dir in [pi, 2pi]
+        // dir in [pi, 2pi] rad
         float c = glm::dot(tail, dir_c);
 
         if (c > 0 || FloatApproximation(c, 0)) {
-          // dir >= theta
-          // dir in [theta, 2pi]
+          // dir >= theta rad
+          // dir in [theta, 2pi] rad
           return true;
         } else {
           return false;
         }
 
       } else {
-        // dir in (0, pi)
+        // dir in (0, pi) rad
         return false;
       }
     }
   }
 }
 
-float GetTheta(const glm::vec2& vec) {
-  //TODO need be funiction
-  float theta = std::atan2(vec.y, vec.x); //
-  if (theta < 0) {
-    theta = 2 * M_PI + theta;
-  }
-  return theta;
-}
 
-bool Collinear(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c) {
-  // if two are same, always colinear
-  return FloatApproximation(glm::dot(a - b, glm::vec2(b.y - c.y, c.x - b.x)), 0);
-}
-
-bool Parallel(const glm::vec2& a, const glm::vec2& b) {
-  //!ZERO VECTOR ARE PARALLEL WITH EVERY VECTOR
-  return FloatApproximation(glm::dot(a, glm::vec2(b.y, -b.x)), 0);
-}
-
-
-// Render Geometry related Methods =======
 float TextureIndexOnLineOfRay(const glm::vec2& line_head, const glm::vec2& line_tail,
                               const glm::vec2& ray_pos, const glm::vec2& ray_dir) {
+  // If ray and segment are parallel, texture can be computed in a more efficient way
+  if (AreParallel(ray_dir, line_head - line_tail)) {
+    // Only when also collinear when parallel, texture index will be finite
+    if (AreCollinear(ray_pos, line_head, line_tail)) {
 
-  //!ADD TO JAVADOC, does nto consider for ray true intersection
-  //  Assume that if the ray did intersect, what texture index will it show?
-  //  !!NO INifnity
-  //   negative does not matter
-
-  if (Parallel(ray_dir, line_head - line_tail)) { // zero vector is included
-    // if the direction is parrel, there are few unique cases
-    if (Collinear(ray_pos, line_head, line_tail)) {
-      // if the pos, head, and tail are colinear, this means that the ray will indeed hit the line
-      //! this also includes the case when line and head are equal
-
-      // If the direction is pointing towards the head, then the disnact should be 0
+      // Ray can now either point towards the head, in which case is guaranteed to intersect with head
       if (glm::dot(ray_dir, line_head - ray_pos) > 0) {
         return 0;
       }
-      // otherwise, the disatnce should be pure distance from head to pos, because ray will only interesrct at that distance
+      // Or point way from head, in which case index should simply be distance to the head
       return glm::length(ray_pos - line_head);
 
     } else {
-      // the ray will not hit the line
+      // If not collinear, will ray never intersects with segment, and so index also is infinite.
       return std::numeric_limits<float>::infinity();
     }
   }
 
-  // if the ray didnt intersect with line anyway, the index should be infinite
-//  if (!RayIntersectsWithSegment(line_head, line_tail, ray_pos, ray_dir)) {
-//    return std::numeric_limits<float>::infinity();
-//  }
+  // Ignore true intersection case. Negative intersection is also valid
 
-  // Treaing line as ray and ray as line will handle most cases, except for when ray and line are in line and they are parrlel
+  // Texture in any other regular cases are simply distance of head to ray.
+  //  This can be accomplished easily by treating segment now as ray and ray as line and outsourcing to util method.
   return GetRayToLineDistance(ray_pos, ray_pos + ray_dir,
                               line_head, line_tail - line_head);
 }
 
-// end of Geometric Utilities
+// end of Geometric Utilities ==========================================================================================
 
 
 } // namespace room_explorer

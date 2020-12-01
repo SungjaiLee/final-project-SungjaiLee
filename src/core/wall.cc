@@ -66,7 +66,7 @@ float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
   if (IntersectsWith(pos, dir)) {
     // If the ray begins at collinear point to the wall,
     // the distance or ray to segment behaves differently to distance of ray to line.
-    if (Collinear(pos, head_, tail_)) {
+    if (AreCollinear(pos, head_, tail_)) {
       // If ray-pos is collinear, ray will either be in-between the two end-points, in which case distance is 0
       //  or bet outside of the segment, in which case distance to the closer of head/tail is the distance
       //    In the second case, it is certain that ray must hit the head or tail, directly
