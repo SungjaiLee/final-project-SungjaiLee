@@ -16,6 +16,10 @@ using json = nlohmann::json;
 
 namespace room_explorer {
 
+/**
+ * Wall consists of a segment, defined by two end points.
+ *      Wall handles geometric interactions with a ray and can return hit-summary from a given ray.
+ */
 class Wall : std::string {
 private:
   glm::vec2 head_;
