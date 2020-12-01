@@ -8,12 +8,8 @@ namespace room_explorer {
 
 // Load Wall from JSON =====================================================
 void from_json(const json& json, Wall& wall) {
-  float h_x = json.at("head_x");
-  float h_y = json.at("head_y");
-  float t_x = json.at("tail_x");
-  float t_y = json.at("tail_y");
-  wall.head_ = glm::vec2(h_x, h_y);
-  wall.tail_ = glm::vec2(t_x, t_y);
+  wall.head_ = glm::vec2(json.at("head_x"), json.at("head_y"));
+  wall.tail_ = glm::vec2(json.at("tail_x"), json.at("tail_y"));
 }
 // End of Load Wall from JSON ==============================================
 
@@ -52,7 +48,8 @@ bool Wall::operator==(const Wall& wall) const {
 
 // Geometric Functions =====================================================
 bool Wall::IntersectsWith(const glm::vec2& ray_pos, float dir_angle) const{
-  return IntersectsWith(ray_pos, glm::vec2(std::cos(dir_angle), std::sin(dir_angle)));
+  return IntersectsWith(ray_pos, /*vec2*/{std::cos(dir_angle), std::sin(dir_angle)});
+  //! Used Braced parameter. Not certain of its implications. Supposed to be more modern.
 }
 
 bool Wall::IntersectsWith(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
@@ -61,7 +58,8 @@ bool Wall::IntersectsWith(const glm::vec2& ray_pos, const glm::vec2& ray_dir) co
 
 float Wall::Distance(const glm::vec2& ray_pos, float dir_angle) const {
   // Handle in vector-form.
-  return Distance(ray_pos, glm::vec2(std::cos(dir_angle), std::sin(dir_angle)));
+  return Distance(ray_pos, /*vec2*/{std::cos(dir_angle), std::sin(dir_angle)});
+  //! Used Braced parameter. Not certain of its implications. Supposed to be more modern.
 }
 
 float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
