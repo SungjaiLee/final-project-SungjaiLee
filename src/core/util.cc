@@ -101,8 +101,8 @@ bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& se
                               const glm::vec2& ray_pos, const glm::vec2& ray_dir) {
   // Trivial Cases
   // If position if head or tail itself, will be considered to have intersected with wall as a whole
-  if (FloatApproximation(segment_head, ray_pos)
-      || FloatApproximation(segment_tail, ray_pos)) {
+  if (FloatApproximation(segment_head, ray_pos) ||
+      FloatApproximation(segment_tail, ray_pos)) {
     return true;
   }
 

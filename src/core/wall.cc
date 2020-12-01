@@ -6,6 +6,7 @@
 
 namespace room_explorer {
 
+// Load Wall from JSON =====================================================
 void from_json(const json& json, Wall& wall) {
   float h_x = json.at("head_x");
   float h_y = json.at("head_y");
@@ -14,7 +15,18 @@ void from_json(const json& json, Wall& wall) {
   wall.head_ = glm::vec2(h_x, h_y);
   wall.tail_ = glm::vec2(t_x, t_y);
 }
+// End of Load Wall from JSON ==============================================
 
+
+// Wall Methods ========================================================================================================
+
+// Constructors ============================================================
+Wall::Wall(const glm::vec2& head, const glm::vec2& tail)
+    : head_(head), tail_(tail) {}
+// End of Constructors =====================================================
+
+
+// Getter ==================================================================
 const glm::vec2 &Wall::GetHead() const {
   return head_;
 }
@@ -22,197 +34,88 @@ const glm::vec2 &Wall::GetHead() const {
 const glm::vec2 &Wall::GetTail() const {
   return tail_;
 }
+// End fo Getters ==========================================================
 
+
+// Comparison Overload =====================================================
 bool Wall::operator<(const Wall& wall) const {
-  //!! doesn't matter what it is actually comparing, just need a valid comparision for them to work in a set
+  // TODO compare using actual geometric property
   return this < &wall;
-
-  //First check by actual wall length,
-  //then check by head length,
-  //then by tail
-
-  //TODO find some clever maths
 }
 
 bool Wall::operator==(const Wall& wall) const {
   // True if and only if both head and tail is equal
   return head_ == wall.head_ && tail_ == wall.tail_;
 }
-
-Wall::Wall(const glm::vec2& head, const glm::vec2& tail) {
-  head_ = head;
-  tail_ = tail;
-}
-
-float Wall::Distance(const glm::vec2& ray_pos, float dir_angle) const {
-  return Distance(ray_pos, glm::vec2(std::cos(dir_angle), std::sin(dir_angle)));
-}
-
-float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
-  if (IntersectsWith(pos, dir)) {
-
-    if (Collinear(pos, head_, tail_)) {
-      //in-line. Pure distance will give 0, whereas a segment needs to yield distance to head or tail
-      // Intserection assumes that direction is in correct orientation
-      // return the closer of the two
-
-      // need to be sure that position is outside of the wall segment
-      if (glm::dot(head_ - pos, tail_ - pos) > 0) {
-        return std::min(glm::length(head_ - pos), glm::length(tail_ - pos));
-      } else {
-        return 0;
-      }
-    }
-
-    return GetRayToLineDistance(head_, tail_, pos, dir);
-
-  } else {
-    return -1;
-  }
-}
+// End of Comparison Overload ==============================================
 
 
-// Todo, convert to normal vector dot product computation instead
-//  TODO:: normal computation, find normal of the direction vector
-//         find dot f each head-pos and tail-pos
-//         if the two dots of different sign, means that angle must be inside
-//         this will then require orientation check, which can be done by checking if both dot of just direciton vectpr with wall vector is both positve, else wrong direction
+// Geometric Functions =====================================================
 bool Wall::IntersectsWith(const glm::vec2& ray_pos, float dir_angle) const{
   return IntersectsWith(ray_pos, glm::vec2(std::cos(dir_angle), std::sin(dir_angle)));
 }
 
 bool Wall::IntersectsWith(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
-
   return RayIntersectsWithSegment(head_, tail_, ray_pos, ray_dir);
-
-//  // Trivial Cases
-//  // If position if head or tail itself, will be considered to have intersected with wall as a whole
-//  if (head_ == pos || tail_ == pos) {
-//    return true;
-//  }
-//
-//  // Calculation is based on relative position to head and tail from the position of ray-head
-//  glm::vec2 head = head_ - pos;
-//  glm::vec2 tail = tail_ - pos;
-//
-//  // complementarty normals
-//  glm::vec2 tail_c(tail.y, -tail.x);
-//
-//  float a = glm::dot(head, tail_c);
-//  if (FloatApproximation(a, 0)) {
-//    // head and tail are collinear
-//
-//
-//    if (glm::dot(head, tail) < 0) {
-//      // theta is pi, meaning pos is between the head and tail
-//      // definitely intersects
-//      return true;
-//    } else {
-//      // theta is 0
-//      // head and tail are collinear with the pos, or worse a point wall
-//      glm::vec2 dir_c(dir.y, -dir.x);
-//
-//      if (FloatApproximation(glm::dot(head, dir_c), 0)) {
-//        if (glm::dot(head, dir) > 0) {
-//          // direction is 0
-//          return true;
-//        } else {
-//          // direction is pi
-//          //  wrong direction
-//          return false;
-//        }
-//      } else {
-//        // direction not 0 or pi
-//        // not facing either of correct orrientaiotn
-//        return false;
-//      }
-//    }
-//
-//  } else {
-//    glm::vec2 dir_c(dir.y, -dir.x);
-//    float b = glm::dot(head, dir_c);
-//    // not colinear, either in I, II quad or III, IV quad
-//    if (a > 0) {
-//      // theta in (0, pi)
-//      if (b > 0 || FloatApproximation(b, 0)) {
-//        // dir in [0, pi]
-//
-//        float c = glm::dot(tail, dir_c);
-//        if (c < 0 || FloatApproximation(c, 0)) {
-//          // dir <= theat
-//          // dir in [0, theta]
-//          return true;
-//        } else {
-//          return false;
-//        }
-//
-//      } else {
-//        // dir in (pi, 2pi)
-//        return false;
-//      }
-//    } else {
-//      // theta in (pi, 2pi)
-//
-//      if (b < 0 || FloatApproximation(b, 0)) {
-//        // dir in [pi, 2pi]
-//        float c = glm::dot(tail, dir_c);
-//
-//        if (c > 0 || FloatApproximation(c, 0)) {
-//          // dir >= theta
-//          // dir in [theta, 2pi]
-//          return true;
-//        } else {
-//          return false;
-//        }
-//
-//      } else {
-//        // dir in (0, pi)
-//        return false;
-//      }
-//    }
-//  }
 }
 
-Hit Wall::GetWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
+float Wall::Distance(const glm::vec2& ray_pos, float dir_angle) const {
+  // Handle in vector-form.
+  return Distance(ray_pos, glm::vec2(std::cos(dir_angle), std::sin(dir_angle)));
+}
 
-  float wall_intersection_distance = Distance(ray_pos, ray_dir);
-  if (wall_intersection_distance < 0) {
-    return Hit(); // invalid hit
+float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
+  if (IntersectsWith(pos, dir)) {
+    // If the ray begins at collinear point to the wall,
+    // the distance or ray to segment behaves differently to distance of ray to line.
+    if (Collinear(pos, head_, tail_)) {
+      // If ray-pos is collinear, ray will either be in-between the two end-points, in which case distance is 0
+      //  or bet outside of the segment, in which case distance to the closer of head/tail is the distance
+      //    In the second case, it is certain that ray must hit the head or tail, directly
+      //    because it is already confirmed to intersect.
+
+      // Ray can be confirmed to be outside of segment, if direction from ray to head and ray to tail is equal
+      //  If ray was within the segment, the direction must be opposite, and thus their dot product positive or zero.
+      if (glm::dot(head_ - pos, tail_ - pos) > 0) {
+        return std::min(glm::length(head_ - pos),
+                        glm::length(tail_ - pos));
+      } else {
+        return 0;
+      }
+    }
+
+    // Certainty of intersection ensures that the returned value must be positive number
+    return GetRayToLineDistance(head_, tail_, pos, dir);
+  } else {
+    // If does not intersect, default to -1.
+    return -1;
   }
-
-  // treating ray now as line, and line now as ray, we can calculate the texture index
-  float texture_index = TextureIndex(ray_pos, ray_dir);
-
-  return Hit(wall_intersection_distance, kWall, texture_index);
 }
 
 float Wall::TextureIndex(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
-
+  // Outsourced to util method. Handles collinear collisions internally.
   return TextureIndexOnLineOfRay(head_, tail_,
                                  ray_pos, ray_dir);
-
-  // if collinear, do not consider direction/parrellel ray adn line
-  // just return distance to pos, where true intersecction occurs
-  // must check if parrelel, if it is, then only valid texture distance is if also collinear and distancr to head
-
-
-  //!This shouyld also handle on-wall case
-//  if (Parallel(dir, head_ - tail_)) {
-//    if (Collinear(pos, head_, tail_)) {
-//        // If ray is already set to intsersect with the wall, the distance of head to ray is 0
-//        if (glm::dot(dir, head_ - pos) > 0) {
-//          return 0;
-//        }
-//
-//      // this suggests that ray is pointing away from the head, meaning that the distance must be actual ray-head distance
-//      return glm::length(pos - head_);
-//    }
-//  }
-//
-//
-//  return GetRayToLineDistance(pos, pos + dir, head_, tail_ - head_);
 }
 
-// static unit methods =================================================
+
+// Hit Summaries ===================================================
+Hit Wall::GetWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
+  // Intersection deduced from Distance. Distance will return -1 if not intersected.
+  float wall_intersection_distance = Distance(ray_pos, ray_dir);
+  if (wall_intersection_distance == -1) {
+    return {}; // Return invalid hit.
+  }
+
+  float texture_index = TextureIndex(ray_pos, ray_dir);
+  return {wall_intersection_distance, kWall, texture_index};
+  //! Clang-tidy endorsed bracket initializer list rather than explicit instantiation. Apparently more modern?
+}
+// End of Hit Summaries ============================================
+
+// End of Geometric Functions ==============================================
+
+
+// End of Wall Methods =================================================================================================
 
 } // namespace room_explorer

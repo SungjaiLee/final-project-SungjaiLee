@@ -52,8 +52,8 @@ public:
 
   /**
    * Distance the ray must travel to intersect with the wall-segment.
-   *    Negative distance possible.
-   *    Post-processing required.
+   *    If ray does not intersect with the wall, returns -1. This information can be used to deduce intersection.
+   *    Valid intersection, thus, must result in positive or zero distance.
    * @param ray_pos Initial position of the ray.
    * @param dir_angle Direction in standard polar coordinate of rht ray.
    * @return Pure distance, including negative and infinity, that ray must travel to intersect with the wall.
@@ -61,8 +61,8 @@ public:
   float Distance(const glm::vec2& ray_pos, float dir_angle) const;
   /**
    * Distance the ray must travel to intersect with the wall-segment.
-   *    Negative distance possible.
-   *    Post-processing required.
+   *    If ray does not intersect with the wall, returns -1. This information can be used to deduce intersection.
+   *    Valid intersection, thus, must result in positive or zero distance.
    * @param ray_pos Initial position of the ray.
    * @param ray_dir Vector direction of the ray.
    *                No need to be normalized.
