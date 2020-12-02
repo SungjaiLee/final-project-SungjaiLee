@@ -456,6 +456,21 @@ glm::vec2 Room::GetWallTail(Direction dir) const {
       throw exceptions::InvalidDirectionException();
   }
 }
+
+Hit Room::GetRoomWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
+  try {
+    // If invalid direction, will throw
+    Direction direction{GetSideHit(ray_pos, ray_dir)};
+    bool is_portal{RayHitsPortal(direction, ray_pos, ray_dir)};
+
+    return {GetRoomWallHitDistance(direction, ray_pos, ray_dir),
+            is_portal ? kPortal : kRoomWall,
+            GetWallTextureIndex(direction, is_portal, ray_pos, ray_dir)};
+  } catch (const exceptions::InvalidDirectionException& e) {
+    return {}; // Return invalid hit package
+  }
+}
+
 // end of private geometric functions ===========================================================
 
 // End of Private Room Functions =======================================================================================
