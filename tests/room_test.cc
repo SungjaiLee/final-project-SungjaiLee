@@ -904,7 +904,7 @@ TEST_CASE("Room Primary Hit") {
       SECTION("On This Wall") {
         SECTION("Inclusive") {
           SECTION("Portal") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(399, 200), glm::vec2(0, -1));
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(399, 200), glm::vec2(0, -1));
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -914,7 +914,7 @@ TEST_CASE("Room Primary Hit") {
           }
 
           SECTION("Wall") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(499, 200), glm::vec2(0, 1));
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(499, 200), glm::vec2(0, 1));
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -925,7 +925,7 @@ TEST_CASE("Room Primary Hit") {
         }
         SECTION("Exclusive") {
           SECTION("Portal") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(399, 200), glm::vec2(1, 0), false);
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(399, 200), glm::vec2(1, 0), false);
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -935,7 +935,7 @@ TEST_CASE("Room Primary Hit") {
           }
 
           SECTION("Wall") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(499, 200), glm::vec2(1, 0), false);
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(499, 200), glm::vec2(1, 0), false);
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -948,7 +948,7 @@ TEST_CASE("Room Primary Hit") {
         // Needs to be exclusive
       SECTION("On Other Wall") {
         SECTION("Wall") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(499, 0), glm::vec2(0, 1), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(499, 0), glm::vec2(0, 1), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -958,7 +958,7 @@ TEST_CASE("Room Primary Hit") {
         }
 
         SECTION("Portal") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(399, 0), glm::vec2(0, 1), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(399, 0), glm::vec2(0, 1), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -969,7 +969,7 @@ TEST_CASE("Room Primary Hit") {
       }
       SECTION("From Room") {
         SECTION("Wall") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(499, 199), glm::vec2(0, 1), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(499, 199), glm::vec2(0, 1), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -978,7 +978,7 @@ TEST_CASE("Room Primary Hit") {
           REQUIRE(hit.texture_index_ == 1);
         }
         SECTION("Portal") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(399, 199), glm::vec2(0, 1), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(399, 199), glm::vec2(0, 1), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -992,7 +992,7 @@ TEST_CASE("Room Primary Hit") {
       SECTION("On This Wall") {
         SECTION("Inclusive") {
           SECTION("Portal") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(101, 0), glm::vec2(0, -1));
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(101, 0), glm::vec2(0, -1));
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1002,7 +1002,7 @@ TEST_CASE("Room Primary Hit") {
           }
 
           SECTION("Wall") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(1, 0), glm::vec2(0, 1));
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(1, 0), glm::vec2(0, 1));
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1013,7 +1013,7 @@ TEST_CASE("Room Primary Hit") {
         }
         SECTION("Exclusive") {
           SECTION("Portal") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(101, 0), glm::vec2(-1, 0), false);
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(101, 0), glm::vec2(-1, 0), false);
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1023,7 +1023,7 @@ TEST_CASE("Room Primary Hit") {
           }
 
           SECTION("Wall") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(1, 0), glm::vec2( -1, 0), false);
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(1, 0), glm::vec2(-1, 0), false);
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1036,7 +1036,7 @@ TEST_CASE("Room Primary Hit") {
         // Needs to be exclusive
       SECTION("On Other Wall") {
         SECTION("Wall") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(1, 200), glm::vec2(0, -1), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(1, 200), glm::vec2(0, -1), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1046,7 +1046,7 @@ TEST_CASE("Room Primary Hit") {
         }
 
         SECTION("Portal") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(101, 200), glm::vec2(0, -1), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(101, 200), glm::vec2(0, -1), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1057,7 +1057,7 @@ TEST_CASE("Room Primary Hit") {
       }
       SECTION("From Room") {
         SECTION("Wall") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(1, 1), glm::vec2(0, -1), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(1, 1), glm::vec2(0, -1), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1066,7 +1066,7 @@ TEST_CASE("Room Primary Hit") {
           REQUIRE(hit.texture_index_ == 1);
         }
         SECTION("Portal") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(101, 1), glm::vec2(0, -1), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(101, 1), glm::vec2(0, -1), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1080,7 +1080,7 @@ TEST_CASE("Room Primary Hit") {
       SECTION("On This Wall") {
         SECTION("Inclusive") {
           SECTION("Portal") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(500, 51), glm::vec2(1, 0));
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(500, 51), glm::vec2(1, 0));
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1090,7 +1090,7 @@ TEST_CASE("Room Primary Hit") {
           }
 
           SECTION("Wall") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(500, 1), glm::vec2(1, 0));
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(500, 1), glm::vec2(1, 0));
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1101,7 +1101,7 @@ TEST_CASE("Room Primary Hit") {
         }
         SECTION("Exclusive") {
           SECTION("Portal") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(500, 51), glm::vec2(0, -1), false);
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(500, 51), glm::vec2(0, -1), false);
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1111,7 +1111,7 @@ TEST_CASE("Room Primary Hit") {
           }
 
           SECTION("Wall") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(500, 1), glm::vec2( 0, -1), false);
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(500, 1), glm::vec2(0, -1), false);
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1124,7 +1124,7 @@ TEST_CASE("Room Primary Hit") {
         // Needs to be exclusive
       SECTION("On Other Wall") {
         SECTION("Wall") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(0, 1), glm::vec2(1, 0), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(0, 1), glm::vec2(1, 0), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1134,7 +1134,7 @@ TEST_CASE("Room Primary Hit") {
         }
 
         SECTION("Portal") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(0, 51), glm::vec2(1, 0), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(0, 51), glm::vec2(1, 0), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1145,7 +1145,7 @@ TEST_CASE("Room Primary Hit") {
       }
       SECTION("From Room") {
         SECTION("PORTAL") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(499, 51), glm::vec2(1, 0), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(499, 51), glm::vec2(1, 0), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1154,7 +1154,7 @@ TEST_CASE("Room Primary Hit") {
           REQUIRE(hit.texture_index_ == 1);
         }
         SECTION("WALL") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(499, 1), glm::vec2(1, 0), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(499, 1), glm::vec2(1, 0), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1168,7 +1168,7 @@ TEST_CASE("Room Primary Hit") {
       SECTION("On This Wall") {
         SECTION("Inclusive") {
           SECTION("Portal") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(0, 149), glm::vec2(1, 0));
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(0, 149), glm::vec2(1, 0));
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1178,7 +1178,7 @@ TEST_CASE("Room Primary Hit") {
           }
 
           SECTION("Wall") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(0, 199), glm::vec2(1, 0));
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(0, 199), glm::vec2(1, 0));
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1189,7 +1189,7 @@ TEST_CASE("Room Primary Hit") {
         }
         SECTION("Exclusive") {
           SECTION("Portal") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(0, 149), glm::vec2(0, 1), false);
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(0, 149), glm::vec2(0, 1), false);
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1199,7 +1199,7 @@ TEST_CASE("Room Primary Hit") {
           }
 
           SECTION("Wall") {
-            Hit hit = room.GetRoomWallHit(glm::vec2(0, 199), glm::vec2( 0, 1), false);
+            Hit hit = room.GetPrimaryWallHit(glm::vec2(0, 199), glm::vec2(0, 1), false);
 
             REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1212,7 +1212,7 @@ TEST_CASE("Room Primary Hit") {
         // Needs to be exclusive
       SECTION("On Other Wall") {
         SECTION("Wall") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(500, 199), glm::vec2(-1, 0), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(500, 199), glm::vec2(-1, 0), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1222,7 +1222,7 @@ TEST_CASE("Room Primary Hit") {
         }
 
         SECTION("Portal") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(500, 149), glm::vec2(-1, 0), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(500, 149), glm::vec2(-1, 0), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1233,7 +1233,7 @@ TEST_CASE("Room Primary Hit") {
       }
       SECTION("From Room") {
         SECTION("PORTAL") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(1, 149), glm::vec2(-1, 0), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(1, 149), glm::vec2(-1, 0), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1242,7 +1242,7 @@ TEST_CASE("Room Primary Hit") {
           REQUIRE(hit.texture_index_ == 1);
         }
         SECTION("WALL") {
-          Hit hit = room.GetRoomWallHit(glm::vec2(1, 199), glm::vec2(-1, 0), false);
+          Hit hit = room.GetPrimaryWallHit(glm::vec2(1, 199), glm::vec2(-1, 0), false);
 
           REQUIRE_FALSE(hit.IsNoHit());
 
@@ -1254,7 +1254,15 @@ TEST_CASE("Room Primary Hit") {
     }
   }
   SECTION("Invalid") {
-    Hit hit = room.GetRoomWallHit(glm::vec2(-1, 0), glm::vec2(1,0));
+    Hit hit = room.GetPrimaryWallHit(glm::vec2(-1, 0), glm::vec2(1, 0));
     REQUIRE(hit.IsNoHit());
   }
+}
+
+TEST_CASE("Single Room HitPackage") {
+
+}
+
+TEST_CASE("Connected Room HitPackage") {
+
 }

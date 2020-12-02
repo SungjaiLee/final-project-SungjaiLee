@@ -87,7 +87,7 @@ Room* RoomFactory::GenerateRoom(const std::string &id) const {
 
   //TODO should walls be only reference? copying might take up too much storage
   std::copy( room_temp.walls_.begin(), room_temp.walls_.end(),
-             std::inserter(room->walls, room->walls.begin()) );
+             std::inserter(room->walls_, room->walls_.begin()) );
 
   return room;
 }

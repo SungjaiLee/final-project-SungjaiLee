@@ -60,7 +60,7 @@ private:
   float ns_door_begin_;
   float ew_door_begin_;
 
-  std::set<Wall> walls;
+  std::set<Wall> walls_;
 
 public:
   // Public Room Member Functions ===============================================
@@ -199,7 +199,7 @@ public:
   float GetWallTextureIndex(const Direction& direction, bool of_portal,
                             const glm::vec2& ray_pos, const glm::vec2& ray_dir) const;
 
-  Hit GetRoomWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool wall_inclusive = true) const;
+  Hit GetPrimaryWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool wall_inclusive = true) const;
 
   /**
    * Retrieves HitPackage of all the walls and portal/room-wall in the path of the ray.
@@ -210,6 +210,16 @@ public:
    *            Will include the package of the adjacent room if appropriate.
    */
   HitPackage GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir);
+
+  /**
+   * Package of all the Hits, including all walls and cardinal wall.
+   * Contain only up until the given range
+   * @param ray_pos
+   * @param ray_dir
+   * @param visible_range
+   * @return
+   */
+  HitPackage CurrentRoomPackage(const glm::vec2 ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive) const;
 
   // End of Room-Geometry Functions ==============
 
@@ -301,7 +311,7 @@ private:
    * @param strictly_within_height If the position is strictly between north and south walls.
    * @param width_edge If the pos is on west or east wall.
    * @param height_edge If the pos is on north or south wall.
-   * @return If the positoin is non-strictly between the walls.
+   * @return If the position is non-strictly between the walls.
    */
   bool WithinRoom(bool strictly_within_width, bool strictly_within_height,
                   bool width_edge, bool height_edge) const;

@@ -20,5 +20,22 @@ Hit::Hit(float hit_distance, HitType hit_type, float texture_index) {
   texture_index_ = texture_index;
 }
 
+bool Hit::operator==(Hit hit) const {
+  if (hit_type_ != hit.hit_type_) {
+    return false;
+  }
+  if (!FloatApproximation(hit_distance_, hit.hit_distance_)) {
+    return false;
+  }
+  if (!FloatApproximation(texture_index_, hit.texture_index_)) {
+    return false;
+  }
+  return true;
+}
+
+bool Hit::operator!=(Hit hit) const {
+  return !(*this == hit);
+}
+
 
 } //namespace room_explorer

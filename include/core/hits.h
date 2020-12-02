@@ -5,6 +5,8 @@
 #ifndef NONEUCLIDEAN_RAY_CASTER_HITS_H
 #define NONEUCLIDEAN_RAY_CASTER_HITS_H
 
+#include <core/util.h>
+
 #include <cinder/gl/gl.h>
 
 /**
@@ -47,11 +49,20 @@ struct Hit {
   bool IsNoHit() const; // if invalid, ignore this hit
 
   void IncrementDistance();
+
+  bool WithinDistance(float max_distance) const;
+
+  bool operator== (Hit hit) const;
+  bool operator!= (Hit hit) const;
 };
 
 class HitPackage {
 
   std::map<float, Hit> hits_;
+public:
+  size_t HitCount() const;
+
+  const std::map<float, Hit>& GetHits() const;
 
   bool AddHit(Hit hit);
 

@@ -28,11 +28,11 @@ Direction OppositeDirection(const Direction& direction) {
 
 // Elementary Getters ===========================================================================
 size_t Room::GetWallCount() const {
-  return walls.size();
+  return walls_.size();
 }
 
 const std::set<Wall>& Room::GetWalls() const {
-  return walls;
+  return walls_;
 }
 // End of elementary getters ====================================================================
 
@@ -335,6 +335,47 @@ float Room::GetWallTextureIndex(const Direction& direction, bool of_portal,
                                  ray_pos,
                                  ray_dir);
 }
+
+HitPackage Room::CurrentRoomPackage(const glm::vec2 ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive) const {
+  HitPackage package;
+  // if point inclusive, can either be point and non point
+  //   need to check if two are the same
+  if (point_inclusive) {
+    Hit inclusive{GetPrimaryWallHit(ray_pos, ray_dir, true)};
+    Hit exclusive{GetPrimaryWallHit(ray_pos, ray_dir, false)};
+
+    // TODO might be unneccesary, just check in add
+    if (inclusive != exclusive) {
+      if (!inclusive.IsNoHit() && inclusive.WithinDistance(visible_range)) {
+        package.AddHit(inclusive);
+      }
+      if (!exclusive.IsNoHit() && exclusive.WithinDistance(visible_range)) {
+        package.AddHit(exclusive);
+      }
+    } else {
+      if (!inclusive.IsNoHit() && inclusive.WithinDistance(visible_range)) {
+        package.AddHit(inclusive);
+      }
+    }
+
+  } else {
+    // only use exclusive
+    Hit exclusive{GetPrimaryWallHit(ray_pos, ray_dir, false)};
+    if (!exclusive.IsNoHit() && exclusive.WithinDistance(visible_range)) {
+      package.AddHit(exclusive);
+    }
+  }
+
+  for (Wall wall : walls_) {
+    Hit hit{wall.GetWallHit(ray_pos, ray_dir)};
+    if (hit.WithinDistance(visible_range)) {
+      package.AddHit(hit);
+    }
+  }
+
+  // if not point inclusive, can only be uninclusive
+  return package;
+}
 // End of Room geometric functions ==============================================================
 
 // End of public room functions ========================================================================================
@@ -461,7 +502,7 @@ glm::vec2 Room::GetWallTail(Direction dir) const {
   }
 }
 
-Hit Room::GetRoomWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool wall_inclusive) const {
+Hit Room::GetPrimaryWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool wall_inclusive) const {
   try {
     // If invalid direction, will throw
     Direction direction{GetSideHit(ray_pos, ray_dir, wall_inclusive)};
