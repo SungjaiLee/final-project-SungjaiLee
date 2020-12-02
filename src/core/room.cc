@@ -140,25 +140,19 @@ Direction Room::GetSideHit(const glm::vec2& ray_pos,
   bool touch_east = FloatApproximation(ray_pos.x, width_);
   bool touch_west = FloatApproximation(ray_pos.x, 0);
 
-  // Exclusively on-wall condition will be combined with strictly within room check to yield
-  //  Wall inclusive within-room check. However, by separating steps like this allows recycling of calculation
-  //  and reduce repeating loss of information after calculation.
-  bool on_wall_bounds = touch_north || touch_south || touch_east || touch_west;
+  // Necessary boolean characteristics for private within-wall check
+  bool strictly_within_x = (ray_pos.x > 0) && (ray_pos.x < width_);
+  bool strictly_within_y = (ray_pos.y > 0) && (ray_pos.y < height_);
 
-//  bool strictly_within_x = (ray_pos.x > 0) && (ray_pos.x < width_);
-//  bool strictly_within_y = (ray_pos.y > 0) && (ray_pos.y < height_);
-//
-//  if ((strictly_within_x || touch_west || touch_east) &&
-//      (strictly_within_y || touch_north || touch_south)) {
-//    throw exceptions::InvalidDirectionException();
-//  }
-
-  // If not wall-inclusively within room, wall-hit should not be valid.
-  if (!WithinRoom(ray_pos, false) && !on_wall_bounds) { // logically equivalent to !WithinRoom(ray_pos)
+  // Outsource within-room calculation to character-wise within check
+  if (!WithinRoom(strictly_within_x,
+                  strictly_within_y,
+                  touch_west || touch_east,
+                  touch_north || touch_south)) {
     throw exceptions::InvalidDirectionException();
   }
 
-  if (on_wall_bounds) {
+  if (touch_north || touch_south || touch_east || touch_west) {
     // If point-inclusive, means that current wall on which the ray begins on should be considered a hit.
     if (point_inclusive) {
       // Heads are included as being hart of the wall, but tails aren't.
