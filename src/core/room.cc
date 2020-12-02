@@ -143,6 +143,14 @@ Direction Room::GetSideHit(const glm::vec2& ray_pos,
   //  and reduce repeating loss of information after calculation.
   bool on_wall_bounds = touch_north || touch_south || touch_east || touch_west;
 
+//  bool strictly_within_x = (ray_pos.x > 0) && (ray_pos.x < width_);
+//  bool strictly_within_y = (ray_pos.y > 0) && (ray_pos.y < height_);
+//
+//  if ((strictly_within_x || touch_west || touch_east) &&
+//      (strictly_within_y || touch_north || touch_south)) {
+//    throw exceptions::InvalidDirectionException();
+//  }
+
   // If not wall-inclusively within room, wall-hit should not be valid.
   if (!WithinRoom(ray_pos, false) && !on_wall_bounds) { // logically equivalent to !WithinRoom(ray_pos)
     throw exceptions::InvalidDirectionException();
@@ -457,10 +465,10 @@ glm::vec2 Room::GetWallTail(Direction dir) const {
   }
 }
 
-Hit Room::GetRoomWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
+Hit Room::GetRoomWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool wall_inclusive) const {
   try {
     // If invalid direction, will throw
-    Direction direction{GetSideHit(ray_pos, ray_dir)};
+    Direction direction{GetSideHit(ray_pos, ray_dir, wall_inclusive)};
     bool is_portal{RayHitsPortal(direction, ray_pos, ray_dir)};
 
     return {GetRoomWallHitDistance(direction, ray_pos, ray_dir),

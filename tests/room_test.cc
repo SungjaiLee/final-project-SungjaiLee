@@ -891,3 +891,366 @@ TEST_CASE("Get Wall Texture Index") {
     }
   }
 }
+
+
+TEST_CASE("Room Primary Hit") {
+  Room room = *factory.GenerateRandomRoom();
+  SECTION("Valid") {
+    SECTION("North") {
+      SECTION("On This Wall") {
+        SECTION("Inclusive") {
+          SECTION("Portal") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(399, 200), glm::vec2(0, -1));
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kPortal);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 1);
+          }
+
+          SECTION("Wall") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(499, 200), glm::vec2(0, 1));
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kRoomWall);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 1);
+          }
+        }
+        SECTION("Exclusive") {
+          SECTION("Portal") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(399, 200), glm::vec2(1, 0), false);
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kPortal);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 0);
+          }
+
+          SECTION("Wall") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(499, 200), glm::vec2(1, 0), false);
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kRoomWall);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 0);
+          }
+        }
+      }
+        // Needs to be exclusive
+      SECTION("On Other Wall") {
+        SECTION("Wall") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(499, 0), glm::vec2(0, 1), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kRoomWall);
+          REQUIRE(hit.hit_distance_ == 200);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+
+        SECTION("Portal") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(399, 0), glm::vec2(0, 1), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kPortal);
+          REQUIRE(hit.hit_distance_ == 200);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+      }
+      SECTION("From Room") {
+        SECTION("Wall") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(499, 199), glm::vec2(0, 1), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kRoomWall);
+          REQUIRE(hit.hit_distance_ == 1);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+        SECTION("Portal") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(399, 199), glm::vec2(0, 1), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kPortal);
+          REQUIRE(hit.hit_distance_ == 1);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+      }
+    }
+    SECTION("South") {
+      SECTION("On This Wall") {
+        SECTION("Inclusive") {
+          SECTION("Portal") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(101, 0), glm::vec2(0, -1));
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kPortal);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 1);
+          }
+
+          SECTION("Wall") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(1, 0), glm::vec2(0, 1));
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kRoomWall);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 1);
+          }
+        }
+        SECTION("Exclusive") {
+          SECTION("Portal") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(101, 0), glm::vec2(-1, 0), false);
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kPortal);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 0);
+          }
+
+          SECTION("Wall") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(1, 0), glm::vec2( -1, 0), false);
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kRoomWall);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 0);
+          }
+        }
+      }
+        // Needs to be exclusive
+      SECTION("On Other Wall") {
+        SECTION("Wall") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(1, 200), glm::vec2(0, -1), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kRoomWall);
+          REQUIRE(hit.hit_distance_ == 200);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+
+        SECTION("Portal") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(101, 200), glm::vec2(0, -1), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kPortal);
+          REQUIRE(hit.hit_distance_ == 200);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+      }
+      SECTION("From Room") {
+        SECTION("Wall") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(1, 1), glm::vec2(0, -1), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kRoomWall);
+          REQUIRE(hit.hit_distance_ == 1);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+        SECTION("Portal") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(101, 1), glm::vec2(0, -1), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kPortal);
+          REQUIRE(hit.hit_distance_ == 1);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+      }
+    }
+    SECTION("East") {
+      SECTION("On This Wall") {
+        SECTION("Inclusive") {
+          SECTION("Portal") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(500, 51), glm::vec2(1, 0));
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kPortal);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 1);
+          }
+
+          SECTION("Wall") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(500, 1), glm::vec2(1, 0));
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kRoomWall);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 1);
+          }
+        }
+        SECTION("Exclusive") {
+          SECTION("Portal") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(500, 51), glm::vec2(0, -1), false);
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kPortal);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 0);
+          }
+
+          SECTION("Wall") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(500, 1), glm::vec2( 0, -1), false);
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kRoomWall);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 0);
+          }
+        }
+      }
+        // Needs to be exclusive
+      SECTION("On Other Wall") {
+        SECTION("Wall") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(0, 1), glm::vec2(1, 0), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kRoomWall);
+          REQUIRE(hit.hit_distance_ == 500);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+
+        SECTION("Portal") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(0, 51), glm::vec2(1, 0), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kPortal);
+          REQUIRE(hit.hit_distance_ == 500);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+      }
+      SECTION("From Room") {
+        SECTION("PORTAL") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(499, 51), glm::vec2(1, 0), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kPortal);
+          REQUIRE(hit.hit_distance_ == 1);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+        SECTION("WALL") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(499, 1), glm::vec2(1, 0), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kRoomWall);
+          REQUIRE(hit.hit_distance_ == 1);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+      }
+    }
+    SECTION("West") {
+      SECTION("On This Wall") {
+        SECTION("Inclusive") {
+          SECTION("Portal") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(0, 149), glm::vec2(1, 0));
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kPortal);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 1);
+          }
+
+          SECTION("Wall") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(0, 199), glm::vec2(1, 0));
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kRoomWall);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 1);
+          }
+        }
+        SECTION("Exclusive") {
+          SECTION("Portal") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(0, 149), glm::vec2(0, 1), false);
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kPortal);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 0);
+          }
+
+          SECTION("Wall") {
+            Hit hit = room.GetRoomWallHit(glm::vec2(0, 199), glm::vec2( 0, 1), false);
+
+            REQUIRE_FALSE(hit.IsNoHit());
+
+            REQUIRE(hit.hit_type_ == kRoomWall);
+            REQUIRE(hit.hit_distance_ == 0);
+            REQUIRE(hit.texture_index_ == 0);
+          }
+        }
+      }
+        // Needs to be exclusive
+      SECTION("On Other Wall") {
+        SECTION("Wall") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(500, 199), glm::vec2(-1, 0), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kRoomWall);
+          REQUIRE(hit.hit_distance_ == 500);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+
+        SECTION("Portal") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(500, 149), glm::vec2(-1, 0), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kPortal);
+          REQUIRE(hit.hit_distance_ == 500);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+      }
+      SECTION("From Room") {
+        SECTION("PORTAL") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(1, 149), glm::vec2(-1, 0), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kPortal);
+          REQUIRE(hit.hit_distance_ == 1);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+        SECTION("WALL") {
+          Hit hit = room.GetRoomWallHit(glm::vec2(1, 199), glm::vec2(-1, 0), false);
+
+          REQUIRE_FALSE(hit.IsNoHit());
+
+          REQUIRE(hit.hit_type_ == kRoomWall);
+          REQUIRE(hit.hit_distance_ == 1);
+          REQUIRE(hit.texture_index_ == 1);
+        }
+      }
+    }
+  }
+  SECTION("Invalid") {
+    Hit hit = room.GetRoomWallHit(glm::vec2(-1, 0), glm::vec2(1,0));
+    REQUIRE(hit.IsNoHit());
+  }
+}

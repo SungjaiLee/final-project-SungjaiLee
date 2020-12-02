@@ -199,7 +199,7 @@ public:
   float GetWallTextureIndex(const Direction& direction, bool of_portal,
                             const glm::vec2& ray_pos, const glm::vec2& ray_dir) const;
 
-  Hit GetRoomWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const;
+  Hit GetRoomWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool wall_inclusive = true) const;
 
   /**
    * Retrieves HitPackage of all the walls and portal/room-wall in the path of the ray.
