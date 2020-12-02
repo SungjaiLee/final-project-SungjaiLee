@@ -295,6 +295,17 @@ private:
    */
   glm::vec2 GetWallTail(Direction dir) const;
 
+  /**
+   * Compute the non-strict within check based on geometric properties already computed.
+   * @param strictly_within_width If position is strictly between the west and east walls.
+   * @param strictly_within_height If the position is strictly between north and south walls.
+   * @param width_edge If the pos is on west or east wall.
+   * @param height_edge If the pos is on north or south wall.
+   * @return If the positoin is non-strictly between the walls.
+   */
+  bool WithinRoom(bool strictly_within_width, bool strictly_within_height,
+                  bool width_edge, bool height_edge) const;
+
   // End of Private Member Functions ===========================
 
 

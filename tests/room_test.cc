@@ -278,6 +278,10 @@ TEST_CASE("In-Room Check") {
       REQUIRE_FALSE(room.WithinRoom(glm::vec2(-10,900)));
       REQUIRE_FALSE(room.WithinRoom(glm::vec2(-10,900), false));
     }
+
+    SECTION("invalid edges"){
+      REQUIRE_FALSE(room.WithinRoom(glm::vec2(-10,0)));
+    }
   }
 }
 

@@ -116,16 +116,18 @@ glm::vec2 Room::GetTail(Direction direction, bool of_portal) const {
 // End of getters ==========================================================
 
 bool Room::WithinRoom(const glm::vec2& pos, bool wall_inclusive) const {
-  if (!wall_inclusive) {
-    // If not wall-inclusive, only check for strictly within bounds
-    return  (pos.x > 0) && (pos.x < width_) &&
-            (pos.y > 0) && (pos.y < height_);
+
+  if (!wall_inclusive){
+    // Just set edges as always being un-intersected for the same result.
+    return WithinRoom((pos.x > 0) && (pos.x < width_),
+                      (pos.y > 0) && (pos.y < height_),
+                      false,
+                      false);
   } else {
-    return  WithinRoom(pos, false) ||
-            FloatApproximation(pos.x, 0) ||
-            FloatApproximation(pos.x, width_) ||
-            FloatApproximation(pos.y, 0) ||
-            FloatApproximation(pos.y, height_);
+    return WithinRoom((pos.x > 0) && (pos.x < width_),
+                      (pos.y > 0) && (pos.y < height_),
+                      FloatApproximation(pos.x, 0) || FloatApproximation(pos.x, width_),
+                      FloatApproximation(pos.y, 0) || FloatApproximation(pos.y, height_));
   }
 }
 
@@ -477,6 +479,23 @@ Hit Room::GetRoomWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, boo
   } catch (const exceptions::InvalidDirectionException& e) {
     return {}; // Return invalid hit package
   }
+}
+
+bool Room::WithinRoom(bool strictly_within_width, bool strictly_within_height,
+                      bool width_edge, bool height_edge) const {
+  if (strictly_within_width && strictly_within_height) {
+    return true;
+  }
+  if (width_edge && height_edge) {
+    return true;
+  }
+  if (width_edge && strictly_within_height) {
+    return true;
+  }
+  if (strictly_within_width && height_edge) {
+    return true;
+  }
+  return false;
 }
 
 // end of private geometric functions ===========================================================
