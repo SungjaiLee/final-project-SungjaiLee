@@ -71,4 +71,15 @@ bool HitPackage::AddHit(Hit hit) {
   hits_[hit.hit_distance_] = hit;
   return true;
 }
+
+void HitPackage::merge(const HitPackage& package) {
+  auto hit_map = package.GetHits();
+  auto hit_map_iterator = hit_map.begin();
+
+  while (hit_map_iterator != hit_map.end()) {
+    this->AddHit(hit_map_iterator->second);
+    ++hit_map_iterator;
+  }
+
+}
 } //namespace room_explorer

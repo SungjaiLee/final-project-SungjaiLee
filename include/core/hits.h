@@ -66,7 +66,7 @@ public:
 
   bool AddHit(Hit hit);
 
-  void merge(const HitPackage& );
+  void merge(const HitPackage& package);
 };
 
 }
