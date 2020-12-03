@@ -336,7 +336,7 @@ float Room::GetWallTextureIndex(const Direction& direction, bool of_portal,
                                  ray_dir);
 }
 
-HitPackage Room::CurrentRoomPackage(const glm::vec2 ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive) const {
+HitPackage Room::CurrentRoomPackage(const glm::vec2& ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive) const {
   HitPackage package;
   // if point inclusive, can either be point and non point
   //   need to check if two are the same

@@ -80,6 +80,19 @@ RoomFactory factory = R"aa(
           "tail_y" : 101
         }
       ]
+    },
+    "empty" : {
+      "walls" : []
+    },
+    "simple_room" : {
+      "walls" : [
+        {
+          "head_x" : 0,
+          "head_y" : 0,
+          "tail_x" : 500,
+          "tail_y" : 200
+        }
+      ]
     }
   }
 })aa"_json;
@@ -1261,6 +1274,209 @@ TEST_CASE("Room Primary Hit") {
 
 TEST_CASE("Single Room HitPackage") {
 
+  SECTION("Empty room") {
+    Room room  = *factory.GenerateRoom("empty");
+    SECTION("All the rooms") {
+      SECTION("point inclusive") {
+        SECTION("from a wall") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(0, 100),
+                                                       glm::vec2(1, 0),
+                                                       500, true);
+
+          REQUIRE(package.HitCount() == 2);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[0].hit_type_ == kPortal);
+          REQUIRE(hits[500].hit_type_ == kPortal);
+        }
+        SECTION("within room") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(100, 100),
+                                                       glm::vec2(1, 0),
+                                                       500, true);
+
+          REQUIRE(package.HitCount() == 1);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[400].hit_type_ == kPortal);
+        }
+      }
+      SECTION("point exclusive") {
+        SECTION("from a wall") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(0, 100),
+                                                       glm::vec2(1, 0),
+                                                       500, false);
+
+          REQUIRE(package.HitCount() == 1);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[0].IsNoHit());
+          REQUIRE(hits[500].hit_type_ == kPortal);
+        }
+        SECTION("within room") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(100, 100),
+                                                       glm::vec2(1, 0),
+                                                       500, false);
+
+          REQUIRE(package.HitCount() == 1);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[400].hit_type_ == kPortal);
+        }
+      }
+    }
+
+    SECTION("Limited Range") {
+      SECTION("point inclusive") {
+        SECTION("from a wall") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(0, 100),
+                                                       glm::vec2(1, 0),
+                                                       200, true);
+
+          REQUIRE(package.HitCount() == 1);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[0].hit_type_ == kPortal);
+          REQUIRE(hits[500].IsNoHit());
+        }
+        SECTION("within room") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(100, 100),
+                                                       glm::vec2(1, 0),
+                                                       200, true);
+
+          REQUIRE(package.HitCount() == 0);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[400].IsNoHit());
+        }
+      }
+      SECTION("point exclusive") {
+        SECTION("from a wall") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(0, 100),
+                                                       glm::vec2(1, 0),
+                                                       200, false);
+
+          REQUIRE(package.HitCount() == 0);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[0].IsNoHit());
+          REQUIRE(hits[500].IsNoHit());
+        }
+        SECTION("within room") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(100, 100),
+                                                       glm::vec2(1, 0),
+                                                       200, false);
+
+          REQUIRE(package.HitCount() == 0);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[400].IsNoHit());
+        }
+      }
+    }
+  }
+
+  SECTION("Room with walls") {
+    Room room  = *factory.GenerateRoom("simple_room");
+    // wall is from corner to corner, with slope if 200/500 = 2/5
+    //  so at y of
+    SECTION("All the rooms") {
+      SECTION("point inclusive") {
+        HitPackage package = room.CurrentRoomPackage(glm::vec2(100, 0),
+                                                     glm::vec2(0, 1),
+                                                     500, true);
+
+        REQUIRE(package.HitCount() == 3);
+
+        auto hits = package.GetHits();
+
+        REQUIRE(hits[0].hit_type_ == kPortal);
+        REQUIRE(hits[40].hit_type_ == kWall);
+        REQUIRE(hits[200].hit_type_ == kPortal);
+      }
+      SECTION("point exclusive") {
+        HitPackage package = room.CurrentRoomPackage(glm::vec2(100, 0),
+                                                     glm::vec2(0, 1),
+                                                     500, false);
+
+        REQUIRE(package.HitCount() == 2);
+
+        auto hits = package.GetHits();
+
+        REQUIRE(hits[0].IsNoHit());
+        REQUIRE(hits[40].hit_type_ == kWall);
+        REQUIRE(hits[200].hit_type_ == kPortal);
+      }
+    }
+
+    SECTION("Limited Range") {
+      SECTION("wall included") {
+        SECTION("point inclusive") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(100, 0),
+                                                       glm::vec2(0, 1),
+                                                       50, true);
+
+          REQUIRE(package.HitCount() == 2);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[0].hit_type_ == kPortal);
+          REQUIRE(hits[40].hit_type_ == kWall);
+          REQUIRE(hits[200].IsNoHit());
+        }
+
+        SECTION("point exclusive") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(100, 0),
+                                                       glm::vec2(0, 1),
+                                                       50, false);
+
+          REQUIRE(package.HitCount() == 1);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[0].IsNoHit());
+          REQUIRE(hits[40].hit_type_ == kWall);
+          REQUIRE(hits[200].IsNoHit());
+        }
+      }
+      SECTION("Wall not included") {
+        SECTION("point inclusive") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(100, 0),
+                                                       glm::vec2(0, 1),
+                                                       10, true);
+
+          REQUIRE(package.HitCount() == 1);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[0].hit_type_ == kPortal);
+          REQUIRE(hits[40].IsNoHit());
+          REQUIRE(hits[200].IsNoHit());
+        }
+
+        SECTION("point exclusive") {
+          HitPackage package = room.CurrentRoomPackage(glm::vec2(100, 0),
+                                                       glm::vec2(0, 1),
+                                                       10, false);
+
+          REQUIRE(package.HitCount() == 0);
+
+          auto hits = package.GetHits();
+
+          REQUIRE(hits[0].IsNoHit());
+          REQUIRE(hits[40].IsNoHit());
+          REQUIRE(hits[200].IsNoHit());
+        }
+      }
+    }
+  }
 }
 
 TEST_CASE("Connected Room HitPackage") {

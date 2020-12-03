@@ -33,6 +33,8 @@ enum Direction {
 };
 
 Direction OppositeDirection(const Direction& direction);
+// TODO, simpler notation for opposite room?
+Direction operator!(const Direction& direction);
 
 /**
  * Individual room of the map.
@@ -219,7 +221,7 @@ public:
    * @param visible_range
    * @return
    */
-  HitPackage CurrentRoomPackage(const glm::vec2 ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive) const;
+  HitPackage CurrentRoomPackage(const glm::vec2& ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive) const;
 
   // End of Room-Geometry Functions ==============
 
