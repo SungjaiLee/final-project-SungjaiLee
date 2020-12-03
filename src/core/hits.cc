@@ -72,7 +72,7 @@ bool HitPackage::AddHit(Hit hit) {
   return true;
 }
 
-void HitPackage::merge(const HitPackage& package) {
+void HitPackage::Merge(const HitPackage& package) {
   auto hit_map = package.GetHits();
   auto hit_map_iterator = hit_map.begin();
 

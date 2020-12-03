@@ -121,7 +121,7 @@ TEST_CASE("Merge") {
       REQUIRE(p1.HitCount() == 0);
       REQUIRE(p2.HitCount() == 0);
 
-      p1.merge(p2);
+      p1.Merge(p2);
 
       REQUIRE(p1.HitCount() == 0);
       REQUIRE(p2.HitCount() == 0);
@@ -137,7 +137,7 @@ TEST_CASE("Merge") {
       REQUIRE(p1.HitCount() == 1);
       REQUIRE(p2.HitCount() == 2);
 
-      p1.merge(p2);
+      p1.Merge(p2);
 
       REQUIRE(p1.HitCount() == 3);
       REQUIRE(p2.HitCount() == 2);
@@ -158,7 +158,7 @@ TEST_CASE("Merge") {
 
       REQUIRE(p2.HitCount() == 1);
 
-      p1.merge(p2);
+      p1.Merge(p2);
 
       REQUIRE(p1.HitCount() == 4);
       REQUIRE(p2.HitCount() == 1);
@@ -169,7 +169,7 @@ TEST_CASE("Merge") {
 
       REQUIRE(p2.HitCount() == 2);
 
-      p1.merge(p2);
+      p1.Merge(p2);
 
       REQUIRE(p1.HitCount() == 4);
       REQUIRE(p2.HitCount() == 2);
@@ -181,10 +181,59 @@ TEST_CASE("Merge") {
 
       REQUIRE(p2.HitCount() == 3);
 
-      p1.merge(p2);
+      p1.Merge(p2);
 
       REQUIRE(p1.HitCount() == 3);
       REQUIRE(p2.HitCount() == 3);
+    }
+  }
+}
+
+TEST_CASE("Shift Back package") {
+  SECTION("Empty") {
+    HitPackage hitPackage;
+    REQUIRE(hitPackage.HitCount() == 0);
+
+    hitPackage.ShiftHits(4);
+
+    REQUIRE(hitPackage.HitCount() == 0);
+  }
+  SECTION("Non Empty") {
+    SECTION("No overlap during shift") {
+      HitPackage hitPackage;
+      hitPackage.AddHit({4, kWall, 5});
+      hitPackage.AddHit({5, kRoomWall, 5});
+      hitPackage.AddHit({6, kPortal, 5});
+      hitPackage.AddHit({7, kWall, 5});
+
+      hitPackage.ShiftHits(4);
+
+      REQUIRE(hitPackage.HitCount() == 4);
+
+      auto hits = hitPackage.GetHits();
+
+      REQUIRE(hits[8].hit_type_ == kWall);
+      REQUIRE(hits[9].hit_type_ == kRoomWall);
+      REQUIRE(hits[10].hit_type_ == kPortal);
+      REQUIRE(hits[11].hit_type_ == kWall);
+    }
+    SECTION("May be overlap while shifting") {
+      HitPackage hitPackage;
+      hitPackage.AddHit({4, kWall, 5});
+      hitPackage.AddHit({5, kRoomWall, 5});
+      hitPackage.AddHit({6, kPortal, 5});
+      hitPackage.AddHit({7, kWall, 5});
+
+      hitPackage.ShiftHits(1);
+
+      REQUIRE(hitPackage.HitCount() == 4);
+
+      auto hits = hitPackage.GetHits();
+
+      REQUIRE(hits[5].hit_type_ == kWall);
+      REQUIRE(hits[6].hit_type_ == kRoomWall);
+      REQUIRE(hits[7].hit_type_ == kPortal);
+      REQUIRE(hits[8].hit_type_ == kWall);
     }
   }
 }

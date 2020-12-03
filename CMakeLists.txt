@@ -66,6 +66,7 @@ list(APPEND TEST_FILES tests/room_factory_test.cc)
 list(APPEND TEST_FILES tests/room_test.cc)
 list(APPEND TEST_FILES tests/util_test.cc)
 list(APPEND TEST_FILES tests/hit_package_test.cc)
+list(APPEND TEST_FILES tests/hit_test.cc)
 
 ci_make_app(
         APP_NAME        rooms_explorer
