@@ -48,7 +48,7 @@ struct Hit {
 
   bool IsNoHit() const; // if invalid, ignore this hit
 
-  void IncrementDistance();
+  void ShiftDistance(float shift);
 
   bool WithinDistance(float max_distance) const;
 
@@ -68,7 +68,7 @@ public:
 
   void Merge(const HitPackage& package);
 
-  void ShiftHits(double shift);
+  void ShiftHits(float shift);
 };
 
 }

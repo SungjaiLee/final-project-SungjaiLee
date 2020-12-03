@@ -42,6 +42,10 @@ bool Hit::WithinDistance(float max_distance) const {
   return hit_distance_ <= max_distance;
 }
 
+void Hit::ShiftDistance(float shift) {
+  hit_distance_ += shift;
+}
+
 
 size_t HitPackage::HitCount() const {
   return hits_.size();
@@ -82,4 +86,22 @@ void HitPackage::Merge(const HitPackage& package) {
   }
 
 }
+
+void HitPackage::ShiftHits(float shift) {
+  auto temp_hit = std::move(hits_);
+  // assume hits_ is not cleared
+  assert(hits_.empty());
+
+  auto temp_hit_it = temp_hit.begin();
+  while (temp_hit_it != temp_hit.end()) {
+
+    Hit hit(temp_hit_it->second);
+    hit.ShiftDistance(shift);
+    AddHit(hit);
+    ++temp_hit_it;
+  }
+}
+
+
+
 } //namespace room_explorer
