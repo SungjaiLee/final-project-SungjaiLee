@@ -111,3 +111,80 @@ TEST_CASE("AddHit") {
     }
   }
 }
+
+TEST_CASE("Merge") {
+  SECTION("Empty") {
+    SECTION("Both empoty") {
+      HitPackage p1;
+      HitPackage p2;
+
+      REQUIRE(p1.HitCount() == 0);
+      REQUIRE(p2.HitCount() == 0);
+
+      p1.merge(p2);
+
+      REQUIRE(p1.HitCount() == 0);
+      REQUIRE(p2.HitCount() == 0);
+    }
+    SECTION("One filled") {
+      HitPackage p1;
+      HitPackage p2;
+
+      p1.AddHit({1, kRoomWall, 5});
+      p2.AddHit({10, kRoomWall, 5});
+      p2.AddHit({11, kRoomWall, 5});
+
+      REQUIRE(p1.HitCount() == 1);
+      REQUIRE(p2.HitCount() == 2);
+
+      p1.merge(p2);
+
+      REQUIRE(p1.HitCount() == 3);
+      REQUIRE(p2.HitCount() == 2);
+    }
+  }
+  SECTION("Filled") {
+    HitPackage p1;
+    HitPackage p2;
+
+    p1.AddHit({1, kWall, 5});
+    p1.AddHit({2, kWall, 5});
+    p1.AddHit({3, kWall, 5});
+
+    REQUIRE(p1.HitCount() == 3);
+
+    SECTION("No Overlap") {
+      p2.AddHit({1.5, kPortal, 3});
+
+      REQUIRE(p2.HitCount() == 1);
+
+      p1.merge(p2);
+
+      REQUIRE(p1.HitCount() == 4);
+      REQUIRE(p2.HitCount() == 1);
+    }
+    SECTION("Some overlap") {
+      p2.AddHit({1.5, kPortal, 3});
+      p2.AddHit({1, kPortal, 3});
+
+      REQUIRE(p2.HitCount() == 2);
+
+      p1.merge(p2);
+
+      REQUIRE(p1.HitCount() == 4);
+      REQUIRE(p2.HitCount() == 2);
+    }
+    SECTION("All overlap") {
+      p2.AddHit({1, kWall, 5});
+      p2.AddHit({2, kWall, 5});
+      p2.AddHit({3, kWall, 5});
+
+      REQUIRE(p2.HitCount() == 3);
+
+      p1.merge(p2);
+
+      REQUIRE(p1.HitCount() == 3);
+      REQUIRE(p2.HitCount() == 3);
+    }
+  }
+}
