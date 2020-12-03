@@ -37,5 +37,38 @@ bool Hit::operator!=(Hit hit) const {
   return !(*this == hit);
 }
 
+bool Hit::WithinDistance(float max_distance) const {
+  // TODO use float approximation?
+  return hit_distance_ <= max_distance;
+}
 
+
+size_t HitPackage::HitCount() const {
+  return hits_.size();
+}
+
+const std::map<float, Hit>& HitPackage::GetHits() const {
+  return hits_;
+}
+
+bool HitPackage::AddHit(Hit hit) {
+  if (hit.IsNoHit()) {
+    return false;
+  }
+  if (hits_.find(hit.hit_distance_) != hits_.end()) {
+    Hit prev = hits_[hit.hit_distance_];
+
+    if (hit.hit_type_ > prev.hit_type_) {
+      // If eual priority, leave th eprevious one
+      hits_[hit.hit_distance_] = hit;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
+  hits_[hit.hit_distance_] = hit;
+  return true;
+}
 } //namespace room_explorer
