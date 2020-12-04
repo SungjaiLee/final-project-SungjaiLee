@@ -7,6 +7,7 @@
 
 #include <cinder/gl/gl.h>
 
+// TODO look into quaternions
 namespace room_explorer {
 
 // Numeric Utilities ===================================================================================

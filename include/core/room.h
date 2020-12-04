@@ -202,6 +202,9 @@ public:
                             const glm::vec2& ray_pos, const glm::vec2& ray_dir) const;
 
   Hit GetPrimaryWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool wall_inclusive = true) const;
+  // Useful information to keep track of is the direction of pimary hit, which is only really useful in private context.
+  //  the reference variable is set as the direction found
+  Hit GetPrimaryWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, Direction& direction, bool wall_inclusive = true) const;
 
   /**
    * Retrieves HitPackage of all the walls and portal/room-wall in the path of the ray.
@@ -211,7 +214,7 @@ public:
    * @return HitPackage of all the elements intersected by the ray in the given direction of this room.
    *            Will include the package of the adjacent room if appropriate.
    */
-  HitPackage GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir);
+  HitPackage GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive);
 
   /**
    * Package of all the Hits, including all walls and cardinal wall.

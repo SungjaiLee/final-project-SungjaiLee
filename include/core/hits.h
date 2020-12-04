@@ -33,7 +33,8 @@ enum HitType : int {
   kInvalid = 0
 };
 
-struct Hit {
+class Hit {
+public:
   /**
    * As default, construct invalid hit.
    *    Supposed to represent no-hit.

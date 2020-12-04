@@ -336,37 +336,53 @@ float Room::GetWallTextureIndex(const Direction& direction, bool of_portal,
                                  ray_dir);
 }
 
+Hit Room::GetPrimaryWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool wall_inclusive) const {
+  // dummy for reference
+  __unused Direction direction;
+  return GetPrimaryWallHit(ray_pos, ray_dir, direction, wall_inclusive);
+}
+
+Hit Room::GetPrimaryWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, Direction& direction, bool wall_inclusive) const {
+  try {
+    // If invalid direction, will throw
+    direction = GetSideHit(ray_pos, ray_dir, wall_inclusive);
+    bool is_portal{RayHitsPortal(direction, ray_pos, ray_dir)};
+
+    return {GetRoomWallHitDistance(direction, ray_pos, ray_dir),
+            is_portal ? kPortal : kRoomWall,
+            GetWallTextureIndex(direction, is_portal, ray_pos, ray_dir)};
+  } catch (const exceptions::InvalidDirectionException& e) {
+    return {}; // Return invalid hit package
+  }
+}
+
+
+
 HitPackage Room::CurrentRoomPackage(const glm::vec2& ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive) const {
   HitPackage package;
-  // if point inclusive, can either be point and non point
-  //   need to check if two are the same
+
+  Hit exclusive_primary_hit{GetPrimaryWallHit(ray_pos, ray_dir, false)};
+
+  if (!exclusive_primary_hit.IsNoHit() && exclusive_primary_hit.WithinDistance(visible_range)) {
+    package.AddHit(exclusive_primary_hit);
+
+    // only this exclusive primary hit can be a portal
+  }
+
   if (point_inclusive) {
-    Hit inclusive{GetPrimaryWallHit(ray_pos, ray_dir, true)};
-    Hit exclusive{GetPrimaryWallHit(ray_pos, ray_dir, false)};
+    // check for inclusive hit
+    Hit inclusive_primary_hit{GetPrimaryWallHit(ray_pos, ray_dir, true)};
 
-    // TODO might be unneccesary, just check in add
-    if (inclusive != exclusive) {
-      if (!inclusive.IsNoHit() && inclusive.WithinDistance(visible_range)) {
-        package.AddHit(inclusive);
-      }
-      if (!exclusive.IsNoHit() && exclusive.WithinDistance(visible_range)) {
-        package.AddHit(exclusive);
-      }
-    } else {
-      if (!inclusive.IsNoHit() && inclusive.WithinDistance(visible_range)) {
-        package.AddHit(inclusive);
-      }
-    }
-
-  } else {
-    // only use exclusive
-    Hit exclusive{GetPrimaryWallHit(ray_pos, ray_dir, false)};
-    if (!exclusive.IsNoHit() && exclusive.WithinDistance(visible_range)) {
-      package.AddHit(exclusive);
+    // only include different hits
+    if (!inclusive_primary_hit.IsNoHit() &&
+        inclusive_primary_hit.WithinDistance(visible_range) &&
+        exclusive_primary_hit != inclusive_primary_hit) {
+      package.AddHit(inclusive_primary_hit);
     }
   }
 
-  for (Wall wall : walls_) {
+
+  for (const Wall& wall : walls_) {
     Hit hit{wall.GetWallHit(ray_pos, ray_dir)};
     if (hit.WithinDistance(visible_range)) {
       package.AddHit(hit);
@@ -376,6 +392,87 @@ HitPackage Room::CurrentRoomPackage(const glm::vec2& ray_pos, const glm::vec2& r
   // if not point inclusive, can only be uninclusive
   return package;
 }
+
+
+HitPackage Room::GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive) {
+  HitPackage package;
+
+  Direction direction;
+  Hit exclusive_primary_hit{GetPrimaryWallHit(ray_pos, ray_dir, direction, false)};
+
+  if (!exclusive_primary_hit.IsNoHit() && exclusive_primary_hit.WithinDistance(visible_range)) {
+    package.AddHit(exclusive_primary_hit);
+
+    // only this exclusive primary hit can be a portal
+    if (exclusive_primary_hit.hit_type_ == kPortal) {
+      // requestion from room of directio
+
+      float& texture_shift = exclusive_primary_hit.texture_index_;
+
+      glm::vec2 entry_pos;
+
+      // define entry point, on the other room
+      //  texture index must be from current, the other compoennt needs to be opposite
+      switch (direction) {
+        case kNorth:
+          // entry at (nw_begin + width - texture, 0) :: on south
+          entry_pos = {ns_door_begin_ + ns_door_width_ - texture_shift, 0};
+          break;
+        case kSouth:
+          // entry at (nw_begin + texture, height) :: on north
+          entry_pos = {ns_door_begin_ + texture_shift, height_};
+          break;
+        case kEast:
+          // entry at (0, ew_begin + texture) :: on west
+          entry_pos = {0, ew_door_begin_ + texture_shift};
+          break;
+        case kWest:
+          // entry at (width, ew_begin + ew_wdith - texture) :: on east
+          entry_pos = {width_, ew_door_begin_ + ew_door_width_ - texture_shift};
+          break;
+
+        case kUndefined:
+          throw exceptions::InvalidDirectionException();
+      }
+
+      float new_range = visible_range - exclusive_primary_hit.hit_distance_;
+      HitPackage next_room = GetConnectedRoom(direction)->GetVisible(entry_pos, ray_dir, new_range, false);
+
+      next_room.ShiftHits(exclusive_primary_hit.hit_distance_);
+
+      package.Merge(next_room);
+    }
+  }
+
+  if (point_inclusive) {
+    // check for inclusive hit
+    Hit inclusive_primary_hit{GetPrimaryWallHit(ray_pos, ray_dir, true)};
+
+    // only include different hits
+    if (!inclusive_primary_hit.IsNoHit() &&
+        inclusive_primary_hit.WithinDistance(visible_range) &&
+        exclusive_primary_hit != inclusive_primary_hit) {
+      package.AddHit(inclusive_primary_hit);
+    }
+  }
+
+  for (const Wall& wall : walls_) {
+    Hit hit{wall.GetWallHit(ray_pos, ray_dir)};
+    if (hit.WithinDistance(visible_range)) {
+      package.AddHit(hit);
+    }
+  }
+
+//  auto hit_it = --package.GetHits().end();
+
+  // if on a portal, ignore it, only find the last portal, which is what the ray will 'look into'
+//  Direction direction{GetSideHit(ray_pos, ray_dir, false)};
+
+
+  return package;
+}
+
+
 // End of Room geometric functions ==============================================================
 
 // End of public room functions ========================================================================================
@@ -499,20 +596,6 @@ glm::vec2 Room::GetWallTail(Direction dir) const {
 
     case kUndefined:
       throw exceptions::InvalidDirectionException();
-  }
-}
-
-Hit Room::GetPrimaryWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool wall_inclusive) const {
-  try {
-    // If invalid direction, will throw
-    Direction direction{GetSideHit(ray_pos, ray_dir, wall_inclusive)};
-    bool is_portal{RayHitsPortal(direction, ray_pos, ray_dir)};
-
-    return {GetRoomWallHitDistance(direction, ray_pos, ray_dir),
-            is_portal ? kPortal : kRoomWall,
-            GetWallTextureIndex(direction, is_portal, ray_pos, ray_dir)};
-  } catch (const exceptions::InvalidDirectionException& e) {
-    return {}; // Return invalid hit package
   }
 }
 

@@ -164,7 +164,7 @@ bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& se
 
         float c = glm::dot(tail, dir_c);
         if (c < 0 || FloatApproximation(c, 0)) {
-          // dir <= theat rad
+          // dir <= theta rad
           // dir in [0, theta] rad
           return true;
         } else {
