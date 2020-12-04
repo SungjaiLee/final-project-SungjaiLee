@@ -1477,8 +1477,57 @@ TEST_CASE("Single Room HitPackage") {
       }
     }
   }
+
+  SECTION("On wall, point to portal") {
+    Room room = *factory.GenerateRandomRoom();
+    HitPackage package = room.CurrentRoomPackage(glm::vec2(0, 1), glm::vec2(0, 5), 200, true);
+
+    REQUIRE(package.HitCount() == 1);
+
+    auto hits = package.GetHits();
+
+    REQUIRE(hits[0].hit_type_ == kRoomWall);
+  }
+
 }
 
 TEST_CASE("Connected Room HitPackage") {
 
+  Room room = *factory.GenerateRoom("simple_room");
+  Room& room2 = *room.GetConnectedRoom(kNorth, "simple_room");
+  room2.GetConnectedRoom(kNorth, "simple_room");
+
+  SECTION("Only Current Room visible") {
+    SECTION("not enough range") {
+
+      HitPackage package = room.GetVisible(glm::vec2(250, 0), glm::vec2(0, 5), 200);
+
+      REQUIRE(package.HitCount() == 3);
+
+      auto hits = package.GetHits();
+
+      REQUIRE(hits[0].hit_type_ == kPortal);
+      REQUIRE(hits[100].hit_type_ == kWall);
+      REQUIRE(hits[200].hit_type_ == kPortal);
+    }
+    SECTION("Enough range, hits room wall") {
+    }
+  }
+  SECTION("Multiple room visible") {
+    SECTION("One room visible") {
+      HitPackage package = room.GetVisible(glm::vec2(250, 0), glm::vec2(0, 5), 350);
+
+      REQUIRE(package.HitCount() == 4);
+
+      auto hits = package.GetHits();
+
+      REQUIRE(hits[0].hit_type_ == kPortal);
+      REQUIRE(hits[100].hit_type_ == kWall);
+      REQUIRE(hits[200].hit_type_ == kPortal);
+      REQUIRE(hits[300].hit_type_ == kWall);
+    }
+    SECTION("multiple room visible") {
+
+    }
+  }
 }

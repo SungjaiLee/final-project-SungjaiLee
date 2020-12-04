@@ -74,10 +74,19 @@ bool Room::IsConnectedWith(Room* other_p) const {
 }
 
 Room* Room::GetConnectedRoom(const Direction& direction) {
+  return GetConnectedRoom(direction, factory->RandomId());
+}
+
+Room* Room::GetConnectedRoom(const Direction& direction, const std::string& default_id) {
   Room* room = GetLinkedRoomPointer(direction);
-  // If room is not yet linked, indicated by link being null, generate a new room from factory and link them
+// If room is not yet linked, indicated by link being null, generate a new room from factory and link them
   if (room == nullptr) {
-    room = factory->GenerateRandomRoom();
+
+    if (!factory->ContainsRoomId(default_id)) {
+      return nullptr;
+    }
+
+    room = factory->GenerateRoom(default_id);
     LinkRoom(direction, room);
   }
   return room;
@@ -323,7 +332,8 @@ bool Room::RayHitsPortal(const Direction& direction,
   // Out-source to general util method. Retrieves if ray intersects with the segment defined by portal head and tail.
   return RayIntersectsWithSegment(GetPortalHead(direction),
                                   GetPortalTail(direction),
-                                  ray_pos, ray_dir);
+                                  ray_pos, ray_dir,
+                                  false);
 }
 
 float Room::GetWallTextureIndex(const Direction& direction, bool of_portal,
@@ -615,6 +625,14 @@ bool Room::WithinRoom(bool strictly_within_width, bool strictly_within_height,
   }
   return false;
 }
+
+bool Room::OnRoomEdge(const glm::vec2& pos) const {
+  return  FloatApproximation(pos.x, 0) ||
+          FloatApproximation(pos.x, width_) ||
+          FloatApproximation(pos.y, 0) ||
+          FloatApproximation(pos.y, height_);
+}
+
 
 // end of private geometric functions ===========================================================
 

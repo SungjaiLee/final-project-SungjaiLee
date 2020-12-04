@@ -76,7 +76,19 @@ public:
    * @return    Pointer to the adjacent room in the given direction.
    *            Will never be a nullptr. Always a room-pointer that is linked to this room as well.
    */
-  Room* GetConnectedRoom(const Direction& direction) ;
+  Room* GetConnectedRoom(const Direction& direction);
+
+  /**
+   * Retrieves the adjacent room in the given direction.
+   * If the current room is not yet linked with any adjacent room, generate a new room from factory from id,
+   *    link it with this room, and return the pointer to the newly generated room.
+   * If id is not valid, return nullptr.
+   * @param direction Direction in which the room should be retrieved, or if necessary generated in.
+   * @return    Pointer to the adjacent room in the given direction.
+   *            If room not yet connected, generate new from from id.
+   *            If id is not valid, return nullptr.
+   */
+  Room* GetConnectedRoom(const Direction& direction, const std::string& default_id);
 
   /**
    * Checks if the given room is connected with the current room in one specific direction.
@@ -138,6 +150,8 @@ public:
    */
   bool WithinRoom(const glm::vec2& pos, bool wall_inclusive = true) const;
 
+  bool OnRoomEdge(const glm::vec2& pos) const;
+
   /**
    * Retrieves the direction of wall that a given ray will hit.
    *    If the ray is outside of the room, considered invalid direction, throw InvalidDirectionException.
@@ -175,6 +189,7 @@ public:
    * Checks if the given ray Intersects with the portal on the wall of the given direction.
    *    Does not considered if the path is valid.
    *    Ray must intersect with the portal in the positive direction.
+   * If on wall, and points to portal, consdiered not true.
    * @param direction Direction of wall, to which the ray is being shot.
    * @param ray_pos Initial position of the ray.
    * @param ray_dir Direction of the ray.
@@ -214,7 +229,7 @@ public:
    * @return HitPackage of all the elements intersected by the ray in the given direction of this room.
    *            Will include the package of the adjacent room if appropriate.
    */
-  HitPackage GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive);
+  HitPackage GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir, float visible_range, bool point_inclusive = true);
 
   /**
    * Package of all the Hits, including all walls and cardinal wall.

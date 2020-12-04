@@ -103,7 +103,8 @@ float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tai
 
 
 bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& segment_tail,
-                              const glm::vec2& ray_pos, const glm::vec2& ray_dir) {
+                              const glm::vec2& ray_pos, const glm::vec2& ray_dir,
+                              bool parallel_hit_valid) {
   // Trivial Cases
   // If position if head or tail itself, will be considered to have intersected with wall as a whole
   if (FloatApproximation(segment_head, ray_pos) ||
@@ -135,6 +136,11 @@ bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& se
     } else {
       // theta is 0
       // head and tail are collinear with the pos, or worse a point wall
+      if (!parallel_hit_valid) {
+        // If does not allow parallel hit, immediately false
+        return false;
+      }
+
       glm::vec2 dir_c(ray_dir.y, -ray_dir.x);
 
       if (FloatApproximation(glm::dot(head, dir_c), 0)) {

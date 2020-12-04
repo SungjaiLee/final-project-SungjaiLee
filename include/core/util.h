@@ -92,7 +92,8 @@ float GetRayToLineDistance(const glm::vec2& line_head, const glm::vec2& line_tai
  * @return True if and only if ray intersects eventually with the segment in positive direction.
  */
 bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& segment_tail,
-                              const glm::vec2& ray_pos, const glm::vec2& ray_dir);
+                              const glm::vec2& ray_pos, const glm::vec2& ray_dir,
+                              bool parallel_hit_valid = true);
 
 /**
  * Retrieves texture-index that ray intercepts from a segment.
