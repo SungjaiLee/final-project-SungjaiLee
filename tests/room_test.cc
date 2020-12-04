@@ -1497,6 +1497,16 @@ TEST_CASE("Connected Room HitPackage") {
   Room& room2 = *room.GetConnectedRoom(kNorth, "simple_room");
   room2.GetConnectedRoom(kNorth, "simple_room");
 
+  SECTION("Parallel on wall") {
+    HitPackage package = room.GetVisible(glm::vec2(0, 0), glm::vec2(0, 5), 200);
+
+    REQUIRE(package.HitCount() == 1);
+
+    auto hits = package.GetHits();
+
+    REQUIRE(hits[0].hit_type_ == kRoomWall);
+  }
+
   SECTION("Only Current Room visible") {
     SECTION("not enough range") {
 
@@ -1511,6 +1521,13 @@ TEST_CASE("Connected Room HitPackage") {
       REQUIRE(hits[200].hit_type_ == kPortal);
     }
     SECTION("Enough range, hits room wall") {
+      HitPackage package = room.GetVisible(glm::vec2(10, 100), glm::vec2(0, 5), 200);
+
+      REQUIRE(package.HitCount() == 1);
+
+      auto hits = package.GetHits();
+
+      REQUIRE(hits[100].hit_type_ == kRoomWall);
     }
   }
   SECTION("Multiple room visible") {
@@ -1527,7 +1544,19 @@ TEST_CASE("Connected Room HitPackage") {
       REQUIRE(hits[300].hit_type_ == kWall);
     }
     SECTION("multiple room visible") {
+      HitPackage package = room.GetVisible(glm::vec2(250, 0), glm::vec2(0, 5), 600);
 
+      REQUIRE(package.HitCount() == 7);
+
+      auto hits = package.GetHits();
+
+      REQUIRE(hits[0].hit_type_ == kPortal);
+      REQUIRE(hits[100].hit_type_ == kWall);
+      REQUIRE(hits[200].hit_type_ == kPortal);
+      REQUIRE(hits[300].hit_type_ == kWall);
+      REQUIRE(hits[400].hit_type_ == kPortal);
+      REQUIRE(hits[500].hit_type_ == kWall);
+      REQUIRE(hits[600].hit_type_ == kPortal);
     }
   }
 }
