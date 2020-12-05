@@ -26,7 +26,7 @@ void RoomsExplorerApp::draw() {
 
   std::vector<HitPackage> packages{current_room_.GetVision(rotation_cos_, rotation_sin_,
                                                            half_resolution,
-                                                           200)};
+                                                           900)};
 
   for (size_t i = 0; i < total_resolution_; ++i) {
     if (i % 2 == 0) {
@@ -38,6 +38,23 @@ void RoomsExplorerApp::draw() {
                    {(i + 1) * section_width, kScreenHeight_}};
 
     ci::gl::drawSolidRect(rect);
+
+    HitPackage& package = packages.at(i);
+    auto it = package.GetHits().begin();
+
+    float distance = it->first;
+    // todo find the correct height calculation
+    float height = 10000 / (distance + 1);
+    ci::Rectf wall{{i * section_width, kScreenHeight_ - 100},
+                   {(i + 1) * section_width, kScreenHeight_ - 100 - height}};
+
+
+    ci::gl::color(ci::Color8u(200, 200, 200));
+    if (it->second.hit_type_ == kPortal) {
+      ci::gl::color(ci::Color8u(100, 20, 100));
+    }
+    ci::gl::drawSolidRect(wall);
+
   }
 }
 void RoomsExplorerApp::update() {

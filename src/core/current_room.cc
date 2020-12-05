@@ -16,6 +16,9 @@ CurrentRoom::CurrentRoom(const std::string& room_template_path)
   factory_ = factory_json;
 
   current_room_ = factory_.GenerateRoom("entry");
+
+  current_position = {factory_.RoomWidth() / 2, factory_.RoomHeight() / 2};
+  main_view_direction = {1, 0};
 }
 
 std::vector<HitPackage> CurrentRoom::GetVision(float cos, float sin, size_t half_resolution, float range_distance) {
@@ -28,8 +31,8 @@ std::vector<HitPackage> CurrentRoom::GetVision(float cos, float sin, size_t half
   glm::vec2 clockwise_direction{main_view_direction};
 
   for (size_t i = 0; i < half_resolution; ++i) {
-    FastRotate(counter_clockwise_direction, cos, sin);
-    FastRotate(clockwise_direction, cos, -sin);
+    FastRotate(counter_clockwise_direction, cos, -sin);
+    FastRotate(clockwise_direction, cos, sin);
 
     // add to front
     packages.insert(packages.begin(), current_room_->GetVisible(current_position, counter_clockwise_direction, range_distance));
