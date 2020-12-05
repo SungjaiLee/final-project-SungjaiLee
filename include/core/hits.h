@@ -50,6 +50,7 @@ public:
   bool IsNoHit() const; // if invalid, ignore this hit
 
   void ShiftDistance(float shift);
+  void ScaleDistance(float scale);
 
   bool WithinDistance(float max_distance) const;
 
@@ -70,6 +71,8 @@ public:
   void Merge(const HitPackage& package);
 
   void ShiftHits(float shift);
+
+  void ScaleDistances(float scale);
 };
 
 }

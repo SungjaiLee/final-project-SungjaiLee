@@ -43,6 +43,10 @@ public:
    * @return 2*half_resolutoin + 1 size array
    */
   std::vector<HitPackage> GetVision(float cos, float sin, size_t half_resolution, float range_distance);
+
+  void RotateDirection(float cos, float sin);
+  void MoveForward(float speed);
+
 };
 
 }

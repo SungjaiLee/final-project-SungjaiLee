@@ -46,6 +46,10 @@ void Hit::ShiftDistance(float shift) {
   hit_distance_ += shift;
 }
 
+void Hit::ScaleDistance(float scale) {
+  hit_distance_ *= scale;
+}
+
 
 size_t HitPackage::HitCount() const {
   return hits_.size();
@@ -102,6 +106,20 @@ void HitPackage::ShiftHits(float shift) {
   }
 }
 
+void HitPackage::ScaleDistances(float scale) {
+  auto temp_hit = std::move(hits_);
+  // assume hits_ is not cleared
+  assert(hits_.empty());
+
+  auto temp_hit_it = temp_hit.begin();
+  while (temp_hit_it != temp_hit.end()) {
+
+    Hit hit(temp_hit_it->second);
+    hit.ScaleDistance(scale);
+    AddHit(hit);
+    ++temp_hit_it;
+  }
+}
 
 
 } //namespace room_explorer

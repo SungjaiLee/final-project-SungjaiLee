@@ -35,10 +35,23 @@ std::vector<HitPackage> CurrentRoom::GetVision(float cos, float sin, size_t half
     FastRotate(clockwise_direction, cos, sin);
 
     // add to front
-    packages.insert(packages.begin(), current_room_->GetVisible(current_position, counter_clockwise_direction, range_distance));
-    packages.push_back(current_room_->GetVisible(current_position, clockwise_direction, range_distance));
+    HitPackage pack1 = current_room_->GetVisible(current_position, counter_clockwise_direction, range_distance);
+    pack1.ScaleDistances(std::abs(glm::dot(main_view_direction, counter_clockwise_direction)));
+    packages.insert(packages.begin(), pack1);
+
+    HitPackage pack2 = current_room_->GetVisible(current_position, clockwise_direction, range_distance);
+    pack2.ScaleDistances(std::abs(glm::dot(main_view_direction, clockwise_direction)));
+    packages.push_back(pack2);
   }
 
   return packages;
+}
+
+void CurrentRoom::RotateDirection(float cos, float sin) {
+  FastRotate(main_view_direction, cos, sin);
+}
+
+void CurrentRoom::MoveForward(float speed) {
+  current_position += speed * main_view_direction;
 }
 

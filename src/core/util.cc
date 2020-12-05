@@ -241,6 +241,10 @@ glm::vec2& FastRotate(glm::vec2& vec, const float rotation_cos, const float rota
   vec.x = x;
   vec.y = y;
 
+  if (!IsUnitVector(vec)) {
+    vec = glm::normalize(vec);
+  }
+
   return vec;
 }
 

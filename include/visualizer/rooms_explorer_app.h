@@ -21,8 +21,8 @@ namespace visualizer {
  */
 class RoomsExplorerApp : public ci::app::App {
 private:
-  const float kScreenWidth_ = 750;
-  const float kScreenHeight_ = 550;
+  const float kScreenWidth_ = 700;
+  const float kScreenHeight_ = 500;
 
   __unused const std::string room_template_path_;
 
@@ -31,7 +31,8 @@ private:
   const size_t half_resolution = 50;
 
   // range in radius of half field
-  const float half_visual_field_range_ = 2;
+  const float half_visual_field_range_ = .7;
+
 
 
   CurrentRoom current_room_;
@@ -44,11 +45,17 @@ private:
   const float total_resolution_;
 
 
+  const float movement_rotation_cos_;
+  const float movement_rotation_sin_;
+
 public:
   RoomsExplorerApp();
 
   void draw() override;
   void update() override;
+
+  void keyDown(ci::app::KeyEvent event) override;
+
 
 };
 

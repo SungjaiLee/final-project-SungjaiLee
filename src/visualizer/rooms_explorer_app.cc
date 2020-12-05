@@ -11,7 +11,9 @@ RoomsExplorerApp::RoomsExplorerApp()
       incr_angle_(half_visual_field_range_ / half_resolution),
       rotation_cos_(std::cos(incr_angle_)),
       rotation_sin_(std::sin(incr_angle_)),
-      total_resolution_(2 * half_resolution + 1) {
+      total_resolution_(2 * half_resolution + 1),
+      movement_rotation_cos_(std::cos(.01f)),
+      movement_rotation_sin_(std::sin(.01f)) {
 
   ci::app::setWindowSize(kScreenWidth_, kScreenHeight_);
 
@@ -59,6 +61,23 @@ void RoomsExplorerApp::draw() {
 }
 void RoomsExplorerApp::update() {
 
+}
+
+void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
+  switch (event.getCode()) {
+    case ci::app::KeyEvent::KEY_LEFT:
+      current_room_.RotateDirection(movement_rotation_cos_, -movement_rotation_sin_);
+      break;
+    case ci::app::KeyEvent::KEY_RIGHT:
+      current_room_.RotateDirection(movement_rotation_cos_, movement_rotation_sin_);
+      break;
+    case ci::app::KeyEvent::KEY_UP:
+      current_room_.MoveForward(1);
+      break;
+    case ci::app::KeyEvent::KEY_DOWN:
+      current_room_.MoveForward(-1);
+      break;
+  }
 }
 
 
