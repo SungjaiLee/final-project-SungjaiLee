@@ -4,8 +4,8 @@
   "room_dimension" : {
     "width" : 500,
     "height" : 600,
-    "ns_door_width" : 300,
-    "ew_door_width" : 400
+    "ns_door_width" : 450,
+    "ew_door_width" : 550
   },
 
   "rooms" : {
@@ -28,6 +28,41 @@
           "head_y" : 600,
           "tail_x" : 500,
           "tail_y" : 500
+        }
+      ]
+    },
+    "type-1" : {
+      "walls" : [
+        {
+          "head_x" : 0,
+          "head_y" : 0,
+          "tail_x" : 200,
+          "tail_y" : 200
+        },
+        {
+          "head_x" : 500,
+          "head_y" : 600,
+          "tail_x" : 400,
+          "tail_y" : 400
+        }
+      ]
+    },
+    "type-2" : {
+      "walls" : []
+    },
+    "type-3" : {
+      "walls" : [
+        {
+          "head_x" : 80,
+          "head_y" : 30,
+          "tail_x" : 400,
+          "tail_y" : 20
+        },
+        {
+          "head_x" : 80,
+          "head_y" : 500,
+          "tail_x" : 400,
+          "tail_y" : 400
         }
       ]
     }

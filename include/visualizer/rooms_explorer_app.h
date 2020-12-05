@@ -21,18 +21,17 @@ namespace visualizer {
  */
 class RoomsExplorerApp : public ci::app::App {
 private:
-  const float kScreenWidth_ = 700;
+  const float kScreenWidth_ = 900;
   const float kScreenHeight_ = 500;
 
   __unused const std::string room_template_path_;
 
   // into how many columnes should the screen be partitionsed into?
   //  total resolution will be 2*n + 1
-  const size_t half_resolution = 50;
+  const size_t half_resolution = 100;
 
   // range in radius of half field
-  const float half_visual_field_range_ = .7;
-
+  const float half_visual_field_range_ = 1;
 
 
   CurrentRoom current_room_;

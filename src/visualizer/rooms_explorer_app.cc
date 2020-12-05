@@ -12,8 +12,8 @@ RoomsExplorerApp::RoomsExplorerApp()
       rotation_cos_(std::cos(incr_angle_)),
       rotation_sin_(std::sin(incr_angle_)),
       total_resolution_(2 * half_resolution + 1),
-      movement_rotation_cos_(std::cos(.01f)),
-      movement_rotation_sin_(std::sin(.01f)) {
+      movement_rotation_cos_(std::cos(.1f)),
+      movement_rotation_sin_(std::sin(.1f)) {
 
   ci::app::setWindowSize(kScreenWidth_, kScreenHeight_);
 
@@ -24,39 +24,60 @@ void RoomsExplorerApp::draw() {
   ci::gl::clear(background_color);
 
 
+  float wall_bottom = 100;
+
+  ci::Rectf floor{glm::vec2(0, kScreenHeight_),
+                   glm::vec2(kScreenWidth_, kScreenHeight_ - wall_bottom)};
+  ci::gl::color(ci::ColorA(0, 0, 0));
+  ci::gl::drawSolidRect(floor);
+
+
   float section_width = kScreenWidth_ / (total_resolution_);
 
   std::vector<HitPackage> packages{current_room_.GetVision(rotation_cos_, rotation_sin_,
                                                            half_resolution,
-                                                           900)};
+                                                           1500)};
 
   for (size_t i = 0; i < total_resolution_; ++i) {
-    if (i % 2 == 0) {
-      ci::gl::color(ci::Color8u(200, 101, 108));
-    } else {
-      ci::gl::color(ci::Color8u(20, 101, 108));
-    }
-    ci::Rectf rect{{i * section_width, 0},
-                   {(i + 1) * section_width, kScreenHeight_}};
-
-    ci::gl::drawSolidRect(rect);
+//    if (i % 2 == 0) {
+//      ci::gl::color(ci::Color8u(200, 101, 108));
+//    } else {
+//      ci::gl::color(ci::Color8u(20, 101, 108));
+//    }
+//    ci::Rectf rect{{i * section_width, 0},
+//                   {(i + 1) * section_width, kScreenHeight_}};
+//
+//    ci::gl::drawSolidRect(rect);
 
     HitPackage& package = packages.at(i);
-    auto it = package.GetHits().begin();
 
-    float distance = it->first;
-    // todo find the correct height calculation
-    float height = 10000 / (distance + 1);
-    ci::Rectf wall{{i * section_width, kScreenHeight_ - 100},
-                   {(i + 1) * section_width, kScreenHeight_ - 100 - height}};
+    std::map<float, Hit>::const_iterator it = package.GetHits().end();
+    do {
+      --it;
+      float distance = it->first;
+      // todo find the correct height calculation
+      float height = 10000 / (distance + 1);
+      ci::Rectf wall{{i * section_width, kScreenHeight_ - wall_bottom + (height / 10)},
+                     {(i + 1) * section_width, kScreenHeight_ - wall_bottom - height}};
 
+      float shade{1 / distance}; //max disatnce
 
-    ci::gl::color(ci::Color8u(200, 200, 200));
-    if (it->second.hit_type_ == kPortal) {
-      ci::gl::color(ci::Color8u(100, 20, 100));
-    }
-    ci::gl::drawSolidRect(wall);
+      if (it->second.hit_type_ == kPortal) {
+        ci::gl::color(ci::ColorA(100, 0, 200, .2));
+//        wall = {{i * section_width, kScreenWidth_},
+//             {(i + 1) * section_width, kScreenHeight_ - 100 - height}};
+      } else if (it->second.hit_type_ == kWall) {
+        auto col = ci::ColorA(200 * shade, 200 * shade, 200 * shade);
+        ci::gl::color(col);
 
+      } else if (it->second.hit_type_ == kRoomWall) {
+        ci::gl::color(ci::ColorA(200 * shade, 0, 0));
+      } else {
+        ci::gl::color(ci::ColorA(0, 0, 0));
+      }
+
+      ci::gl::drawSolidRect(wall);
+    } while (it != package.GetHits().begin());
   }
 }
 void RoomsExplorerApp::update() {
@@ -72,10 +93,10 @@ void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
       current_room_.RotateDirection(movement_rotation_cos_, movement_rotation_sin_);
       break;
     case ci::app::KeyEvent::KEY_UP:
-      current_room_.MoveForward(1);
+      current_room_.MoveForward(4);
       break;
     case ci::app::KeyEvent::KEY_DOWN:
-      current_room_.MoveForward(-1);
+      current_room_.MoveForward(-4);
       break;
   }
 }

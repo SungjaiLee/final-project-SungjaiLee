@@ -33,7 +33,7 @@ public:
    * Room by default is loaded to "entry" id
    * @param room_template_path
    */
-  CurrentRoom(const std::string& room_template_path);
+  explicit CurrentRoom(const std::string& room_template_path);
 
   /**
    *
