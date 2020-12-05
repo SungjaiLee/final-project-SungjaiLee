@@ -7,6 +7,8 @@
 
 #include <core/room.h>
 
+#include <cinder/gl/gl.h>
+
 /**
  * Holds the current room, and position of the player.
  * //Perhaps player shoudl be its own structure/class
@@ -19,6 +21,28 @@ namespace room_explorer {
  */
 class CurrentRoom {
   __unused Room* current_room_;
+  __unused glm::vec2 current_position;
+  __unused glm::vec2 main_view_direction;
+
+  __unused const std::string room_template_path_;
+
+  __unused RoomFactory factory_;
+
+public:
+  /**
+   * Room by default is loaded to "entry" id
+   * @param room_template_path
+   */
+  CurrentRoom(const std::string& room_template_path);
+
+  /**
+   *
+   * @param cos of rotatoin angle for each instance
+   * @param sin Rotation value of rotation angle of each instance
+   * @param resolution  number of hitpackages delievered. there will be resolution number of hitpackages to each side
+   * @return 2*half_resolutoin + 1 size array
+   */
+  std::vector<HitPackage> GetVision(float cos, float sin, size_t half_resolution, float range_distance);
 };
 
 }

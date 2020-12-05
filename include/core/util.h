@@ -117,6 +117,10 @@ bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& se
 float TextureIndexOnLineOfRay(const glm::vec2& line_head, const glm::vec2& line_tail,
                               const glm::vec2& ray_pos, const glm::vec2& ray_dir);
 
+//Rotate clockwise
+//  for counter,
+glm::vec2& FastRotate(glm::vec2& vec, const float rotation_cos, const float rotation_sin);
+
 // end of Geometric Utilities ==========================================================================================
 
 }

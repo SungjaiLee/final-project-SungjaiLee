@@ -4,7 +4,7 @@
 
 #include <visualizer/rooms_explorer_app.h>
 
-using rooms::visualizer::RoomsExplorerApp;
+using room_explorer::visualizer::RoomsExplorerApp;
 
 void prepareSettings(RoomsExplorerApp::Settings* settings) {
   settings->setResizable(false);

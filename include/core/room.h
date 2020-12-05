@@ -336,6 +336,9 @@ private:
   bool WithinRoom(bool strictly_within_width, bool strictly_within_height,
                   bool width_edge, bool height_edge) const;
 
+  bool OnRoomEdge(bool strictly_within_width, bool strictly_within_height,
+                  bool width_edge, bool height_edge) const;
+
   // End of Private Member Functions ===========================
 
 

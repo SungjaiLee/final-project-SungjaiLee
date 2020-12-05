@@ -233,6 +233,17 @@ float TextureIndexOnLineOfRay(const glm::vec2& line_head, const glm::vec2& line_
                               line_head, line_tail - line_head);
 }
 
+// Rotate counter clockwise
+glm::vec2& FastRotate(glm::vec2& vec, const float rotation_cos, const float rotation_sin) {
+  float x =  vec.x * rotation_cos + vec.y * rotation_sin;
+  float y = -vec.x * rotation_sin + vec.y * rotation_cos;
+
+  vec.x = x;
+  vec.y = y;
+
+  return vec;
+}
+
 // end of Geometric Utilities ==========================================================================================
 
 

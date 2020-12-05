@@ -140,6 +140,17 @@ bool Room::WithinRoom(const glm::vec2& pos, bool wall_inclusive) const {
   }
 }
 
+bool Room::OnRoomEdge(const glm::vec2& pos) const {
+  return OnRoomEdge((pos.x > 0) && (pos.x < width_),
+                    (pos.y > 0) && (pos.y < height_),
+                    FloatApproximation(pos.x, 0) || FloatApproximation(pos.x, width_),
+                    FloatApproximation(pos.y, 0) || FloatApproximation(pos.y, height_));
+//  return  FloatApproximation(pos.x, 0) ||
+//          FloatApproximation(pos.x, width_) ||
+//          FloatApproximation(pos.y, 0) ||
+//          FloatApproximation(pos.y, height_);
+}
+
 Direction Room::GetSideHit(const glm::vec2& ray_pos,
                            const glm::vec2& ray_dir,
                            bool point_inclusive) const {
@@ -614,24 +625,27 @@ bool Room::WithinRoom(bool strictly_within_width, bool strictly_within_height,
   if (strictly_within_width && strictly_within_height) {
     return true;
   }
+
+  return OnRoomEdge(strictly_within_width, strictly_within_height,
+                    width_edge, height_edge);
+}
+
+bool
+Room::OnRoomEdge(bool strictly_within_width, bool strictly_within_height, bool width_edge, bool height_edge) const {
   if (width_edge && height_edge) {
     return true;
   }
+
   if (width_edge && strictly_within_height) {
     return true;
   }
-  if (strictly_within_width && height_edge) {
+  if (height_edge && strictly_within_width) {
     return true;
   }
+
   return false;
 }
 
-bool Room::OnRoomEdge(const glm::vec2& pos) const {
-  return  FloatApproximation(pos.x, 0) ||
-          FloatApproximation(pos.x, width_) ||
-          FloatApproximation(pos.y, 0) ||
-          FloatApproximation(pos.y, height_);
-}
 
 
 // end of private geometric functions ===========================================================
