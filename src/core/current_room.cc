@@ -108,6 +108,20 @@ void CurrentRoom::MoveForward(float speed) {
           }
         }
 
+        // clamp in-room. Only one traversal allowed at a time
+        if (current_position.x < 0) {
+          current_position.x = 0;
+        }
+        if (current_position.x > current_room_->GetWidth()) {
+          current_position.x =  current_room_->GetWidth();
+        }
+        if (current_position.y < 0) {
+          current_position.y = 0;
+        }
+        if (current_position.y > current_room_->GetHeight()) {
+          current_position.y =  current_room_->GetHeight();
+        }
+
         return;
 
       case kVoid:

@@ -71,10 +71,10 @@ void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
       current_room_.RotateDirection(movement_rotation_cos_, movement_rotation_sin_);
       break;
     case ci::app::KeyEvent::KEY_UP:
-      current_room_.MoveForward(4);
+      current_room_.MoveForward(10);
       break;
     case ci::app::KeyEvent::KEY_DOWN:
-      current_room_.MoveForward(-4);
+      current_room_.MoveForward(-10);
       break;
   }
 }
@@ -82,7 +82,7 @@ void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
 float RoomsExplorerApp::GetBrightness(float distance) const {
 //  float proportion{distance / max_range};
 
-  const float half_point_adjuster = .005f;// ln2 / half_point
+  const float half_point_adjuster = .0005f;// ln2 / half_point
 
   float brightness{std::exp(-distance * half_point_adjuster)};
   if (brightness < 0) {
