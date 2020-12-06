@@ -39,7 +39,7 @@ bool Hit::operator!=(Hit hit) const {
 
 bool Hit::WithinDistance(float max_distance) const {
   // TODO use float approximation?
-  return hit_distance_ <= max_distance;
+  return hit_distance_ >= 0 && hit_distance_ <= max_distance;
 }
 
 void Hit::ShiftDistance(float shift) {

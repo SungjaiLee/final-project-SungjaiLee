@@ -4,8 +4,8 @@
   "room_dimension" : {
     "width" : 500,
     "height" : 600,
-    "ns_door_width" : 450,
-    "ew_door_width" : 550
+    "ns_door_width" : 490,
+    "ew_door_width" : 590
   },
 
   "rooms" : {

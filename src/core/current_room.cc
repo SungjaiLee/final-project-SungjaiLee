@@ -52,6 +52,49 @@ void CurrentRoom::RotateDirection(float cos, float sin) {
 }
 
 void CurrentRoom::MoveForward(float speed) {
+  // get all the item on the path, and see if the closest is closer than speed
+  HitPackage package_on_path{current_room_->GetVisible(current_position, speed * main_view_direction, std::abs(speed))};
+  auto it{package_on_path.GetHits().begin()};
+  //
+  if (it != package_on_path.GetHits().end()) {
+
+    float distance = it->first;
+    switch (it->second.hit_type_) {
+
+      case kRoomWall:
+      case kWall:
+        // walls treated the same
+        if (std::abs(speed) > std::abs(distance)) {
+          float abs = distance - 1;
+          if (speed > 0) {
+            speed = abs;
+          } else {
+            speed = -abs;
+          }
+        }
+        break;
+
+      case kPortal: // todo Need to behave comepletely differently
+        if (std::abs(speed) > std::abs(distance)) {
+          float abs = distance - 1;
+          if (speed > 0) {
+            speed = abs;
+          } else {
+            speed = -abs;
+          }
+        }
+        break;
+
+      case kVoid:
+      case kInvalid:
+        // skip
+        break;
+    }
+  }
+// else
+  // nothing on path
+  // just move
+
   current_position += speed * main_view_direction;
 }
 

@@ -479,7 +479,7 @@ HitPackage Room::GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir, 
 
   for (const Wall& wall : walls_) {
     Hit hit{wall.GetWallHit(ray_pos, ray_dir)};
-    if (hit.WithinDistance(visible_range)) {
+    if (!hit.IsNoHit() && hit.WithinDistance(visible_range)) { //add validity check
       package.AddHit(hit);
     }
   }

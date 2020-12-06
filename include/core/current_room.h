@@ -45,6 +45,10 @@ public:
   std::vector<HitPackage> GetVision(float cos, float sin, size_t half_resolution, float range_distance);
 
   void RotateDirection(float cos, float sin);
+  /**
+   * Also handmles collision
+   * @param speed
+   */
   void MoveForward(float speed);
 
 };
