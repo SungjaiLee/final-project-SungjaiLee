@@ -7,7 +7,7 @@
 namespace room_explorer {
 
 // Direction Enum Methods ===================================================
-Direction OppositeDirection(const Direction& direction) {
+Direction operator!(const Direction& direction) {
   switch (direction) {
     case kNorth:
       return kSouth;
@@ -45,7 +45,7 @@ bool Room::LinkRoom(const Direction& direction, Room* room_p) {
     return false;
   }
 
-  Room*& other_link = room_p->GetLinkedRoomPointer(OppositeDirection(direction));
+  Room*& other_link = room_p->GetLinkedRoomPointer(!direction);
   if (other_link != nullptr) {
     return false;
   }
@@ -60,7 +60,7 @@ bool Room::IsConnectedWith(Room* other_p, const Direction& direction) const {
   if (other_p != GetLinkedRoomPointer(direction)) {
     return false;
   }
-  if (this != other_p->GetLinkedRoomPointer(OppositeDirection(direction))) {
+  if (this != other_p->GetLinkedRoomPointer(!direction)) {
     return false;
   }
   return true;

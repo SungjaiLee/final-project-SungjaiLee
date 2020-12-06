@@ -21,8 +21,7 @@ namespace room_explorer {
 
 // Studs ==================
 class RoomFactory;
-// end of Studs ====
-
+// end of Studs ===========
 
 enum Direction {
   kNorth,
@@ -32,8 +31,13 @@ enum Direction {
   kUndefined
 };
 
-Direction OppositeDirection(const Direction& direction);
-// TODO, simpler notation for opposite room?
+/**
+ * Short-hand for returning opposite direction.
+ * Returns Opposite direction.
+ * @param direction Direction of which the opposite will be returned.
+ * @return Opposite Direction of the given direction.
+ *          If Direction is invalid, throws InvalidDirectionException
+ */
 Direction operator!(const Direction& direction);
 
 /**
@@ -140,7 +144,7 @@ public:
   // End of getters ===============
 
   /**
-   * Checks of the point if within the confines of the room-walls.
+   * Checks if the point is within the confines of the room-walls.
    *    Possible to check strictly within the walls by setting wall inclusivity to false.
    *        Being on the wall is not considered as being withing room if wall is not inclusive.
    * @param pos Point being check for being within room.
@@ -149,7 +153,13 @@ public:
    * @return Whether the point is within the room, strictly or not determined by parameter.
    */
   bool WithinRoom(const glm::vec2& pos, bool wall_inclusive = true) const;
-
+  /**
+    * Checks if the point is on the room's edge-wall.
+    *    Point must be strictly on the wall.
+    *    Being on same x,y level does not satisfy.
+    * @param pos Point being check for being on wall.
+    * @return Whether the point is on the wall's edge.
+    */
   bool OnRoomEdge(const glm::vec2& pos) const;
 
   /**
@@ -216,9 +226,26 @@ public:
   float GetWallTextureIndex(const Direction& direction, bool of_portal,
                             const glm::vec2& ray_pos, const glm::vec2& ray_dir) const;
 
+  /**
+   * Hit of either room-wall or portal.
+   * @param ray_pos Initial position of the ray.
+   * @param ray_dir Direction of the ray.
+   * @param wall_inclusive Whether or not the point on which the initial position is on should be included.
+   * @return Hit of either room-wall or portal.
+   */
   Hit GetPrimaryWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, bool wall_inclusive = true) const;
-  // Useful information to keep track of is the direction of pimary hit, which is only really useful in private context.
-  //  the reference variable is set as the direction found
+
+  /**
+   * Hit of either room-wall or portal.
+   * Also updates the direction passed to the direction in which the primary hit would be in.
+   *    Regardless of whether or not the primary hit is valid.
+   *    Such information will allow quicker faster check without repeating calcualtion.
+   * @param ray_pos Initial position of the ray.
+   * @param ray_dir Direction of the ray.
+   * @param direction Reference to the direction variable which will be updated to direction of possible primary hit.
+   * @param wall_inclusive Whether or not the point on which the initial position is on should be included.
+   * @return Hit of either room-wall or portal.
+   */
   Hit GetPrimaryWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir, Direction& direction, bool wall_inclusive = true) const;
 
   /**
@@ -258,9 +285,7 @@ public:
 
   // End of Room Element Functions ==========
 
-  // End of Public Room Member functions =============
-
-
+  // End of Public Room Member functions ============
 
 private:
   // Private Room Member Functions ===============================================================
@@ -336,6 +361,14 @@ private:
   bool WithinRoom(bool strictly_within_width, bool strictly_within_height,
                   bool width_edge, bool height_edge) const;
 
+  /**
+   * Compute the on-edge based on geometric properties already computed.
+   * @param strictly_within_width If position is strictly between the west and east walls.
+   * @param strictly_within_height If the position is strictly between north and south walls.
+   * @param width_edge If the pos is on west or east wall.
+   * @param height_edge If the pos is on north or south wall.
+   * @return If the position if strictly on the wall.
+   */
   bool OnRoomEdge(bool strictly_within_width, bool strictly_within_height,
                   bool width_edge, bool height_edge) const;
 
@@ -343,10 +376,8 @@ private:
 
 
   // Friend Classes/Functions =====================================================
-
   //! Factory needs to be able to initialize private members of room object
   friend class RoomFactory;
-
   // End of Friends ====================
 };
 
