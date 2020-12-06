@@ -24,21 +24,19 @@ void RoomsExplorerApp::draw() {
   ci::gl::clear(background_color);
 
 
-  float wall_bottom = 100;
-
   ci::Rectf floor{glm::vec2(0, kScreenHeight_),
-                   glm::vec2(kScreenWidth_, kScreenHeight_ - wall_bottom)};
+                   glm::vec2(kScreenWidth_, kScreenHeight_ - floor_height_)};
   ci::gl::color(ci::ColorA(0, 0, 0));
   ci::gl::drawSolidRect(floor);
 
 
   float section_width = kScreenWidth_ / (total_resolution_);
 
-  float max_range = 1500;
+//  float max_range = 1500;
 
   std::vector<HitPackage> packages{current_room_.GetVision(rotation_cos_, rotation_sin_,
                                                            half_resolution,
-                                                           max_range)};
+                                                           max_visible_distance_)};
 
   for (size_t i = 0; i < total_resolution_; ++i) {
 //    if (i % 2 == 0) {
@@ -56,35 +54,7 @@ void RoomsExplorerApp::draw() {
     std::map<float, Hit>::const_iterator it = package.GetHits().end();
     do {
       --it;
-      float distance = it->first;
-      // todo find the correct height calculation
-      float height = 10000 / (distance + 1);
-      ci::Rectf wall{{i * section_width, kScreenHeight_ - wall_bottom + (height / 10)},
-                     {(i + 1) * section_width, kScreenHeight_ - wall_bottom - height}};
-
-      float shade{GetBrightness(distance, max_range)}; // make its own function
-
-      if (it->second.hit_type_ == kPortal) {
-        ci::gl::color(ci::ColorA(100, 0, 200, .2));
-//        wall = {{i * section_width, kScreenWidth_},
-//             {(i + 1) * section_width, kScreenHeight_ - 100 - height}};
-      } else if (it->second.hit_type_ == kWall) {
-        ci::ColorA col;
-        if (std::fmod(it->second.texture_index_, 50) >= 5) {
-          col = ci::ColorA(200 * shade, 200 * shade, 200 * shade);
-        } else {
-//          col = ci::ColorA(20 * shade, 200 * shade, 100 * shade, .5);
-          col = ci::ColorA(0, 200, 0);
-        }
-        ci::gl::color(col);
-
-      } else if (it->second.hit_type_ == kRoomWall) {
-        ci::gl::color(ci::ColorA(200 * shade, 0, 0));
-      } else {
-        ci::gl::color(ci::ColorA(0, 0, 0));
-      }
-
-      ci::gl::drawSolidRect(wall);
+      DrawStrip(i, section_width, it->second);
     } while (it != package.GetHits().begin());
   }
 }
@@ -109,13 +79,104 @@ void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
   }
 }
 
-float RoomsExplorerApp::GetBrightness(float distance, float max_range) const {
+float RoomsExplorerApp::GetBrightness(float distance) const {
 //  float proportion{distance / max_range};
 
-  const float half_point_adjuster = .019f;// ln2 / half_point
+  const float half_point_adjuster = .005f;// ln2 / half_point
 
-  return std::exp(-distance * half_point_adjuster);
+  float brightness{std::exp(-distance * half_point_adjuster)};
+  if (brightness < 0) {
+    return 0;
+  }
+  if (brightness > 1) {
+    return 1;
+  }
+  return brightness;
 //  return std::exp(-proportion * half_point_adjuster);
+}
+
+void RoomsExplorerApp::DrawStrip(float left_index, float strip_width, const Hit& hit) const {
+  float room_height{projection_constant_ / hit.hit_distance_};
+
+  float lower_height{kScreenHeight_ - floor_height_ + room_height / 8};
+  float upper_height{kScreenHeight_ - floor_height_ - room_height};
+
+  switch (hit.hit_type_) {
+
+    case kRoomWall:
+      {
+        ci::Rectf wall{{left_index * strip_width,       lower_height},
+                       {(left_index + 1) * strip_width, upper_height}};
+        float shade{GetBrightness(hit.hit_distance_)};
+        ci::ColorA col{1 * shade, .2f * shade, .3f * shade};
+
+        ci::gl::color(col);
+        ci::gl::drawSolidRect(wall);
+      }
+      break;
+
+    case kWall:
+      {
+        float sub_index{static_cast<float>(std::fmod(hit.texture_index_, 50))};
+
+        float lower_window;
+        float upper_window;
+        if (sub_index >= 30) {
+          //window will begin at 60% to 90%
+          // since wall height is 9 * distance / 8,  lower and upper window is at
+          lower_window = {28 * room_height / 40};
+          upper_window = {81 * room_height / 80};
+        } else {
+          //window will begin at 5% to 90%
+          lower_window = {9 * room_height / 160};
+          upper_window = {81 * room_height / 80};
+        }
+
+        float shade{GetBrightness(hit.hit_distance_)};
+        // wall col
+        ci::ColorA col{.7f * shade, .7f * shade, .7f * shade};
+        ci::gl::color(col);
+        // lower section
+        ci::Rectf wall {{left_index * strip_width,       lower_height},
+                        {(left_index + 1) * strip_width, lower_height - lower_window}};
+        ci::gl::drawSolidRect(wall);
+        // upper
+        wall = {{left_index * strip_width,      lower_height - upper_window},
+               {(left_index + 1) * strip_width, upper_height}};
+        ci::gl::drawSolidRect(wall);
+
+        // window col
+        col = {0, 1 * shade, 0, 1.2f - shade};
+        ci::gl::color(col);
+        wall = {{left_index * strip_width,       lower_height - lower_window},
+                {(left_index + 1) * strip_width, lower_height - upper_window}};
+        ci::gl::drawSolidRect(wall);
+      }
+      break;
+
+    case kPortal:
+      {
+        // find a more elegent design
+//        const float portal_repetition{50};
+//        float sub_index{static_cast<float>(std::fmod(hit.texture_index_, portal_repetition))};
+//        sub_index /= portal_repetition;
+//        sub_index -= .5f;
+//        sub_index /= 3;
+//        float shade{sub_index * sub_index};
+
+        ci::ColorA col{.8f, .2f, .9f, .3f};
+        ci::gl::color(col);
+        ci::Rectf wall = {{left_index * strip_width,       lower_height},
+                {(left_index + 1) * strip_width, upper_height}};
+        ci::gl::drawSolidRect(wall);
+      }
+      break;
+
+    case kVoid:
+    case kInvalid:
+      // Draw nothing?
+      break;
+  }
 }
 
 

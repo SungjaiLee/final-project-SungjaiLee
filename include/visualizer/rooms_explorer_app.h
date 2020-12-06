@@ -28,10 +28,14 @@ private:
 
   // into how many columnes should the screen be partitionsed into?
   //  total resolution will be 2*n + 1
-  const size_t half_resolution = 140;
+  const size_t half_resolution = 40;
 
   // range in radius of half field
   const float half_visual_field_range_ = 1;
+
+  const float max_visible_distance_ = 2000;
+
+  const float floor_height_ = 100;
 
 
   CurrentRoom current_room_;
@@ -47,7 +51,9 @@ private:
   const float movement_rotation_cos_;
   const float movement_rotation_sin_;
 
-  float GetBrightness(float distance, float max_range) const;
+  float GetBrightness(float distance) const;
+
+  void DrawStrip(float left_index, float strip_width, const Hit& hit) const;
 
 public:
   RoomsExplorerApp();
@@ -58,6 +64,8 @@ public:
   void keyDown(ci::app::KeyEvent event) override;
 
 
+private:
+  const float projection_constant_ = 10000;
 };
 
 } // namespace visualizer
