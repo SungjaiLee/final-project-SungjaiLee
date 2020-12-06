@@ -84,7 +84,7 @@ void CurrentRoom::MoveForward(float speed) {
 //          }
 //        }
         {
-          Direction traversal_direction{current_room_->GetSideHit(current_position, main_view_direction)};
+          Direction traversal_direction{current_room_->GetSideHit(current_position, speed * main_view_direction)};
           current_room_ = current_room_->GetConnectedRoom(traversal_direction);
 
           current_position += speed * main_view_direction;

@@ -7,7 +7,7 @@
 using namespace room_explorer::visualizer;
 
 RoomsExplorerApp::RoomsExplorerApp()
-    : current_room_("/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/room_template.json"),
+    : current_room_("/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/small_maze.json"),
       incr_angle_(half_visual_field_range_ / half_resolution),
       rotation_cos_(std::cos(incr_angle_)),
       rotation_sin_(std::sin(incr_angle_)),
@@ -134,7 +134,7 @@ void RoomsExplorerApp::DrawStrip(float left_index, float strip_width, const Hit&
 
         float shade{GetBrightness(hit.hit_distance_)};
         // wall col
-        ci::ColorA col{.7f * shade, .7f * shade, .7f * shade};
+        ci::ColorA col{1 * shade, 1 * shade, 1 * shade};
         ci::gl::color(col);
         // lower section
         ci::Rectf wall {{left_index * strip_width,       lower_height},

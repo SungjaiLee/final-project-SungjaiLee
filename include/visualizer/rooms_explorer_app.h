@@ -28,7 +28,7 @@ private:
 
   // into how many columnes should the screen be partitionsed into?
   //  total resolution will be 2*n + 1
-  const size_t half_resolution = 40;
+  const size_t half_resolution = 20;
 
   // range in radius of half field
   const float half_visual_field_range_ = 1;

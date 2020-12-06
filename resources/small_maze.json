@@ -1,0 +1,58 @@
+{
+  "room_dimension" : {
+    "width" : 200,
+    "height" : 200,
+    "ns_door_width" : 180,
+    "ew_door_width" : 180
+  },
+
+  "rooms" : {
+    "entry" : {
+      "walls" : []
+    },
+    "cross" : {
+      "walls" : [
+        {
+          "head_x" : 20,
+          "head_y" : 20,
+          "tail_x" : 180,
+          "tail_y" : 180
+        },
+        {
+          "head_x" : 20,
+          "head_y" : 180,
+          "tail_x" : 180,
+          "tail_y" : 20
+        }
+      ]
+    },
+    "pilar" : {
+      "walls" : [
+        {
+          "head_x" : 90,
+          "head_y" : 90,
+          "tail_x" : 110,
+          "tail_y" : 90
+        },
+        {
+          "head_x" : 90,
+          "head_y" : 110,
+          "tail_x" : 110,
+          "tail_y" : 110
+        },
+        {
+          "head_x" : 90,
+          "head_y" : 90,
+          "tail_x" : 90,
+          "tail_y" : 110
+        },
+        {
+          "head_x" : 110,
+          "head_y" : 90,
+          "tail_x" : 110,
+          "tail_y" : 110
+        }
+      ]
+    }
+  }
+}
