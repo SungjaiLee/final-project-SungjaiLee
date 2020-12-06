@@ -34,9 +34,11 @@ void RoomsExplorerApp::draw() {
 
   float section_width = kScreenWidth_ / (total_resolution_);
 
+  float max_range = 1500;
+
   std::vector<HitPackage> packages{current_room_.GetVision(rotation_cos_, rotation_sin_,
                                                            half_resolution,
-                                                           1500)};
+                                                           max_range)};
 
   for (size_t i = 0; i < total_resolution_; ++i) {
 //    if (i % 2 == 0) {
@@ -60,14 +62,20 @@ void RoomsExplorerApp::draw() {
       ci::Rectf wall{{i * section_width, kScreenHeight_ - wall_bottom + (height / 10)},
                      {(i + 1) * section_width, kScreenHeight_ - wall_bottom - height}};
 
-      float shade{1 / distance}; //max disatnce
+      float shade{GetBrightness(distance, max_range)}; // make its own function
 
       if (it->second.hit_type_ == kPortal) {
         ci::gl::color(ci::ColorA(100, 0, 200, .2));
 //        wall = {{i * section_width, kScreenWidth_},
 //             {(i + 1) * section_width, kScreenHeight_ - 100 - height}};
       } else if (it->second.hit_type_ == kWall) {
-        auto col = ci::ColorA(200 * shade, 200 * shade, 200 * shade);
+        ci::ColorA col;
+        if (std::fmod(it->second.texture_index_, 50) >= 5) {
+          col = ci::ColorA(200 * shade, 200 * shade, 200 * shade);
+        } else {
+//          col = ci::ColorA(20 * shade, 200 * shade, 100 * shade, .5);
+          col = ci::ColorA(0, 200, 0);
+        }
         ci::gl::color(col);
 
       } else if (it->second.hit_type_ == kRoomWall) {
@@ -99,6 +107,15 @@ void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
       current_room_.MoveForward(-4);
       break;
   }
+}
+
+float RoomsExplorerApp::GetBrightness(float distance, float max_range) const {
+//  float proportion{distance / max_range};
+
+  const float half_point_adjuster = .019f;// ln2 / half_point
+
+  return std::exp(-distance * half_point_adjuster);
+//  return std::exp(-proportion * half_point_adjuster);
 }
 
 

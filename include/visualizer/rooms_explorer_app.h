@@ -28,7 +28,7 @@ private:
 
   // into how many columnes should the screen be partitionsed into?
   //  total resolution will be 2*n + 1
-  const size_t half_resolution = 100;
+  const size_t half_resolution = 140;
 
   // range in radius of half field
   const float half_visual_field_range_ = 1;
@@ -46,6 +46,8 @@ private:
 
   const float movement_rotation_cos_;
   const float movement_rotation_sin_;
+
+  float GetBrightness(float distance, float max_range) const;
 
 public:
   RoomsExplorerApp();
