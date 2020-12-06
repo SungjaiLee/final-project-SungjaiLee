@@ -126,9 +126,6 @@ public:
   // end of JSON constructor =================================================
 };
 
-
-void from_json(const json& j, Wall& wall);
-
 } // namespace room_explorer
 
 #endif //NONEUCLIDEAN_RAY_CASTER_WALL_H
