@@ -75,15 +75,40 @@ void CurrentRoom::MoveForward(float speed) {
         break;
 
       case kPortal: // todo Need to behave comepletely differently
-        if (std::abs(speed) > std::abs(distance)) {
-          float abs = distance - 1;
-          if (speed > 0) {
-            speed = abs;
-          } else {
-            speed = -abs;
+//        if (std::abs(speed) > std::abs(distance)) {
+//          float abs = distance - 1;
+//          if (speed > 0) {
+//            speed = abs;
+//          } else {
+//            speed = -abs;
+//          }
+//        }
+        {
+          Direction traversal_direction{current_room_->GetSideHit(current_position, main_view_direction)};
+          current_room_ = current_room_->GetConnectedRoom(traversal_direction);
+
+          current_position += speed * main_view_direction;
+          switch (traversal_direction) {
+
+            case kNorth:
+              current_position.y -= current_room_->GetHeight();
+              break;
+            case kSouth:
+              current_position.y += current_room_->GetHeight();
+              break;
+            case kEast:
+              current_position.x -= current_room_->GetWidth();
+              break;
+            case kWest:
+              current_position.x += current_room_->GetWidth();
+              break;
+
+            case kUndefined:
+              throw exceptions::InvalidDirectionException();
           }
         }
-        break;
+
+        return;
 
       case kVoid:
       case kInvalid:
