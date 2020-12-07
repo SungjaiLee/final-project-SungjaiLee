@@ -28,11 +28,11 @@ Direction operator!(const Direction& direction) {
 
 // Elementary Getters ===========================================================================
 size_t Room::GetWallCount() const {
-  return walls_.size();
+  return walls_->size();
 }
 
 const std::set<Wall>& Room::GetWalls() const {
-  return walls_;
+  return *walls_;
 }
 // End of elementary getters ====================================================================
 
@@ -403,7 +403,7 @@ HitPackage Room::CurrentRoomPackage(const glm::vec2& ray_pos, const glm::vec2& r
   }
 
 
-  for (const Wall& wall : walls_) {
+  for (const Wall& wall : *walls_) {
     Hit hit{wall.GetWallHit(ray_pos, ray_dir)};
     if (hit.WithinDistance(visible_range)) {
       package.AddHit(hit);
@@ -477,7 +477,7 @@ HitPackage Room::GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir, 
     }
   }
 
-  for (const Wall& wall : walls_) {
+  for (const Wall& wall : *walls_) {
     Hit hit{wall.GetWallHit(ray_pos, ray_dir)};
     if (!hit.IsNoHit() && hit.WithinDistance(visible_range)) { //add validity check
       package.AddHit(hit);

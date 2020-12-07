@@ -66,7 +66,7 @@ private:
   float ns_door_begin_;
   float ew_door_begin_;
 
-  std::set<Wall> walls_;
+  const std::set<Wall>* walls_;
 
 public:
   // Public Room Member Functions ===============================================

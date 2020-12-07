@@ -83,11 +83,11 @@ Room* RoomFactory::GenerateRoom(const std::string &id) const {
 
   room->factory = this;
 
-  RoomTemplate room_temp = template_rooms_.at(id);
+  const RoomTemplate& room_temp = template_rooms_.at(id);
 
-  //TODO should walls be only reference? copying might take up too much storage
-  std::copy( room_temp.walls_.begin(), room_temp.walls_.end(),
-             std::inserter(room->walls_, room->walls_.begin()) );
+  // Link straight to source. Reduces space complexity, which may be a source of slowness.
+  // Due to non-euclidean physics, small repeating room unit will define infinite space.
+  room->walls_ = &room_temp.walls_;
 
   return room;
 }

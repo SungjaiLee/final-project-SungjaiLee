@@ -20,7 +20,7 @@ namespace room_explorer {
  * Wall consists of a segment, defined by two end points.
  *      Wall handles geometric interactions with a ray and can return hit-summary from a given ray.
  */
-class Wall : std::string {
+class Wall {
 private:
   glm::vec2 head_;
   glm::vec2 tail_;
