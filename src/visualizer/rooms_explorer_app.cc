@@ -11,7 +11,7 @@ RoomsExplorerApp::RoomsExplorerApp()
       rotation_cos_(std::cos(incr_angle_)),
       rotation_sin_(std::sin(incr_angle_)),
 
-      movement_angle_(.1f),
+      movement_angle_(.2f),
       movement_rotation_cos_(std::cos(movement_angle_)),
       movement_rotation_sin_(std::sin(movement_angle_)),
 
@@ -56,24 +56,60 @@ void RoomsExplorerApp::draw() {
 }
 void RoomsExplorerApp::update() {
   ++ticks_;
+
+  // Opposite movement keys can be held at the same time.
+  //  To avoid useless computation, record all the movement using these counters first,
+  //  then only perform movement if valid direction occurs.
+  size_t curr_rotation_direction{0};
+  size_t curr_movement_direction{0};
+  for (int key : held_keys_) {
+    switch (key) {
+      case ci::app::KeyEvent::KEY_LEFT:
+        --curr_rotation_direction;
+        break;
+      case ci::app::KeyEvent::KEY_RIGHT:
+        ++curr_rotation_direction;
+        break;
+
+      case ci::app::KeyEvent::KEY_UP:
+        ++curr_movement_direction;
+        break;
+      case ci::app::KeyEvent::KEY_DOWN:
+        --curr_movement_direction;
+        break;
+
+      default:
+        // Do nothing
+        break;
+    }
+  }
+
+  if (curr_rotation_direction == 1) {
+    // rotation clockwise
+    game_engine_.RotateDirection(movement_rotation_cos_, movement_rotation_sin_);
+  } else if (curr_rotation_direction == -1) {
+    // rotate counter clockwise
+    game_engine_.RotateDirection(movement_rotation_cos_, -movement_rotation_sin_);
+  }
+
+  if (curr_movement_direction == 1) {
+    // Move forwards
+    game_engine_.MoveForward(movement_speed_);
+  } else if (curr_movement_direction == -1) {
+    // Move backwards
+    game_engine_.MoveForward(-movement_speed_);
+  }
+
 }
 
 void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
-  switch (event.getCode()) {
-    case ci::app::KeyEvent::KEY_LEFT:
-      game_engine_.RotateDirection(movement_rotation_cos_, -movement_rotation_sin_);
-      break;
-    case ci::app::KeyEvent::KEY_RIGHT:
-      game_engine_.RotateDirection(movement_rotation_cos_, movement_rotation_sin_);
-      break;
-    case ci::app::KeyEvent::KEY_UP:
-      game_engine_.MoveForward(movement_speed_);
-      break;
-    case ci::app::KeyEvent::KEY_DOWN:
-      game_engine_.MoveForward(-movement_speed_);
-      break;
-  }
+  held_keys_.insert(event.getCode() );
 }
+
+void RoomsExplorerApp::keyUp(ci::app::KeyEvent event) {
+  held_keys_.erase(event.getCode() );
+}
+
 
 float RoomsExplorerApp::GetBrightness(float distance) const {
 //  float proportion{distance / max_range};
@@ -170,7 +206,6 @@ void RoomsExplorerApp::DrawStrip(float left_index, float strip_width, const Hit&
       break;
   }
 }
-
 
 
 

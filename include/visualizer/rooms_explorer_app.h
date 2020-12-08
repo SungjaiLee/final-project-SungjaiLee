@@ -14,6 +14,7 @@
 #include <cinder/gl/gl.h>
 
 #include <string>
+#include <set>
 
 namespace room_explorer {
 
@@ -78,6 +79,7 @@ public:
   void update() override;
 
   void keyDown(ci::app::KeyEvent event) override;
+  void keyUp(ci::app::KeyEvent event) override;
 
 
 private:
@@ -86,6 +88,9 @@ private:
 
   // Counts number of updates
   size_t ticks_ = 0;
+
+  // allows multiple key holding
+  std::set<int> held_keys_;
 
   // End of Private Variables ==========================================================================================
 
