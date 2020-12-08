@@ -23,7 +23,7 @@ namespace visualizer {
  */
 class RoomsExplorerApp : public ci::app::App {
 private:
-  const std::string kTemplatePath = "/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/small_maze.json";
+  const std::string kTemplatePath = "/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/tight_map.json";
 
   GameEngine game_engine_;
 
@@ -32,7 +32,7 @@ private:
 
   // into how many columnes should the screen be partitionsed into?
   //  total resolution will be 2*n + 1
-  constexpr static const size_t half_resolution = 100; //! HardCoded-Constant
+  constexpr static const size_t half_resolution = 60; //! HardCoded-Constant
   constexpr static const float total_resolution_ = half_resolution * 2 + 1;
 
   constexpr static const float strip_width_ = kScreenWidth_ / total_resolution_;

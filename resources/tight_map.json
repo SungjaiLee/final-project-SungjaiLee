@@ -1,0 +1,378 @@
+{
+  "entry_x" : 50,
+  "entry_y" : 50,
+
+  "room_dimension" : {
+    "width" : 100,
+    "height" : 100,
+    "ns_door_width" : 100,
+    "ew_door_width" : 100
+  },
+
+  "rooms" : {
+    "entry" : {
+      "walls" : []
+    },
+    "north_blocked" : {
+      "walls" : [
+        {
+          "head_x" : 0,
+          "head_y" : 100,
+          "tail_x" : 100,
+          "tail_y" : 100
+        }
+      ]
+    },
+    "south_blocked" : {
+      "walls" : [
+        {
+          "head_x" : 0,
+          "head_y" : 0,
+          "tail_x" : 100,
+          "tail_y" : 0
+        }
+      ]
+    },
+    "east_block" : {
+      "walls" : [
+        {
+          "head_x" : 100,
+          "head_y" : 0,
+          "tail_x" : 100,
+          "tail_y" : 100
+        }
+      ]
+    },
+    "west_block" : {
+      "walls" : [
+        {
+          "head_x" : 100,
+          "head_y" : 100,
+          "tail_x" : 100,
+          "tail_y" : 100
+        }
+      ]
+    },
+    "right_diagonal" : {
+      "walls" : [
+        {
+          "head_x" : 100,
+          "head_y" : 0,
+          "tail_x" : 0,
+          "tail_y" : 100
+        }
+      ]
+    },
+    "left_diagonal" : {
+      "walls" : [
+        {
+          "head_x" : 100,
+          "head_y" : 100,
+          "tail_x" : 0,
+          "tail_y" : 0
+        }
+      ]
+    },
+    "pillar" : {
+      "walls" : [
+        {
+          "head_x" : 40,
+          "head_y" : 40,
+          "tail_x" : 40,
+          "tail_y" : 60
+        },
+        {
+          "head_x" : 60,
+          "head_y" : 40,
+          "tail_x" : 60,
+          "tail_y" : 60
+        },
+        {
+          "head_x" : 40,
+          "head_y" : 60,
+          "tail_x" : 60,
+          "tail_y" : 60
+        },
+        {
+          "head_x" : 40,
+          "head_y" : 40,
+          "tail_x" : 60,
+          "tail_y" : 40
+        }
+      ]
+    },
+    "nine_pillar" : {
+      "__comment__" : "pillars are (25, 50, 75)^2, with width of 10",
+      "walls" : [
+
+        {
+          "head_x" : 20,
+          "head_y" : 20,
+          "tail_x" : 30,
+          "tail_y" : 20
+        },
+        {
+          "head_x" : 20,
+          "head_y" : 30,
+          "tail_x" : 30,
+          "tail_y" : 30
+        },
+        {
+          "head_x" : 20,
+          "head_y" : 20,
+          "tail_x" : 20,
+          "tail_y" : 30
+        },
+        {
+          "head_x" : 30,
+          "head_y" : 20,
+          "tail_x" : 30,
+          "tail_y" : 30
+        },
+
+
+        {
+          "head_x" : 45,
+          "head_y" : 20,
+          "tail_x" : 55,
+          "tail_y" : 20
+        },
+        {
+          "head_x" : 45,
+          "head_y" : 30,
+          "tail_x" : 55,
+          "tail_y" : 30
+        },
+        {
+          "head_x" : 45,
+          "head_y" : 20,
+          "tail_x" : 45,
+          "tail_y" : 30
+        },
+        {
+          "head_x" : 55,
+          "head_y" : 20,
+          "tail_x" : 55,
+          "tail_y" : 30
+        },
+
+
+
+        {
+          "head_x" : 70,
+          "head_y" : 20,
+          "tail_x" : 80,
+          "tail_y" : 20
+        },
+        {
+          "head_x" : 70,
+          "head_y" : 30,
+          "tail_x" : 80,
+          "tail_y" : 30
+        },
+        {
+          "head_x" : 70,
+          "head_y" : 20,
+          "tail_x" : 70,
+          "tail_y" : 30
+        },
+        {
+          "head_x" : 80,
+          "head_y" : 20,
+          "tail_x" : 80,
+          "tail_y" : 30
+        },
+
+
+        {
+          "head_x" : 20,
+          "head_y" : 45,
+          "tail_x" : 30,
+          "tail_y" : 45
+        },
+        {
+          "head_x" : 20,
+          "head_y" : 55,
+          "tail_x" : 30,
+          "tail_y" : 55
+        },
+        {
+          "head_x" : 20,
+          "head_y" : 45,
+          "tail_x" : 20,
+          "tail_y" : 55
+        },
+        {
+          "head_x" : 30,
+          "head_y" : 45,
+          "tail_x" : 30,
+          "tail_y" : 55
+        },
+
+
+        {
+          "head_x" : 45,
+          "head_y" : 45,
+          "tail_x" : 55,
+          "tail_y" : 45
+        },
+        {
+          "head_x" : 45,
+          "head_y" : 55,
+          "tail_x" : 55,
+          "tail_y" : 55
+        },
+        {
+          "head_x" : 45,
+          "head_y" : 45,
+          "tail_x" : 45,
+          "tail_y" : 55
+        },
+        {
+          "head_x" : 55,
+          "head_y" : 45,
+          "tail_x" : 55,
+          "tail_y" : 55
+        },
+
+
+
+        {
+          "head_x" : 70,
+          "head_y" : 45,
+          "tail_x" : 80,
+          "tail_y" : 45
+        },
+        {
+          "head_x" : 70,
+          "head_y" : 55,
+          "tail_x" : 80,
+          "tail_y" : 55
+        },
+        {
+          "head_x" : 70,
+          "head_y" : 45,
+          "tail_x" : 70,
+          "tail_y" : 55
+        },
+        {
+          "head_x" : 80,
+          "head_y" : 45,
+          "tail_x" : 80,
+          "tail_y" : 55
+        },
+
+
+        {
+          "head_x" : 20,
+          "head_y" : 70,
+          "tail_x" : 30,
+          "tail_y" : 70
+        },
+        {
+          "head_x" : 20,
+          "head_y" : 80,
+          "tail_x" : 30,
+          "tail_y" : 80
+        },
+        {
+          "head_x" : 20,
+          "head_y" : 70,
+          "tail_x" : 20,
+          "tail_y" : 80
+        },
+        {
+          "head_x" : 30,
+          "head_y" : 70,
+          "tail_x" : 30,
+          "tail_y" : 80
+        },
+
+
+        {
+          "head_x" : 45,
+          "head_y" : 70,
+          "tail_x" : 55,
+          "tail_y" : 70
+        },
+        {
+          "head_x" : 45,
+          "head_y" : 80,
+          "tail_x" : 55,
+          "tail_y" : 80
+        },
+        {
+          "head_x" : 45,
+          "head_y" : 70,
+          "tail_x" : 45,
+          "tail_y" : 80
+        },
+        {
+          "head_x" : 55,
+          "head_y" : 70,
+          "tail_x" : 55,
+          "tail_y" : 80
+        },
+
+
+
+        {
+          "head_x" : 70,
+          "head_y" : 70,
+          "tail_x" : 80,
+          "tail_y" : 70
+        },
+        {
+          "head_x" : 70,
+          "head_y" : 80,
+          "tail_x" : 80,
+          "tail_y" : 80
+        },
+        {
+          "head_x" : 70,
+          "head_y" : 70,
+          "tail_x" : 70,
+          "tail_y" : 80
+        },
+        {
+          "head_x" : 80,
+          "head_y" : 70,
+          "tail_x" : 80,
+          "tail_y" : 80
+        }
+      ]
+    },
+    "X" : {
+      "walls" : [
+        {
+          "head_x" : 100,
+          "head_y" : 100,
+          "tail_x" : 0,
+          "tail_y" : 0
+        },
+        {
+          "head_x" : 100,
+          "head_y" : 0,
+          "tail_x" : 0,
+          "tail_y" : 100
+        }
+      ]
+    },
+    "cross" : {
+      "walls" : [
+        {
+          "head_x" : 50,
+          "head_y" : 0,
+          "tail_x" : 50,
+          "tail_y" : 100
+        },
+        {
+          "head_x" : 0,
+          "head_y" : 50,
+          "tail_x" : 100,
+          "tail_y" : 50
+        }
+      ]
+    }
+  }
+}
