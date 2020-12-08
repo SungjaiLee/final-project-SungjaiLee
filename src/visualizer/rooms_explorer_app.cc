@@ -8,12 +8,12 @@ using namespace room_explorer::visualizer;
 
 RoomsExplorerApp::RoomsExplorerApp()
     : game_engine_("/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/small_maze.json"),
-      incr_angle_(half_visual_field_range_ / half_resolution),
       rotation_cos_(std::cos(incr_angle_)),
       rotation_sin_(std::sin(incr_angle_)),
-      total_resolution_(2 * half_resolution + 1),
-      movement_rotation_cos_(std::cos(.1f)),
-      movement_rotation_sin_(std::sin(.1f)) {
+      movement_angle_(.1f),
+      movement_rotation_cos_(std::cos(movement_angle_)),
+      movement_rotation_sin_(std::sin(movement_angle_)),
+      movement_speed_(10) {
 
   ci::app::setWindowSize(kScreenWidth_, kScreenHeight_);
 
@@ -30,7 +30,7 @@ void RoomsExplorerApp::draw() {
   ci::gl::drawSolidRect(floor);
 
 
-  float section_width = kScreenWidth_ / (total_resolution_);
+//  float section_width = kScreenWidth_ / (total_resolution_);
 
 //  float max_range = 1500;
 
@@ -39,24 +39,18 @@ void RoomsExplorerApp::draw() {
                                                            max_visible_distance_)};
 
   for (size_t i = 0; i < total_resolution_; ++i) {
-//    if (i % 2 == 0) {
-//      ci::gl::color(ci::Color8u(200, 101, 108));
-//    } else {
-//      ci::gl::color(ci::Color8u(20, 101, 108));
-//    }
-//    ci::Rectf rect{{i * section_width, 0},
-//                   {(i + 1) * section_width, kScreenHeight_}};
-//
-//    ci::gl::drawSolidRect(rect);
 
     HitPackage& package = packages.at(i);
 
-    std::map<float, Hit>::const_iterator it = package.GetHits().end();
+    // Need to draw the furthest hit first.
+    //  Star at the end and iterate down until begin is found.
+    auto it = package.GetHits().end();
     do {
       --it;
-      DrawStrip(i, section_width, it->second);
+      DrawStrip(i, strip_width_, it->second);
     } while (it != package.GetHits().begin());
   }
+
 }
 void RoomsExplorerApp::update() {
 
@@ -71,10 +65,10 @@ void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
       game_engine_.RotateDirection(movement_rotation_cos_, movement_rotation_sin_);
       break;
     case ci::app::KeyEvent::KEY_UP:
-      game_engine_.MoveForward(10);
+      game_engine_.MoveForward(movement_speed_);
       break;
     case ci::app::KeyEvent::KEY_DOWN:
-      game_engine_.MoveForward(-10);
+      game_engine_.MoveForward(-movement_speed_);
       break;
   }
 }

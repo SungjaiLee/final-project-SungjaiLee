@@ -1,4 +1,8 @@
 {
+
+  "entry_x" : 5,
+  "entry_y" : 100,
+
   "room_dimension" : {
     "width" : 200,
     "height" : 200,
@@ -8,7 +12,38 @@
 
   "rooms" : {
     "entry" : {
-      "walls" : []
+      "walls" : [
+        {
+          "head_x" : 10,
+          "head_y" : 10,
+          "tail_x" : 190,
+          "tail_y" : 10
+        },
+        {
+          "head_x" : 10,
+          "head_y" : 10,
+          "tail_x" : 190,
+          "tail_y" : 10
+        },
+        {
+          "head_x" : 10,
+          "head_y" : 190,
+          "tail_x" : 190,
+          "tail_y" : 190
+        },
+        {
+          "head_x" : 190,
+          "head_y" : 10,
+          "tail_x" : 190,
+          "tail_y" : 190
+        },
+        {
+          "head_x" : 10,
+          "head_y" : 10,
+          "tail_x" : 10,
+          "tail_y" : 190
+        }
+      ]
     },
     "cross" : {
       "walls" : [

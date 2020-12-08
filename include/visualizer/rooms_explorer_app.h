@@ -21,35 +21,38 @@ namespace visualizer {
  */
 class RoomsExplorerApp : public ci::app::App {
 private:
-  const float kScreenWidth_ = 900;
-  const float kScreenHeight_ = 500;
+  GameEngine game_engine_;
 
-  __unused const std::string room_template_path_;
+  constexpr static const float kScreenWidth_ = 1000; //! HardCoded-Constant
+  constexpr static const float kScreenHeight_ = 500; //! HardCoded-Constant
 
   // into how many columnes should the screen be partitionsed into?
   //  total resolution will be 2*n + 1
-  const size_t half_resolution = 40;
+  constexpr static const size_t half_resolution = 40; //! HardCoded-Constant
+  constexpr static const float total_resolution_ = half_resolution * 2 + 1;
+
+  constexpr static const float strip_width_ = kScreenWidth_ / total_resolution_;
 
   // range in radius of half field
-  const float half_visual_field_range_ = 1;
+  constexpr static const float half_visual_field_range_ = 1; //! HardCoded-Constant
 
-  const float max_visible_distance_ = 2000;
+  constexpr static const float max_visible_distance_ = 2000; //! HardCoded-Constant
 
-  const float floor_height_ = 100;
+  constexpr static const float floor_height_ = 100; //! HardCoded-Constant
 
+  constexpr static const float incr_angle_ = half_visual_field_range_ / half_resolution;
 
-  GameEngine game_engine_;
-
-  const float incr_angle_;
-
+  // Angle between each strips, seen from main-direction vector
   const float rotation_cos_;
   const float rotation_sin_;
 
-  const float total_resolution_;
-
-
+  // Angle between rotation of each rotating movement.
+  const float movement_angle_;
   const float movement_rotation_cos_;
   const float movement_rotation_sin_;
+
+  // Speed of each forward or backward motion
+  const float movement_speed_;
 
   float GetBrightness(float distance) const;
 
