@@ -98,19 +98,35 @@ Room* Room::GetConnectedRoom(const Direction& direction, const std::string& defa
 
 // Getters ==================================================================
 float Room::GetWidth() const {
-  return width_;
+  return factory->kRoomWidth;
 }
 
 float Room::GetHeight() const {
-  return height_;
+  return factory->kRoomHeight;
 }
 
 float Room::GetNSDoorWidth() const {
-  return ns_door_width_;
+  return factory->kNSDoorWidth;
 }
 
 float Room::GetEWDoorWidth() const {
-  return ew_door_width_;
+  return factory->kEWDoorWidth;
+}
+
+float Room::GetNSDoorBegin() const {
+  return factory->kNSDoorBegin;
+}
+
+float Room::GetEWDoorBegin() const {
+  return factory->kEWDoorBegin;
+}
+
+float Room::GetNSDoorEnd() const {
+  return GetNSDoorBegin() + GetNSDoorWidth();
+}
+
+float Room::GetEWDoorEnd() const {
+  return GetEWDoorBegin() + GetEWDoorWidth();
 }
 
 glm::vec2 Room::GetHead(Direction direction, bool of_portal) const {
@@ -128,41 +144,41 @@ bool Room::WithinRoom(const glm::vec2& pos, bool wall_inclusive) const {
 
   if (!wall_inclusive){
     // Just set edges as always being un-intersected for the same result.
-    return WithinRoom((pos.x > 0) && (pos.x < width_),
-                      (pos.y > 0) && (pos.y < height_),
+    return WithinRoom((pos.x > 0) && (pos.x < GetWidth()),
+                      (pos.y > 0) && (pos.y < GetHeight()),
                       false,
                       false);
   } else {
-    return WithinRoom((pos.x > 0) && (pos.x < width_),
-                      (pos.y > 0) && (pos.y < height_),
-                      FloatApproximation(pos.x, 0) || FloatApproximation(pos.x, width_),
-                      FloatApproximation(pos.y, 0) || FloatApproximation(pos.y, height_));
+    return WithinRoom((pos.x > 0) && (pos.x < GetWidth()),
+                      (pos.y > 0) && (pos.y < GetHeight()),
+                      FloatApproximation(pos.x, 0) || FloatApproximation(pos.x, GetWidth()),
+                      FloatApproximation(pos.y, 0) || FloatApproximation(pos.y, GetHeight()));
   }
 }
 
 bool Room::OnRoomEdge(const glm::vec2& pos) const {
-  return OnRoomEdge((pos.x > 0) && (pos.x < width_),
-                    (pos.y > 0) && (pos.y < height_),
-                    FloatApproximation(pos.x, 0) || FloatApproximation(pos.x, width_),
-                    FloatApproximation(pos.y, 0) || FloatApproximation(pos.y, height_));
+  return OnRoomEdge((pos.x > 0) && (pos.x < GetWidth()),
+                    (pos.y > 0) && (pos.y < GetHeight()),
+                    FloatApproximation(pos.x, 0) || FloatApproximation(pos.x, GetWidth()),
+                    FloatApproximation(pos.y, 0) || FloatApproximation(pos.y, GetHeight()));
 //  return  FloatApproximation(pos.x, 0) ||
-//          FloatApproximation(pos.x, width_) ||
+//          FloatApproximation(pos.x, GetWidth()) ||
 //          FloatApproximation(pos.y, 0) ||
-//          FloatApproximation(pos.y, height_);
+//          FloatApproximation(pos.y, GetHeight());
 }
 
 Direction Room::GetSideHit(const glm::vec2& ray_pos,
                            const glm::vec2& ray_dir,
                            bool point_inclusive) const {
   // Edge border cases are checked first.
-  bool touch_north = FloatApproximation(ray_pos.y, height_);
+  bool touch_north = FloatApproximation(ray_pos.y, GetHeight());
   bool touch_south = FloatApproximation(ray_pos.y, 0);
-  bool touch_east = FloatApproximation(ray_pos.x, width_);
+  bool touch_east = FloatApproximation(ray_pos.x, GetWidth());
   bool touch_west = FloatApproximation(ray_pos.x, 0);
 
   // Necessary boolean characteristics for private within-wall check
-  bool strictly_within_x = (ray_pos.x > 0) && (ray_pos.x < width_);
-  bool strictly_within_y = (ray_pos.y > 0) && (ray_pos.y < height_);
+  bool strictly_within_x = (ray_pos.x > 0) && (ray_pos.x < GetWidth());
+  bool strictly_within_y = (ray_pos.y > 0) && (ray_pos.y < GetHeight());
 
   // Outsource within-room calculation to character-wise within check
   if (!WithinRoom(strictly_within_x,
@@ -260,7 +276,7 @@ Direction Room::GetSideHit(const glm::vec2& ray_pos,
 
     } else if (ray_dir.y > 0) { // Must be northern direction.
       // Check slope against NW corner (0, height)
-      float corner_slope = (height_ - ray_pos.y) / (-ray_pos.x); // ray.pos = 0 is eliminated through on-wall checks.
+      float corner_slope = (GetHeight() - ray_pos.y) / (-ray_pos.x); // ray.pos = 0 is eliminated through on-wall checks.
       float dir_slope = ray_dir.y / ray_dir.x;
 
       // NW corner is part of Western Wall.
@@ -280,7 +296,7 @@ Direction Room::GetSideHit(const glm::vec2& ray_pos,
   } else if (ray_dir.x > 0) { // Must be in eastern direction.
     if (ray_dir.y < 0) { // Must be southern direction.
       // Check slope against SE corner (width, 0)
-      float corner_slope = (-ray_pos.y) / (width_ - ray_pos.x); // width - x = 0 is eliminated through on-wall checks.
+      float corner_slope = (-ray_pos.y) / (GetWidth() - ray_pos.x); // width - x = 0 is eliminated through on-wall checks.
       float dir_slope = ray_dir.y / ray_dir.x;
 
       // SE corner is part of Eastern Wall.
@@ -294,7 +310,7 @@ Direction Room::GetSideHit(const glm::vec2& ray_pos,
 
     } else if (ray_dir.y > 0) { // Must be northern direction.
       // Check slope against NE corner (width, height)
-      float corner_slope = (height_ - ray_pos.y) / (width_ - ray_pos.x);
+      float corner_slope = (GetHeight() - ray_pos.y) / (GetWidth() - ray_pos.x);
       // width - x = 0 is eliminated through on-wall checks.
       float dir_slope = ray_dir.y / ray_dir.x;
 
@@ -437,19 +453,19 @@ HitPackage Room::GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir, 
       switch (direction) {
         case kNorth:
           // entry at (nw_begin + width - texture, 0) :: on south
-          entry_pos = {ns_door_begin_ + ns_door_width_ - texture_shift, 0};
+          entry_pos = {GetNSDoorEnd() - texture_shift, 0};
           break;
         case kSouth:
           // entry at (nw_begin + texture, height) :: on north
-          entry_pos = {ns_door_begin_ + texture_shift, height_};
+          entry_pos = {GetNSDoorBegin() + texture_shift, GetHeight()};
           break;
         case kEast:
           // entry at (0, ew_begin + texture) :: on west
-          entry_pos = {0, ew_door_begin_ + texture_shift};
+          entry_pos = {0, GetEWDoorBegin() + texture_shift};
           break;
         case kWest:
           // entry at (width, ew_begin + ew_wdith - texture) :: on east
-          entry_pos = {width_, ew_door_begin_ + ew_door_width_ - texture_shift};
+          entry_pos = {GetWidth(), GetEWDoorEnd() - texture_shift};
           break;
 
         case kUndefined:
@@ -541,16 +557,16 @@ glm::vec2 Room::GetPortalHead(Direction dir) const {
 
   switch (dir) {
     case kNorth:
-      return vec2(ns_door_begin_ + ns_door_width_, height_);
+      return vec2(GetNSDoorEnd(), GetHeight());
 
     case kSouth:
-      return vec2(ns_door_begin_, 0);
+      return vec2(GetNSDoorBegin(), 0);
 
     case kEast:
-      return vec2(width_, ew_door_begin_);
+      return vec2(GetWidth(), GetEWDoorBegin());
 
     case kWest:
-      return vec2(0, ew_door_begin_ + ew_door_width_);
+      return vec2(0, GetEWDoorEnd());
 
     case kUndefined:
       throw exceptions::InvalidDirectionException();
@@ -562,16 +578,16 @@ glm::vec2 Room::GetPortalTail(Direction dir) const {
 
   switch (dir) {
     case kNorth:
-      return vec2(ns_door_begin_, height_);
+      return vec2(GetNSDoorBegin(), GetHeight());
 
     case kSouth:
-      return vec2(ns_door_begin_ + ns_door_width_, 0);
+      return vec2(GetNSDoorEnd(), 0);
 
     case kEast:
-      return vec2(width_, ew_door_begin_ + ew_door_width_);
+      return vec2(GetWidth(), GetEWDoorEnd());
 
     case kWest:
-      return vec2(0, ew_door_begin_);
+      return vec2(0, GetEWDoorBegin());
 
     case kUndefined:
       throw exceptions::InvalidDirectionException();
@@ -583,16 +599,16 @@ glm::vec2 Room::GetWallHead(Direction dir) const {
 
   switch (dir) {
     case kNorth:
-      return vec2(width_, height_);
+      return vec2(GetWidth(), GetHeight());
 
     case kSouth:
       return vec2(0, 0);
 
     case kEast:
-      return vec2(width_, 0);
+      return vec2(GetWidth(), 0);
 
     case kWest:
-      return vec2(0, height_);
+      return vec2(0, GetHeight());
 
     case kUndefined:
       throw exceptions::InvalidDirectionException();
@@ -604,13 +620,13 @@ glm::vec2 Room::GetWallTail(Direction dir) const {
 
   switch (dir) {
     case kNorth:
-      return vec2(0, height_);
+      return vec2(0, GetHeight());
 
     case kSouth:
-      return vec2(width_, 0);
+      return vec2(GetWidth(), 0);
 
     case kEast:
-      return vec2(width_, height_);
+      return vec2(GetWidth(), GetHeight());
 
     case kWest:
       return vec2(0, 0);
@@ -645,9 +661,6 @@ Room::OnRoomEdge(bool strictly_within_width, bool strictly_within_height, bool w
 
   return false;
 }
-
-
-
 // end of private geometric functions ===========================================================
 
 // End of Private Room Functions =======================================================================================

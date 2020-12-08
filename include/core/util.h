@@ -117,9 +117,16 @@ bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& se
 float TextureIndexOnLineOfRay(const glm::vec2& line_head, const glm::vec2& line_tail,
                               const glm::vec2& ray_pos, const glm::vec2& ray_dir);
 
-//Rotate clockwise
-//  for counter,
-glm::vec2& FastRotate(glm::vec2& vec, const float rotation_cos, const float rotation_sin);
+/**
+ * Rotate vector utilizing sine and cosine values pre-calculated.
+ * Coseina dn Sine must
+ * @param vec Vector to be rotated. Reference is passed and will be altered.
+ * @param rotation_cos Cosine of angle of rotation.
+ * @param rotation_sin Sine of angle of rotation.
+ * @return Returns vector rotated by the appropriate angle.
+ *          Vector will be normalized afterwards, if improper sine and cosine were given.
+ */
+glm::vec2& FastRotate(glm::vec2& vec, float rotation_cos, float rotation_sin);
 
 // end of Geometric Utilities ==========================================================================================
 

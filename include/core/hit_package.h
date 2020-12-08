@@ -12,9 +12,13 @@
 
 namespace room_explorer {
 
+/**
+ * Container of all the hits intersected.
+ * Allow merging and manipulating of distances of hits contained.
+ */
 class HitPackage {
-
   std::map<float, Hit> hits_;
+
 public:
   size_t HitCount() const;
 

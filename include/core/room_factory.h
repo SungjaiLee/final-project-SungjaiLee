@@ -17,38 +17,54 @@
 
 #include <string>
 #include <fstream>
-#include <random>
 
 using json = nlohmann::json;
 
-/**
- * Responsibe for generating new rooms.
- * Knows all the room templates from which rooms can be generatde from
- */
 namespace room_explorer {
-
+// Stud for Room =====================================
+// Necessary so that the RoomFactory recognizes existence of room.
 class Room;
+// End of Stud for Room ==============================
 
+/**
+ * Responsible for room generation.
+ * Contains all the templates from which a room can be generated from.
+ * A factory will be contained in each room.
+ *      Each room will generate and pass on the same factory for linkage and connections.
+ */
 class RoomFactory {
 public:
+ /**
+  * Template which holds all the walls that defines a specific room.
+  * Each room generated from the template will refer to all the walls from the template
+  *     rather than copying each wall to each rooms.
+  */
  struct RoomTemplate {
+ private:
    std::set<Wall> walls_;
-   friend void from_json(const json&, RoomTemplate& );
 
+   friend void from_json(const json&, RoomTemplate& );
+   // Limit access to outer classes, but allow RoomFactory to use this freely.
+   //  Also prevents the sensitive walls_ field to be not exposed.
+   friend class RoomFactory;
  public:
+   /**
+    * @return Number of walls  in this room-template.
+    */
    size_t GetWallCount() const;
  };
 
-private:
-  float kRoomWidth, kRoomHeight;
+public:
+  float kRoomHeight;
+  float kRoomWidth;
   float kNSDoorWidth, kEWDoorWidth;
+  float kNSDoorBegin, kEWDoorBegin;
 
   std::map<std::string, RoomTemplate> template_rooms_;
 
   std::set<std::string> ids_;
 
   size_t counts_;
-
 public:
   float RoomWidth() const;
   float RoomHeight() const;
@@ -76,8 +92,6 @@ public:
   Room* GenerateRandomRoom() const;
 
   //json parse needs access to private RoomTemplate
-  friend void from_json(const json& json, RoomFactory::RoomTemplate& room_template);
-
   friend void from_json(const json& json, RoomFactory& room_factory);
 };
 

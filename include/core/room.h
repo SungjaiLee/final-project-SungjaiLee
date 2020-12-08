@@ -57,14 +57,11 @@ private:
   Room* east_;
   Room* west_;
 
-  float width_;
-  float height_;
+  float GetNSDoorBegin() const;
+  float GetEWDoorBegin() const;
 
-  float ns_door_width_;
-  float ew_door_width_;
-
-  float ns_door_begin_;
-  float ew_door_begin_;
+  float GetNSDoorEnd() const;
+  float GetEWDoorEnd() const;
 
   const std::set<Wall>* walls_;
 
