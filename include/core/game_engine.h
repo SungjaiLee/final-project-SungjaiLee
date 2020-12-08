@@ -2,8 +2,8 @@
 // Created by Jack Lee on 2020/11/16.
 //
 
-#ifndef NONEUCLIDEAN_RAY_CASTER_CURRENT_ROOM_H
-#define NONEUCLIDEAN_RAY_CASTER_CURRENT_ROOM_H
+#ifndef NONEUCLIDEAN_RAY_CASTER_GAME_ENGINE_H
+#define NONEUCLIDEAN_RAY_CASTER_GAME_ENGINE_H
 
 #include <core/room.h>
 
@@ -19,21 +19,19 @@ namespace room_explorer {
  * Holds the pointer to current room, and player position and orientation.
  * Need to be able to call ray-hits and send package of ray-hits to outter sources
  */
-class CurrentRoom {
-  __unused Room* current_room_;
-  __unused glm::vec2 current_position;
-  __unused glm::vec2 main_view_direction;
+class GameEngine {
+  RoomFactory factory_;
 
-  __unused const std::string room_template_path_;
-
-  __unused RoomFactory factory_;
+  Room* current_room_;
+  glm::vec2 current_position_;
+  glm::vec2 view_direction_;
 
 public:
   /**
    * Room by default is loaded to "entry" id
    * @param room_template_path
    */
-  explicit CurrentRoom(const std::string& room_template_path);
+  GameEngine(const std::string& room_template_path);
 
   /**
    *
@@ -55,4 +53,4 @@ public:
 
 }
 
-#endif //NONEUCLIDEAN_RAY_CASTER_CURRENT_ROOM_H
+#endif //NONEUCLIDEAN_RAY_CASTER_GAME_ENGINE_H

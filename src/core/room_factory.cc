@@ -8,8 +8,21 @@ namespace room_explorer {
 
 // JSON Loaders ===============================================
 void from_json(const json& json, RoomFactory& room_factory) {
+
   room_factory.kRoomWidth = json.at("room_dimension").at("width");
   room_factory.kRoomHeight = json.at("room_dimension").at("height");
+
+  if (json.contains("entry_x")) {
+    room_factory.entry_pos.x = json.at("entry_x");
+  } else {
+    room_factory.entry_pos.x = room_factory.kRoomWidth / 2;
+  }
+
+  if (json.contains("entry_y")) {
+    room_factory.entry_pos.y = json.at("entry_y");
+  } else {
+    room_factory.entry_pos.y = room_factory.kRoomHeight / 2;
+  }
 
   room_factory.kNSDoorWidth = json.at("room_dimension").at("ns_door_width");
   room_factory.kEWDoorWidth = json.at("room_dimension").at("ew_door_width");

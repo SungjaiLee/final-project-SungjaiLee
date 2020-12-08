@@ -7,7 +7,7 @@
 using namespace room_explorer::visualizer;
 
 RoomsExplorerApp::RoomsExplorerApp()
-    : current_room_("/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/small_maze.json"),
+    : game_engine_("/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/small_maze.json"),
       incr_angle_(half_visual_field_range_ / half_resolution),
       rotation_cos_(std::cos(incr_angle_)),
       rotation_sin_(std::sin(incr_angle_)),
@@ -34,7 +34,7 @@ void RoomsExplorerApp::draw() {
 
 //  float max_range = 1500;
 
-  std::vector<HitPackage> packages{current_room_.GetVision(rotation_cos_, rotation_sin_,
+  std::vector<HitPackage> packages{game_engine_.GetVision(rotation_cos_, rotation_sin_,
                                                            half_resolution,
                                                            max_visible_distance_)};
 
@@ -65,16 +65,16 @@ void RoomsExplorerApp::update() {
 void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
   switch (event.getCode()) {
     case ci::app::KeyEvent::KEY_LEFT:
-      current_room_.RotateDirection(movement_rotation_cos_, -movement_rotation_sin_);
+      game_engine_.RotateDirection(movement_rotation_cos_, -movement_rotation_sin_);
       break;
     case ci::app::KeyEvent::KEY_RIGHT:
-      current_room_.RotateDirection(movement_rotation_cos_, movement_rotation_sin_);
+      game_engine_.RotateDirection(movement_rotation_cos_, movement_rotation_sin_);
       break;
     case ci::app::KeyEvent::KEY_UP:
-      current_room_.MoveForward(10);
+      game_engine_.MoveForward(10);
       break;
     case ci::app::KeyEvent::KEY_DOWN:
-      current_room_.MoveForward(-10);
+      game_engine_.MoveForward(-10);
       break;
   }
 }

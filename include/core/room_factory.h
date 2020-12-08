@@ -55,6 +55,9 @@ public:
  };
 
 public:
+
+  glm::vec2 entry_pos;
+
   float kRoomHeight;
   float kRoomWidth;
   float kNSDoorWidth, kEWDoorWidth;

@@ -4,7 +4,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include <core/current_room.h>
+#include <core/game_engine.h>
 
 bool KnuthApprox(float actual, float expected, float epsilon) {
   float diff = actual - expected;

@@ -1,6 +1,9 @@
 {
   "_comment" : "This is a debug json room templates, involving only a single room as possible template.",
 
+  "entry_x" : 250,
+  "entry_y" : 300,
+
   "room_dimension" : {
     "width" : 500,
     "height" : 600,

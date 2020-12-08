@@ -56,7 +56,7 @@ list(APPEND CORE_SOURCE_FILES src/core/wall.cc)
 list(APPEND CORE_SOURCE_FILES src/core/hits.cc)
 list(APPEND CORE_SOURCE_FILES src/core/hit_package.cc)
 list(APPEND CORE_SOURCE_FILES src/core/util.cc)
-list(APPEND CORE_SOURCE_FILES src/core/current_room.cc)
+list(APPEND CORE_SOURCE_FILES src/core/game_engine.cc)
 
 
 

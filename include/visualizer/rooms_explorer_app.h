@@ -5,7 +5,7 @@
 #ifndef ROOMS_APP_H
 #define ROOMS_APP_H
 
-#include <core/current_room.h>
+#include <core/game_engine.h>
 
 #include <cinder/app/App.h>
 #include <cinder/app/RendererGl.h>
@@ -38,7 +38,7 @@ private:
   const float floor_height_ = 100;
 
 
-  CurrentRoom current_room_;
+  GameEngine game_engine_;
 
   const float incr_angle_;
 
