@@ -12,7 +12,7 @@
 
   "projection_distance_coefficient" : 10000,
 
-  "movement_rotation_angle" : 0.2,
-  "movement_speed" : 15
+  "movement_rotation_angle" : 0.25,
+  "movement_speed" : 10
 
 }

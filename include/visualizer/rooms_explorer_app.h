@@ -74,6 +74,8 @@ private:
 
   float kProjectionPlaneDistanceCoefficient_; // Concerns height of walls hit by the ray.
                               // Further the distance, the larger each walls will seem.
+
+  float kBrightnessDepthAdjuster;
   // Cosmetic Constants ===============================================================
 
   // End of Application Constant Fields ================================================================================

@@ -8,9 +8,11 @@ using namespace room_explorer::visualizer;
 
 RoomsExplorerApp::RoomsExplorerApp()
     : game_engine_(kTemplatePath) {
-
+  // Application itself requires meta data, loaded from json path
   json meta_json;
   std::ifstream(kMetaPath) >> meta_json;
+
+  // Only the essential components are loaded, rest are deduced.
 
   kScreenWidth_ = meta_json.at("screen_width");
   kScreenHeight_ = meta_json.at("screen_height");
@@ -30,6 +32,10 @@ RoomsExplorerApp::RoomsExplorerApp()
 
   kFloorHeight_ = meta_json.at("floor_height");
 
+  // Adjuster adjusts brightness function so that distant enough elements are shaded enough.
+  //  LN_EPSILON marks log of brightness of furthest possible element in range
+  kBrightnessDepthAdjuster = LN_EPSILON / kVisibleDistance_;
+
 
   kMovementRotationAngle_ = meta_json.at("movement_rotation_angle");
   kMovementRotationCosine_ = std::cos(kMovementRotationAngle_);
@@ -41,42 +47,40 @@ RoomsExplorerApp::RoomsExplorerApp()
 
   ci::app::setWindowSize(kScreenWidth_, kScreenHeight_);
 
+  // Tick initially 0
   ticks_ = 0;
 }
 
 void RoomsExplorerApp::draw() {
+  // Ceiling
   ci::Color8u background_color(50, 151, 168);
   ci::gl::clear(background_color);
 
-
+  // Floor
+  ci::gl::color(ci::ColorA(0, 0, 0));
   ci::Rectf floor{glm::vec2(0, kScreenHeight_),
                    glm::vec2(kScreenWidth_, kScreenHeight_ - kFloorHeight_)};
-  ci::gl::color(ci::ColorA(0, 0, 0));
   ci::gl::drawSolidRect(floor);
 
 
-//  float section_width = kScreenWidth_ / (total_resolution_);
-
-//  float max_range = 1500;
-
-  std::vector<HitPackage> packages{game_engine_.GetVision(kResolutionCosine_, kResolutionSine_,
+  // Room-Elements
+  // Load through HitPackages in each strip direction
+  std::vector<HitPackage> packages{ game_engine_.GetVision(kResolutionCosine_, kResolutionSine_,
                                                           kHalfResolution_,
-                                                          kVisibleDistance_)};
+                                                          kVisibleDistance_) };
+  for (size_t i = 0; i < kTotalResolution_; ++i) { // Must draw each strip in order
+    const HitPackage& package = packages.at(i); // Hit Packages contain ordered individual Hits of room-element
 
-  for (size_t i = 0; i < kTotalResolution_; ++i) {
-
-    HitPackage& package = packages.at(i);
-
-    // Need to draw the furthest hit first.
-    //  Star at the end and iterate down until begin is found.
+    // the furthest element must be rendered first, so nearer object can be layered on top, giveing transparent depth
+    // Start at the end, and iterate down
     auto it = package.GetHits().end();
     while (it != package.GetHits().begin()) {
       --it;
       DrawStrip(i, it->second);
     }
   }
-
 }
+
 void RoomsExplorerApp::update() {
   ++ticks_;
 
@@ -126,20 +130,20 @@ void RoomsExplorerApp::update() {
 }
 
 void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
-  held_keys_.insert(event.getCode() );
+  // Add key to list of keys being held. Handle later
+  held_keys_.insert( event.getCode() );
 }
 
 void RoomsExplorerApp::keyUp(ci::app::KeyEvent event) {
-  held_keys_.erase(event.getCode() );
+  // Add key to list of keys being held. Handle later
+  held_keys_.erase( event.getCode() );
 }
 
 
 float RoomsExplorerApp::GetBrightness(float distance) const {
-//  float proportion{distance / max_range};
-
-  const float half_point_adjuster = LN_EPSILON / kVisibleDistance_;
-
-  float brightness{std::exp(-distance * half_point_adjuster)};
+  // Brightness is yielded by exponential reciprocals of distance adjusted by BrightnessDepthAdjuster
+  float brightness{std::exp(-distance * kBrightnessDepthAdjuster)};
+  // Clamped between 0 and 1
   if (brightness < 0) {
     return 0;
   }
@@ -147,19 +151,24 @@ float RoomsExplorerApp::GetBrightness(float distance) const {
     return 1;
   }
   return brightness;
-//  return std::exp(-proportion * half_point_adjuster);
 }
 
 void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
+  //! Remember, design of each element if not mathematically defined, and thus involved many empirical magic numbers
+  //! Do excuse the messy formulas discovered by trial and error
+
+  // Height of wall at given distance is yielded by inverse stretched by projection distance
   float room_height{kProjectionPlaneDistanceCoefficient_ / hit.hit_distance_};
 
-  float lower_height{kScreenHeight_ - kFloorHeight_ + room_height / 8};
-  float upper_height{kScreenHeight_ - kFloorHeight_ - room_height};
+  // Position of lower and upper edge of wall
+  float lower_height{kScreenHeight_ - kFloorHeight_ + room_height / 9}; // 1/8th of the wall is below floor,
+  float upper_height{kScreenHeight_ - kFloorHeight_ - 8 * room_height / 9}; // for more realistic look
 
+  // EAch room-elements are rendered uniquely
   switch (hit.hit_type_) {
-
     case kRoomWall:
       {
+        // Simple solid wall of shaded color
         ci::Rectf wall{{left_index * kStripWidth_,       lower_height},
                        {(left_index + 1) * kStripWidth_, upper_height}};
         float shade{GetBrightness(hit.hit_distance_)};
@@ -172,35 +181,37 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
 
     case kWall:
       {
+        // More complicated pattern, requiring texture-index
         float sub_index{static_cast<float>(std::fmod(hit.texture_index_, 50))};
 
+        // Wall will involve transparent window with alternating large and small strips of window
         float lower_window;
         float upper_window;
         if (sub_index >= 30) {
-          //window will begin at 60% to 90%
-          // since wall height is 9 * distance / 8,  lower and upper window is at
-          lower_window = {28 * room_height / 40};
-          upper_window = {81 * room_height / 80};
+          // Small strip, high up on the wall
+          lower_window = 3 * room_height / 5;
+          upper_window = 7 * room_height / 10;
         } else {
-          //window will begin at 5% to 90%
-          lower_window = {9 * room_height / 160};
-          upper_window = {81 * room_height / 80};
+          // Big strip, Window is most of the wall
+          lower_window = 0;
+          upper_window = 8 * room_height / 10;
         }
 
         float shade{GetBrightness(hit.hit_distance_)};
-        // wall col
+        // Wall needs to be rendered in pieces
+        // Solid Wall, no transparency
         ci::ColorA col{1 * shade, 1 * shade, 1 * shade};
         ci::gl::color(col);
         // lower section
         ci::Rectf wall {{left_index * kStripWidth_,       lower_height},
                         {(left_index + 1) * kStripWidth_, lower_height - lower_window}};
         ci::gl::drawSolidRect(wall);
-        // upper
+        // upper Section
         wall = {{left_index * kStripWidth_,      lower_height - upper_window},
                {(left_index + 1) * kStripWidth_, upper_height}};
         ci::gl::drawSolidRect(wall);
 
-        // window col
+        // Transparent Wall, green with greater transparency as player nears it
         col = {0, 1 * shade, 0, 1.2f - shade};
         ci::gl::color(col);
         wall = {{left_index * kStripWidth_,       lower_height - lower_window},
@@ -211,10 +222,16 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
 
     case kPortal:
       {
+        // Most complex patterns.
+        // Portals will have flowing veil-like waves depending on tick counts
+        //  Red Fluctuation flows to the right, whereas blue flows left
+        float red_fluctuation{static_cast<float>(
+                            std::abs(std::fmod(hit.texture_index_ + ticks_, 20) - 10)  / 40)};
+        float blue_fluctuation{static_cast<float>(
+                            std::abs(std::fmod(hit.texture_index_ - 2 * ticks_, 52) - 26)  / 100)};
 
-        float red_fluctuation{static_cast<float>(std::abs(std::fmod(hit.texture_index_ + ticks_, 20) - 5) / 40)};
-        float blue_fluctuation{static_cast<float>(std::abs(std::fmod(hit.texture_index_ - 2 * ticks_, 52) - 6) / 100)};
-
+        // Transparent to allow viewing of adjacent rooms
+        //  For more unreal effect, portals do not get effected by distance
         ci::ColorA col{.8f + red_fluctuation, .2f, .9f + blue_fluctuation, .3f};
         ci::gl::color(col);
         ci::Rectf wall = {{left_index * kStripWidth_, lower_height},
@@ -225,7 +242,7 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
 
     case kVoid:
     case kInvalid:
-      // Draw nothing?
+      // Invalids, do not render
       break;
   }
 }
