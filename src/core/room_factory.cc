@@ -8,7 +8,6 @@ namespace room_explorer {
 
 // JSON Loaders ===============================================
 void from_json(const json& json, RoomFactory& room_factory) {
-
   room_factory.kRoomWidth = json.at("room_dimension").at("width");
   room_factory.kRoomHeight = json.at("room_dimension").at("height");
 

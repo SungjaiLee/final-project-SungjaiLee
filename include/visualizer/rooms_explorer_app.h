@@ -26,51 +26,86 @@ namespace visualizer {
  */
 class RoomsExplorerApp : public ci::app::App {
 private:
-  //! Path of template file, from which the game will load room data from.
-  //!  Change path to load from different template!
-  const std::string kTemplatePath = "/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/tight_map.json";
-  // Engine loads from the template
+  //! To load different settings and different map templates, alter the Config paths!
+  // External JSON Config Paths ========================================================================================
+  const std::string kTemplatePath =
+      "/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/room_templates/tight_map.json";
+
+  const std::string kMetaPath =
+      "/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/meta/standard_meta.json";
+  // End of External JSON Config Paths =================================================================================
+
   GameEngine game_engine_;
 
-  // Application Constant Fields =======================================================================================
-  //TODO consider moving these constants as json values
-  constexpr static const float kScreenWidth_ = 1000; //! HardCoded-Constant
-  constexpr static const float kScreenHeight_ = 500; //! HardCoded-Constant
+  // Application Effective Constant Fields =============================================================================
+  float kScreenWidth_;
+  float kScreenHeight_;
 
-  // into how many columnes should the screen be partitionsed into?
-  //  total resolution will be 2*n + 1
-  constexpr static const size_t half_resolution = 60; //! HardCoded-Constant
-  constexpr static const float total_resolution_ = half_resolution * 2 + 1;
+  // Rendering Resolution Constants ===================================================
+  size_t kHalfResolution_; // Number of strips occupying half of screen
+  size_t kTotalResolution_; // Number if strips occupying full screen. Middle 1 + 2 * half_resolution.
 
-  constexpr static const float strip_width_ = kScreenWidth_ / total_resolution_;
+  float kStripWidth_;
 
-  // range in radius of half field
-  constexpr static const float half_visual_field_range_ = 1; //! HardCoded-Constant
+  float kResolutionAngle_; // Angle between rays for each individual strips
+  float kResolutionCosine_; // Trigonometrics pre-calculated for known consistent angles between rays.
+  float kResolutionSine_;
+  // End of Rendering Resolution Constants ============================================
 
-  constexpr static const float max_visible_distance_ = 700; //! HardCoded-Constant
 
-  constexpr static const float floor_height_ = 100; //! HardCoded-Constant
+  // Visibility Constants =============================================================
+  float kHalfVisualFieldRange_;
 
-  // Angle between each strips, seen from main-direction vector
-  constexpr static const float incr_angle_ = 2 * half_visual_field_range_ / total_resolution_;
-  // For faster recycling of computation, cosine and sine and sine of angles will be pre-computed at instantiation
-  const float rotation_cos_;
-  const float rotation_sin_;
+  float kVisibleDistance_;
+  // End of Visibility Constants ======================================================
 
-  // Angle between rotation of each rotating movement.
-  const float movement_angle_;
-  // For the same reason as above, these trigonometric functions are pre-computed and recycled.
-  const float movement_rotation_cos_;
-  const float movement_rotation_sin_;
 
-  // Speed of each forward or backward motion
-  const float movement_speed_;
+  // Player Motion Variable ============================================================
+  float kMovementRotationAngle_;
+  float kMovementRotationCosine_;
+  float kMovementRotationSine_;
+
+  float kMovementSpeed_;
+  // End of Player Motion Variable =====================================================
+
+
+  // Cosmetic Constants ===============================================================
+  float kFloorHeight_; // Horizontal level of the floor on screen
+
+  float kProjectionPlaneDistanceCoefficient_; // Concerns height of walls hit by the ray.
+                              // Further the distance, the larger each walls will seem.
+  // Cosmetic Constants ===============================================================
 
   // End of Application Constant Fields ================================================================================
 
+
+  // State Handler Variables ===========================================================================================
+  size_t ticks_; // Keeps track of number of updates performed
+
+  std::set<int> held_keys_; // Keeps track of all the keys pressed simultaneously
+  // End of State Handler Variables ====================================================================================
+
+
+  // Private Render Helper Methods =====================================================================================
+  /**
+   * Returns brightness associated with a distance.
+   * This will depend on the max visible distance.
+   * @param distance Distance of hit.
+   * @return 1 for fully bright. Lower values for dimmer.
+   *            Value will be clamped between 0 and 1.
+   */
   float GetBrightness(float distance) const;
 
-  void DrawStrip(float left_index, float strip_width, const Hit& hit) const;
+  /**
+   * Handles rendering of a single component on a single strip.
+   * Wall, Room-wall, or a Portal will be graphically rendered on top of existing frame.
+   *    This allows transparent glass-look if transparent portal is drawn on top of another element.
+   * Void and invalid hits are not rendered at all.
+   * @param left_index Index of the strip.
+   * @param hit Element intersected by the ray.
+   */
+  void DrawStrip(float left_index, const Hit& hit) const;
+  // End of Private Render Helper Methods ==============================================================================
 
 public:
   RoomsExplorerApp();
@@ -80,20 +115,6 @@ public:
 
   void keyDown(ci::app::KeyEvent event) override;
   void keyUp(ci::app::KeyEvent event) override;
-
-
-private:
-  // Private Variables =================================================================================================
-  const float projection_constant_ = 10000;
-
-  // Counts number of updates
-  size_t ticks_ = 0;
-
-  // allows multiple key holding
-  std::set<int> held_keys_;
-
-  // End of Private Variables ==========================================================================================
-
 };
 
 } // namespace visualizer

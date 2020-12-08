@@ -1,0 +1,18 @@
+{
+  "screen_width" : 1000,
+  "screen_height" : 500,
+
+  "visible_distance" : 600,
+
+  "half_resolution" : 35,
+
+  "half_vision_field" : 1,
+
+  "floor_height" : 100,
+
+  "projection_distance_coefficient" : 10000,
+
+  "movement_rotation_angle" : 0.2,
+  "movement_speed" : 15
+
+}
