@@ -13,6 +13,8 @@
 #include <cinder/app/RendererGl.h>
 #include <cinder/gl/gl.h>
 
+#include <string>
+
 namespace room_explorer {
 
 namespace visualizer {
@@ -23,10 +25,14 @@ namespace visualizer {
  */
 class RoomsExplorerApp : public ci::app::App {
 private:
+  //! Path of template file, from which the game will load room data from.
+  //!  Change path to load from different template!
   const std::string kTemplatePath = "/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/tight_map.json";
-
+  // Engine loads from the template
   GameEngine game_engine_;
 
+  // Application Constant Fields =======================================================================================
+  //TODO consider moving these constants as json values
   constexpr static const float kScreenWidth_ = 1000; //! HardCoded-Constant
   constexpr static const float kScreenHeight_ = 500; //! HardCoded-Constant
 
@@ -44,22 +50,22 @@ private:
 
   constexpr static const float floor_height_ = 100; //! HardCoded-Constant
 
-  constexpr static const float incr_angle_ = half_visual_field_range_ / half_resolution;
-
   // Angle between each strips, seen from main-direction vector
+  constexpr static const float incr_angle_ = 2 * half_visual_field_range_ / total_resolution_;
+  // For faster recycling of computation, cosine and sine and sine of angles will be pre-computed at instantiation
   const float rotation_cos_;
   const float rotation_sin_;
 
   // Angle between rotation of each rotating movement.
   const float movement_angle_;
+  // For the same reason as above, these trigonometric functions are pre-computed and recycled.
   const float movement_rotation_cos_;
   const float movement_rotation_sin_;
 
   // Speed of each forward or backward motion
   const float movement_speed_;
 
-  // Counts how many draws were called
-  size_t ticks = 0;
+  // End of Application Constant Fields ================================================================================
 
   float GetBrightness(float distance) const;
 
@@ -75,7 +81,14 @@ public:
 
 
 private:
+  // Private Variables =================================================================================================
   const float projection_constant_ = 10000;
+
+  // Counts number of updates
+  size_t ticks_ = 0;
+
+  // End of Private Variables ==========================================================================================
+
 };
 
 } // namespace visualizer

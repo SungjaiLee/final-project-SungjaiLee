@@ -53,10 +53,9 @@ void RoomsExplorerApp::draw() {
     }
   }
 
-  ++ticks;
 }
 void RoomsExplorerApp::update() {
-
+  ++ticks_;
 }
 
 void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
@@ -154,8 +153,8 @@ void RoomsExplorerApp::DrawStrip(float left_index, float strip_width, const Hit&
     case kPortal:
       {
 
-        float red_fluctuation{static_cast<float>(std::abs(std::fmod(hit.texture_index_ + ticks, 20) - 5) / 40)};
-        float blue_fluctuation{static_cast<float>(std::abs(std::fmod(hit.texture_index_ - 2 * ticks, 52) - 6) / 100)};
+        float red_fluctuation{static_cast<float>(std::abs(std::fmod(hit.texture_index_ + ticks_, 20) - 5) / 40)};
+        float blue_fluctuation{static_cast<float>(std::abs(std::fmod(hit.texture_index_ - 2 * ticks_, 52) - 6) / 100)};
 
         ci::ColorA col{.8f + red_fluctuation, .2f, .9f + blue_fluctuation, .3f};
         ci::gl::color(col);
