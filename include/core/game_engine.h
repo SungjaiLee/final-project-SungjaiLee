@@ -5,6 +5,8 @@
 #ifndef NONEUCLIDEAN_RAY_CASTER_GAME_ENGINE_H
 #define NONEUCLIDEAN_RAY_CASTER_GAME_ENGINE_H
 
+#define WALL_MARGIN 0.01f
+
 #include <core/room.h>
 
 #include <cinder/gl/gl.h>
