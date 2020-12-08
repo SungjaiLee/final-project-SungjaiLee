@@ -5,6 +5,8 @@
 #ifndef ROOMS_APP_H
 #define ROOMS_APP_H
 
+#define LN_EPSILON 3.605170186f // -ln(epsilon), for epsilon a close approximation of 0, for example, .01
+
 #include <core/game_engine.h>
 
 #include <cinder/app/App.h>
@@ -21,6 +23,8 @@ namespace visualizer {
  */
 class RoomsExplorerApp : public ci::app::App {
 private:
+  const std::string kTemplatePath = "/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/small_maze.json";
+
   GameEngine game_engine_;
 
   constexpr static const float kScreenWidth_ = 1000; //! HardCoded-Constant
@@ -28,7 +32,7 @@ private:
 
   // into how many columnes should the screen be partitionsed into?
   //  total resolution will be 2*n + 1
-  constexpr static const size_t half_resolution = 40; //! HardCoded-Constant
+  constexpr static const size_t half_resolution = 100; //! HardCoded-Constant
   constexpr static const float total_resolution_ = half_resolution * 2 + 1;
 
   constexpr static const float strip_width_ = kScreenWidth_ / total_resolution_;
@@ -36,7 +40,7 @@ private:
   // range in radius of half field
   constexpr static const float half_visual_field_range_ = 1; //! HardCoded-Constant
 
-  constexpr static const float max_visible_distance_ = 2000; //! HardCoded-Constant
+  constexpr static const float max_visible_distance_ = 700; //! HardCoded-Constant
 
   constexpr static const float floor_height_ = 100; //! HardCoded-Constant
 
@@ -53,6 +57,9 @@ private:
 
   // Speed of each forward or backward motion
   const float movement_speed_;
+
+  // Counts how many draws were called
+  size_t ticks = 0;
 
   float GetBrightness(float distance) const;
 

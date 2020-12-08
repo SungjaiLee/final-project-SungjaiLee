@@ -7,12 +7,14 @@
 using namespace room_explorer::visualizer;
 
 RoomsExplorerApp::RoomsExplorerApp()
-    : game_engine_("/Users/jack/Cinder/my-projects/final-project-SungjaiLee/resources/small_maze.json"),
+    : game_engine_(kTemplatePath),
       rotation_cos_(std::cos(incr_angle_)),
       rotation_sin_(std::sin(incr_angle_)),
+
       movement_angle_(.1f),
       movement_rotation_cos_(std::cos(movement_angle_)),
       movement_rotation_sin_(std::sin(movement_angle_)),
+
       movement_speed_(10) {
 
   ci::app::setWindowSize(kScreenWidth_, kScreenHeight_);
@@ -45,12 +47,13 @@ void RoomsExplorerApp::draw() {
     // Need to draw the furthest hit first.
     //  Star at the end and iterate down until begin is found.
     auto it = package.GetHits().end();
-    do {
+    while (it != package.GetHits().begin()) {
       --it;
       DrawStrip(i, strip_width_, it->second);
-    } while (it != package.GetHits().begin());
+    }
   }
 
+  ++ticks;
 }
 void RoomsExplorerApp::update() {
 
@@ -76,7 +79,7 @@ void RoomsExplorerApp::keyDown(ci::app::KeyEvent event) {
 float RoomsExplorerApp::GetBrightness(float distance) const {
 //  float proportion{distance / max_range};
 
-  const float half_point_adjuster = .0005f;// ln2 / half_point
+  const float half_point_adjuster = LN_EPSILON / max_visible_distance_;
 
   float brightness{std::exp(-distance * half_point_adjuster)};
   if (brightness < 0) {
@@ -150,17 +153,13 @@ void RoomsExplorerApp::DrawStrip(float left_index, float strip_width, const Hit&
 
     case kPortal:
       {
-        // find a more elegent design
-//        const float portal_repetition{50};
-//        float sub_index{static_cast<float>(std::fmod(hit.texture_index_, portal_repetition))};
-//        sub_index /= portal_repetition;
-//        sub_index -= .5f;
-//        sub_index /= 3;
-//        float shade{sub_index * sub_index};
 
-        ci::ColorA col{.8f, .2f, .9f, .3f};
+        float red_fluctuation{static_cast<float>(std::abs(std::fmod(hit.texture_index_ + ticks, 20) - 5) / 40)};
+        float blue_fluctuation{static_cast<float>(std::abs(std::fmod(hit.texture_index_ - 2 * ticks, 52) - 6) / 100)};
+
+        ci::ColorA col{.8f + red_fluctuation, .2f, .9f + blue_fluctuation, .3f};
         ci::gl::color(col);
-        ci::Rectf wall = {{left_index * strip_width,       lower_height},
+        ci::Rectf wall = {{left_index * strip_width, lower_height},
                 {(left_index + 1) * strip_width, upper_height}};
         ci::gl::drawSolidRect(wall);
       }
