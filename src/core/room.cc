@@ -161,10 +161,6 @@ bool Room::OnRoomEdge(const glm::vec2& pos) const {
                     (pos.y > 0) && (pos.y < GetHeight()),
                     FloatApproximation(pos.x, 0) || FloatApproximation(pos.x, GetWidth()),
                     FloatApproximation(pos.y, 0) || FloatApproximation(pos.y, GetHeight()));
-//  return  FloatApproximation(pos.x, 0) ||
-//          FloatApproximation(pos.x, GetWidth()) ||
-//          FloatApproximation(pos.y, 0) ||
-//          FloatApproximation(pos.y, GetHeight());
 }
 
 Direction Room::GetSideHit(const glm::vec2& ray_pos,
@@ -426,7 +422,6 @@ HitPackage Room::CurrentRoomPackage(const glm::vec2& ray_pos, const glm::vec2& r
     }
   }
 
-  // if not point inclusive, can only be uninclusive
   return package;
 }
 
@@ -442,7 +437,7 @@ HitPackage Room::GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir, 
 
     // only this exclusive primary hit can be a portal
     if (exclusive_primary_hit.hit_type_ == kPortal) {
-      // requestion from room of directio
+      // request Visible from room of direction
 
       float& texture_shift = exclusive_primary_hit.texture_index_;
 
@@ -499,12 +494,6 @@ HitPackage Room::GetVisible(const glm::vec2& ray_pos, const glm::vec2& ray_dir, 
       package.AddHit(hit);
     }
   }
-
-//  auto hit_it = --package.GetHits().end();
-
-  // if on a portal, ignore it, only find the last portal, which is what the ray will 'look into'
-//  Direction direction{GetSideHit(ray_pos, ray_dir, false)};
-
 
   return package;
 }
@@ -636,8 +625,10 @@ glm::vec2 Room::GetWallTail(Direction dir) const {
   }
 }
 
-bool Room::WithinRoom(bool strictly_within_width, bool strictly_within_height,
-                      bool width_edge, bool height_edge) const {
+bool Room::WithinRoom(bool strictly_within_width,
+                      bool strictly_within_height,
+                      bool width_edge,
+                      bool height_edge) const {
   if (strictly_within_width && strictly_within_height) {
     return true;
   }
@@ -646,8 +637,10 @@ bool Room::WithinRoom(bool strictly_within_width, bool strictly_within_height,
                     width_edge, height_edge);
 }
 
-bool
-Room::OnRoomEdge(bool strictly_within_width, bool strictly_within_height, bool width_edge, bool height_edge) const {
+bool Room::OnRoomEdge(bool strictly_within_width,
+                      bool strictly_within_height,
+                      bool width_edge,
+                      bool height_edge) const {
   if (width_edge && height_edge) {
     return true;
   }

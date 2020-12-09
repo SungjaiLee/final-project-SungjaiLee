@@ -35,7 +35,7 @@ const glm::vec2 &Wall::GetTail() const {
 
 // Comparison Overload =====================================================
 bool Wall::operator<(const Wall& wall) const {
-  // TODO compare using actual geometric property
+  // arbitrary Comparison. No meaningful interpretation.
   return this < &wall;
 }
 
@@ -49,7 +49,6 @@ bool Wall::operator==(const Wall& wall) const {
 // Geometric Functions =====================================================
 bool Wall::IntersectsWith(const glm::vec2& ray_pos, float dir_angle) const{
   return IntersectsWith(ray_pos, /*vec2*/{std::cos(dir_angle), std::sin(dir_angle)});
-  //! Used Braced parameter. Not certain of its implications. Supposed to be more modern.
 }
 
 bool Wall::IntersectsWith(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
@@ -59,7 +58,6 @@ bool Wall::IntersectsWith(const glm::vec2& ray_pos, const glm::vec2& ray_dir) co
 float Wall::Distance(const glm::vec2& ray_pos, float dir_angle) const {
   // Handle in vector-form.
   return Distance(ray_pos, /*vec2*/{std::cos(dir_angle), std::sin(dir_angle)});
-  //! Used Braced parameter. Not certain of its implications. Supposed to be more modern.
 }
 
 float Wall::Distance(const glm::vec2& pos, const glm::vec2& dir) const {
@@ -107,7 +105,6 @@ Hit Wall::GetWallHit(const glm::vec2& ray_pos, const glm::vec2& ray_dir) const {
 
   float texture_index = TextureIndex(ray_pos, ray_dir);
   return {wall_intersection_distance, kWall, texture_index};
-  //! Clang-tidy endorsed bracket initializer list rather than explicit instantiation. Apparently more modern?
 }
 // End of Hit Summaries ============================================
 
