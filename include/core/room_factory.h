@@ -40,44 +40,69 @@ public:
   *     rather than copying each wall to each rooms.
   */
  struct RoomTemplate {
- private:
+  private:
    std::set<Wall> walls_;
-
-   friend void from_json(const json&, RoomTemplate& );
-   // Limit access to outer classes, but allow RoomFactory to use this freely.
-   //  Also prevents the sensitive walls_ field to be not exposed.
-   friend class RoomFactory;
- public:
-   /**
-    * @return Number of walls  in this room-template.
-    */
+  public:
+   // Getters ==========================================================================================================
    size_t GetWallCount() const;
+   // End of Getters ===================================================================================================
+
+   // Friends :) =======================================================================================================
+   // JSON loader ==================================================================
+   friend void from_json(const json&, RoomTemplate& );
+   // End of JSON loader ===========================================================
+
+   // Room Factory. Allow only Factory full access to privates of template =========
+   friend class RoomFactory;
+   // End of Room Factory ==========================================================
+   // End of Friends :( ================================================================================================
  };
 
+private:
+  // Effectively Constant Fields =======================================================================================
+  float kRoomHeight_;
+  float kRoomWidth_;
+  float kNSDoorWidth_, kEWDoorWidth_;
+  float kNSDoorBegin_, kEWDoorBegin_;
+
+  std::map<std::string, RoomTemplate> kRoomTemplates_;
+  std::set<std::string> kIds_;
+  size_t kTemplateCounts_;
+
+  glm::vec2 kEntryPosition_;
+  // End of Effectively Constant Fields ================================================================================
+
 public:
+  // Getters ===========================================================================================================
 
-  glm::vec2 entry_pos;
-
-  float kRoomHeight;
-  float kRoomWidth;
-  float kNSDoorWidth, kEWDoorWidth;
-  float kNSDoorBegin, kEWDoorBegin;
-
-  std::map<std::string, RoomTemplate> template_rooms_;
-
-  std::set<std::string> ids_;
-
-  size_t counts_;
-public:
+  // Geometric Map Characteristics Getters =====================================================
   float RoomWidth() const;
   float RoomHeight() const;
 
+  float GetNSPortalWidth() const;
+  float GetEWPortalWidth() const;
+
+  float GetNSPortalBegin() const;
+  float GetNSPortalEnd() const;
+
+  float GetEWPortalBegin() const;
+  float GetEWPortalEnd() const;
+
+  const glm::vec2& GetEntryPosition() const;
+  // End of Geometric Map Characteristics Getters ==============================================
+
+
+  // Template Characteristics Getters ==========================================================
   size_t RoomTemplateCount() const;
   const std::set<std::string>& GetAvailableIds() const;
-
-  bool ContainsRoomId(const std::string& id) const;
-
   const std::string& RandomId() const;
+  // End of Template Characteristics Getters ===================================================
+
+  // End of Getters ====================================================================================================
+
+
+  // Template Methods ==================================================================================================
+  bool ContainsRoomId(const std::string& id) const;
 
   /**
    * Generate room of given id.
@@ -93,9 +118,11 @@ public:
    * @return Return pointer to a newly generated room from random id.
    */
   Room* GenerateRandomRoom() const;
+  // End of Template Methods ===========================================================================================
 
-  //json parse needs access to private RoomTemplate
+  // JSON Loader =======================================================================================================
   friend void from_json(const json& json, RoomFactory& room_factory);
+  // End of JSON Loader ================================================================================================
 };
 
 } // namespace room_explorer

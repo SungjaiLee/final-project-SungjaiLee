@@ -8,36 +8,36 @@ namespace room_explorer {
 
 // JSON Loaders ===============================================
 void from_json(const json& json, RoomFactory& room_factory) {
-  room_factory.kRoomWidth = json.at("room_dimension").at("width");
-  room_factory.kRoomHeight = json.at("room_dimension").at("height");
+  room_factory.kRoomWidth_ = json.at("room_dimension").at("width");
+  room_factory.kRoomHeight_ = json.at("room_dimension").at("height");
 
+  // Initialize position only if provided. Default to center of the room
   if (json.contains("entry_x")) {
-    room_factory.entry_pos.x = json.at("entry_x");
+    room_factory.kEntryPosition_.x = json.at("entry_x");
   } else {
-    room_factory.entry_pos.x = room_factory.kRoomWidth / 2;
+    room_factory.kEntryPosition_.x = room_factory.kRoomWidth_ / 2;
   }
-
   if (json.contains("entry_y")) {
-    room_factory.entry_pos.y = json.at("entry_y");
+    room_factory.kEntryPosition_.y = json.at("entry_y");
   } else {
-    room_factory.entry_pos.y = room_factory.kRoomHeight / 2;
+    room_factory.kEntryPosition_.y = room_factory.kRoomHeight_ / 2;
   }
 
-  room_factory.kNSDoorWidth = json.at("room_dimension").at("ns_door_width");
-  room_factory.kEWDoorWidth = json.at("room_dimension").at("ew_door_width");
+  room_factory.kNSDoorWidth_ = json.at("room_dimension").at("ns_door_width");
+  room_factory.kEWDoorWidth_ = json.at("room_dimension").at("ew_door_width");
 
-  room_factory.kNSDoorBegin = (room_factory.kRoomWidth - room_factory.kNSDoorWidth) / 2;
-  room_factory.kEWDoorBegin = (room_factory.kRoomHeight - room_factory.kEWDoorWidth) / 2;
+  room_factory.kNSDoorBegin_ = (room_factory.kRoomWidth_ - room_factory.kNSDoorWidth_) / 2;
+  room_factory.kEWDoorBegin_ = (room_factory.kRoomHeight_ - room_factory.kEWDoorWidth_) / 2;
 
   //Use for each items instead of copy to not have to copy id and templates separately
   for (auto& item : json.at("rooms").items()) {
     const std::string& id = item.key();
 
-    room_factory.ids_.insert(id);
-    room_factory.template_rooms_.insert(std::pair<std::string, RoomFactory::RoomTemplate>(id, item.value()));
+    room_factory.kIds_.insert(id);
+    room_factory.kRoomTemplates_.insert(std::pair<std::string, RoomFactory::RoomTemplate>(id, item.value()));
   }
 
-  room_factory.counts_ = room_factory.ids_.size();
+  room_factory.kTemplateCounts_ = room_factory.kIds_.size();
 }
 
 void from_json(const json& json, RoomFactory::RoomTemplate& room_template) {
@@ -51,31 +51,31 @@ void from_json(const json& json, RoomFactory::RoomTemplate& room_template) {
 // RoomFactory Member Handler =====================================
 
 float RoomFactory::RoomWidth() const {
-  return kRoomWidth;
+  return kRoomWidth_;
 }
 
 float RoomFactory::RoomHeight() const {
-  return kRoomHeight;
+  return kRoomHeight_;
 }
 
 size_t RoomFactory::RoomTemplateCount() const {
-  return counts_;
+  return kTemplateCounts_;
 }
 
 bool RoomFactory::ContainsRoomId(const std::string &id) const {
-  return ids_.find(id) != ids_.end();
+  return kIds_.find(id) != kIds_.end();
 }
 
 const std::set<std::string>& RoomFactory::GetAvailableIds() const {
-  return ids_;
+  return kIds_;
 }
 
 const std::string &RoomFactory::RandomId() const {
-  auto it = ids_.begin();
-  if (counts_ == 0) {
+  auto it = kIds_.begin();
+  if (kTemplateCounts_ == 0) {
     throw exceptions::NoRoomTemplateException();
   }
-  size_t advance_length = std::rand() % counts_;
+  size_t advance_length = std::rand() % kTemplateCounts_;
   std::advance(it, advance_length);
   return *it;
 }
@@ -89,7 +89,7 @@ Room* RoomFactory::GenerateRoom(const std::string &id) const {
 
   room->factory = this;
 
-  const RoomTemplate& room_temp = template_rooms_.at(id);
+  const RoomTemplate& room_temp = kRoomTemplates_.at(id);
 
   // Link straight to source. Reduces space complexity, which may be a source of slowness.
   // Due to non-euclidean physics, small repeating room unit will define infinite space.
@@ -101,6 +101,34 @@ Room* RoomFactory::GenerateRoom(const std::string &id) const {
 Room* RoomFactory::GenerateRandomRoom() const {
   return GenerateRoom(RandomId());
 }
+
+const glm::vec2& RoomFactory::GetEntryPosition() const {
+  return kEntryPosition_;
+}
+
+float RoomFactory::GetNSPortalWidth() const {
+  return kNSDoorWidth_;
+}
+float RoomFactory::GetEWPortalWidth() const {
+  return kEWDoorWidth_;
+}
+
+float RoomFactory::GetNSPortalBegin() const {
+  return kNSDoorBegin_;
+}
+
+float RoomFactory::GetNSPortalEnd() const {
+  return kNSDoorBegin_ + kNSDoorWidth_;
+}
+
+float RoomFactory::GetEWPortalBegin() const {
+  return kEWDoorBegin_;
+}
+
+float RoomFactory::GetEWPortalEnd() const {
+  return kEWDoorBegin_ + kEWDoorWidth_;
+}
+
 
 //RoomTemplate Methods ============================================
 

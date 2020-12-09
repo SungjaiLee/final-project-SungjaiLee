@@ -98,35 +98,35 @@ Room* Room::GetConnectedRoom(const Direction& direction, const std::string& defa
 
 // Getters ==================================================================
 float Room::GetWidth() const {
-  return factory->kRoomWidth;
+  return factory->RoomWidth();
 }
 
 float Room::GetHeight() const {
-  return factory->kRoomHeight;
+  return factory->RoomHeight();
 }
 
 float Room::GetNSDoorWidth() const {
-  return factory->kNSDoorWidth;
+  return factory->GetNSPortalWidth();
 }
 
 float Room::GetEWDoorWidth() const {
-  return factory->kEWDoorWidth;
+  return factory->GetEWPortalWidth();
 }
 
 float Room::GetNSDoorBegin() const {
-  return factory->kNSDoorBegin;
+  return factory->GetNSPortalBegin();
 }
 
 float Room::GetEWDoorBegin() const {
-  return factory->kEWDoorBegin;
+  return factory->GetEWPortalBegin();
 }
 
 float Room::GetNSDoorEnd() const {
-  return GetNSDoorBegin() + GetNSDoorWidth();
+  return factory->GetNSPortalEnd();
 }
 
 float Room::GetEWDoorEnd() const {
-  return GetEWDoorBegin() + GetEWDoorWidth();
+  return factory->GetEWPortalEnd();
 }
 
 glm::vec2 Room::GetHead(Direction direction, bool of_portal) const {

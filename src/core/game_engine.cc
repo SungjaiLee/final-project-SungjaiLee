@@ -19,7 +19,7 @@ GameEngine::GameEngine(const std::string& room_template_path) {
   current_room_ = factory_.GenerateRoom("entry");
 
   // Set initial player position.
-  current_position_ = factory_.entry_pos;
+  current_position_ = factory_.GetEntryPosition();
   view_direction_ = {1, 0}; // Direction must be non-zero, and so be assigned any direction, in this case (1,0).
 }
 
