@@ -21,6 +21,64 @@ You may write your own map templates and load run it through the rest of applica
 To change the kTemplatePath in include/visualizer/rooms_explorer_app.h header file.
 Use absolute path.
 
+You may also adjust the rendering setting using the meta file. 
+This also will require you to write or adjust a new json file and change path to meta in the same
+location in the include/visualizer/rooms_explorer_app.h header file.
+
+#####template.json
+Templates will follow this format
+~~~json
+{
+    "entry_x" : float,
+    "entry_y" : float,
+
+    "room_dimension" : {
+      "width" : float,
+      "height" : float,
+      "ns_door_width" : float,
+      "ew_door_width" : float    
+    },
+    
+    "rooms" : {
+      "string_room_id" : {
+        "walls" : [
+           {
+              "head_x" : float,
+              "head_y" : float,
+              "tail_x" : float,
+              "tail_y" : float,
+           },
+           ...
+        ]      
+      },
+      ...
+    }
+} 
+~~~ 
+You can define as many walls and as many rooms as you want.
+
+#####meta
+Meta defines all the rendering information.
+~~~json
+{
+  "screen_width" : float,
+  "screen_height" : float,
+
+  "visible_distance" : float,
+
+  "half_resolution" : integer,
+
+  "half_vision_field" : float,
+
+  "floor_height" : float,
+
+  "projection_distance_coefficient" : float,
+
+  "movement_rotation_angle" : float,
+  "movement_speed" : float
+}
+~~~
+
 ##Movements
 Use arrow keys to move around in the explorer app.
  
