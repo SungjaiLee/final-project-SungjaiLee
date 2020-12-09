@@ -227,7 +227,7 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
         // Portals will have flowing veil-like waves depending on tick counts
         //  Red Fluctuation flows to the right, whereas blue flows left
         float red_fluctuation{static_cast<float>(
-                            abs(std::fmod(hit.texture_index_ + ticks_, 20) - 10)  / 20)};
+                            abs(std::fmod(hit.texture_index_ + ticks_, 20) - 10)  / 30)};
         float blue_fluctuation{static_cast<float>(
             abs(std::fmod(abs(hit.texture_index_ - 2 * ticks_), 52) - 26) / 100)};
 
