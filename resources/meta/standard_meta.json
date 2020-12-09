@@ -1,17 +1,55 @@
 {
-  "screen_width" : 1000,
+  "screen_width" : 1300,
   "screen_height" : 500,
 
   "visible_distance" : 600,
 
-  "half_resolution" : 35,
+  "half_resolution" : 50,
 
-  "half_vision_field" : 1,
+  "half_vision_field" : 1.3,
 
   "floor_height" : 100,
 
   "projection_distance_coefficient" : 10000,
 
   "movement_rotation_angle" : 0.25,
-  "movement_speed" : 10
+  "movement_speed" : 10,
+
+  "colors" : {
+    "floor" : {
+      "r" : 74,
+      "g" : 2,
+      "b" : 9
+    },
+    "ceiling" : {
+      "r" : 0,
+      "g" : 25,
+      "b" : 64
+    },
+    "wall" : {
+      "window" : {
+        "r" : 3,
+        "g" : 69,
+        "b" : 20,
+        "a" : 1.2
+      },
+      "solid" : {
+        "r" : 256,
+        "g" : 256,
+        "b" : 256
+      }
+    },
+    "portal" : {
+      "r" : 91,
+      "g" : 20,
+      "b" : 85,
+      "a" : 0.3
+    },
+    "room-wall" : {
+      "r" : 256,
+      "g" : 51,
+      "b" : 77
+    }
+  }
+
 }

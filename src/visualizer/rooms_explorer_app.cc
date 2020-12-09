@@ -45,6 +45,39 @@ RoomsExplorerApp::RoomsExplorerApp()
 
   kProjectionPlaneDistanceCoefficient_ = meta_json.at("projection_distance_coefficient");
 
+  // Loading Colors
+  auto& ceil_color = meta_json.at("colors").at("ceiling");
+  kCeilingColor = {ceil_color.at("r").get<float>() / 256,
+                   ceil_color.at("g").get<float>() / 256,
+                  ceil_color.at("b").get<float>() / 256, };
+
+  auto& floor_color = meta_json.at("colors").at("floor");
+  kFloorColor = {floor_color.at("r").get<float>() / 256,
+                   floor_color.at("g").get<float>() / 256,
+                   floor_color.at("b").get<float>() / 256, };
+
+  auto& room_wall_color = meta_json.at("colors").at("room-wall");
+  kRoomWallColor = {room_wall_color.at("r").get<float>() / 256,
+                    room_wall_color.at("g").get<float>() / 256,
+                    room_wall_color.at("b").get<float>() / 256};
+
+  auto& wall_solid_color = meta_json.at("colors").at("wall").at("solid");
+  kWallSolidColor = {wall_solid_color.at("r").get<float>() / 256,
+                     wall_solid_color.at("g").get<float>() / 256,
+                     wall_solid_color.at("b").get<float>() / 256};
+
+  auto& wall_window_color = meta_json.at("colors").at("wall").at("window");
+  kWallWindowColor = {wall_window_color.at("r").get<float>() / 256,
+                      wall_window_color.at("g").get<float>() / 256,
+                      wall_window_color.at("b").get<float>() / 256,
+                        wall_window_color.at("a").get<float>()};
+
+  auto& portal_pure_color = meta_json.at("colors").at("portal");
+  kPortalPureColor = {portal_pure_color.at("r").get<float>() / 256,
+                      portal_pure_color.at("g").get<float>() / 256,
+                      portal_pure_color.at("b").get<float>() / 256,
+                          portal_pure_color.at("a").get<float>()};
+
   ci::app::setWindowSize(kScreenWidth_, kScreenHeight_);
 
   // Tick initially 0
@@ -53,11 +86,10 @@ RoomsExplorerApp::RoomsExplorerApp()
 
 void RoomsExplorerApp::draw() {
   // Ceiling
-  ci::Color8u background_color(0, 25, 64);
-  ci::gl::clear(background_color);
+  ci::gl::clear(kCeilingColor);
 
   // Floor
-  ci::gl::color(ci::Color8u(74, 2, 9));
+  ci::gl::color(kFloorColor);
   ci::Rectf floor{glm::vec2(0, kScreenHeight_),
                    glm::vec2(kScreenWidth_, kScreenHeight_ - kFloorHeight_)};
   ci::gl::drawSolidRect(floor);
@@ -172,9 +204,8 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
         ci::Rectf wall{{left_index * kStripWidth_,       lower_height},
                        {(left_index + 1) * kStripWidth_, upper_height}};
         float shade{GetBrightness(hit.hit_distance_)};
-        ci::ColorA col{1 * shade, .2f * shade, .3f * shade};
 
-        ci::gl::color(col);
+        ci::gl::color(shade * kRoomWallColor);
         ci::gl::drawSolidRect(wall);
       }
       break;
@@ -200,8 +231,7 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
         float shade{GetBrightness(hit.hit_distance_)};
         // Wall needs to be rendered in pieces
         // Solid Wall, no transparency
-        ci::ColorA col{1 * shade, 1 * shade, 1 * shade};
-        ci::gl::color(col);
+        ci::gl::color(shade * kWallSolidColor);
         // lower section
         ci::Rectf wall {{left_index * kStripWidth_,       lower_height},
                         {(left_index + 1) * kStripWidth_, lower_height - lower_window}};
@@ -212,7 +242,8 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
         ci::gl::drawSolidRect(wall);
 
         // Transparent Wall, green with greater transparency as player nears it
-        col = {.012f * shade, .270f * shade, .078f * shade, 1.2f - shade};
+        auto col = shade * kWallWindowColor;
+        col.a = kWallWindowColor.a - shade; // Window shade decreases linearly with shade //TODO
         ci::gl::color(col);
         wall = {{left_index * kStripWidth_,       lower_height - lower_window},
                 {(left_index + 1) * kStripWidth_, lower_height - upper_window}};
@@ -233,7 +264,9 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
 
         // Transparent to allow viewing of adjacent rooms
         //  For more unreal effect, portals do not get effected by distance
-        ci::ColorA col{.359f + red_fluctuation, .074f, .336f + blue_fluctuation, .3f};
+        auto col = kPortalPureColor;
+        col.r += red_fluctuation;
+        col.b += blue_fluctuation;
         ci::gl::color(col);
         ci::Rectf wall = {{left_index * kStripWidth_, lower_height},
                 {(left_index + 1) * kStripWidth_, upper_height}};

@@ -76,6 +76,19 @@ private:
                               // Further the distance, the larger each walls will seem.
 
   float kBrightnessDepthAdjuster;
+
+  // Colors ==========================================================
+  ci::ColorA kCeilingColor;
+  ci::ColorA kFloorColor;
+
+  ci::ColorA kWallSolidColor;
+  ci::ColorA kWallWindowColor;
+
+  ci::ColorA kPortalPureColor;
+
+  ci::ColorA kRoomWallColor;
+  // End of Colors ===================================================
+
   // Cosmetic Constants ===============================================================
 
   // End of Application Constant Fields ================================================================================
