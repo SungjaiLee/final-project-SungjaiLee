@@ -53,11 +53,11 @@ RoomsExplorerApp::RoomsExplorerApp()
 
 void RoomsExplorerApp::draw() {
   // Ceiling
-  ci::Color8u background_color(50, 151, 168);
+  ci::Color8u background_color(0, 25, 64);
   ci::gl::clear(background_color);
 
   // Floor
-  ci::gl::color(ci::ColorA(0, 0, 0));
+  ci::gl::color(ci::Color8u(74, 2, 9));
   ci::Rectf floor{glm::vec2(0, kScreenHeight_),
                    glm::vec2(kScreenWidth_, kScreenHeight_ - kFloorHeight_)};
   ci::gl::drawSolidRect(floor);
@@ -212,7 +212,7 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
         ci::gl::drawSolidRect(wall);
 
         // Transparent Wall, green with greater transparency as player nears it
-        col = {0, 1 * shade, 0, 1.2f - shade};
+        col = {.012f * shade, .270f * shade, .078f * shade, 1.2f - shade};
         ci::gl::color(col);
         wall = {{left_index * kStripWidth_,       lower_height - lower_window},
                 {(left_index + 1) * kStripWidth_, lower_height - upper_window}};
@@ -222,17 +222,18 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
 
     case kPortal:
       {
+        using std::abs;
         // Most complex patterns.
         // Portals will have flowing veil-like waves depending on tick counts
         //  Red Fluctuation flows to the right, whereas blue flows left
         float red_fluctuation{static_cast<float>(
-                            std::abs(std::fmod(hit.texture_index_ + ticks_, 20) - 10)  / 40)};
+                            abs(std::fmod(hit.texture_index_ + ticks_, 20) - 10)  / 20)};
         float blue_fluctuation{static_cast<float>(
-                            std::abs(std::fmod(hit.texture_index_ - 2 * ticks_, 52) - 26)  / 100)};
+            abs(std::fmod(abs(hit.texture_index_ - 2 * ticks_), 52) - 26) / 100)};
 
         // Transparent to allow viewing of adjacent rooms
         //  For more unreal effect, portals do not get effected by distance
-        ci::ColorA col{.8f + red_fluctuation, .2f, .9f + blue_fluctuation, .3f};
+        ci::ColorA col{.359f + red_fluctuation, .074f, .336f + blue_fluctuation, .3f};
         ci::gl::color(col);
         ci::Rectf wall = {{left_index * kStripWidth_, lower_height},
                 {(left_index + 1) * kStripWidth_, upper_height}};
