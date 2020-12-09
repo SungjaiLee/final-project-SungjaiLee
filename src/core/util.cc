@@ -33,6 +33,18 @@ bool FloatApproximation(const glm::vec2& vec_a, const glm::vec2& vec_b, float ep
   return FloatApproximation(vec_a.x, vec_b.x, epsilon) &&
          FloatApproximation(vec_a.y, vec_b.y, epsilon);
 }
+
+float AbsoluteClamp(float value, float limiter) {
+  if (limiter < 0) {
+    return 0;
+  }
+
+  if (std::abs(value) > limiter) {
+    // out of valid range, must limit
+    return (value > 0 ? 1.f : -1.f) * limiter;
+  }
+  return value;
+}
 // end of Numeric Utilities ============================================================================================
 
 

@@ -68,6 +68,20 @@ public:
    * @param speed Speed of displacement. Can be negative for backwards motion.
    */
   void MoveForward(float speed);
+
+private:
+  /**
+   * Change the current room the the adjacent room in the given direction.
+   * Set the current position to the new relative position from the newly traversed room,
+   * Clamp the new position within the newly traversed room.
+   * @param direction Direction of adjacent room which will become the new current room.
+   */
+  void TraverseRoom(const Direction& direction);
+
+  /**
+   * Clamp the current position within the room with a small margin.
+   */
+  void ClampWithinRoom();
 };
 
 }

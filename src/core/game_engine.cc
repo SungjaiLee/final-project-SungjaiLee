@@ -53,6 +53,7 @@ std::vector<HitPackage> GameEngine::GetVision(float cos, float sin, size_t half_
   return packages;
 }
 
+// Player Motion Methods ===============================================================================================
 void GameEngine::RotateDirection(float cos, float sin) {
   FastRotation(view_direction_, cos, sin);
 }
@@ -68,72 +69,32 @@ void GameEngine::MoveForward(float speed) {
   // Find the first hit in the package
   if (!package_on_path.GetHits().empty()) {
     // If not empty, must contain certain form of hit
-    const Hit& hit{package_on_path.GetHits().begin()->second};
+    auto hit_iterator{package_on_path.GetHits().begin()};
 
-    switch (hit.hit_type_) {
-
+    switch (hit_iterator->second.hit_type_) {
       case kPortal:
         {
-          // Must traverse room.
-          // Need to know the direction of traversal
+          // Traversal
+          //  Need to know the direction, then first move the
           Direction traversal_direction{current_room_->GetSideHit(current_position_, speed * view_direction_)};
-          current_room_ = current_room_->GetConnectedRoom(traversal_direction); // Change room
 
-          // Position must transported to corresponding position on the other side of portal
+          // Need to check if there is a element blocking path on the other side of portal.
+          //  This will be the second item on the iterator
+          ++hit_iterator;
+          if (hit_iterator != package_on_path.GetHits().end()) {
+            // Clamp to the next hit-distance with margin
+            speed = AbsoluteClamp(speed, hit_iterator->first - WALL_MARGIN);
+          }
+
+          // Must move first, before teleporting to new appropriate location
           current_position_ += speed * view_direction_;
-
-          switch (traversal_direction) {
-            case kNorth:
-              current_position_.y -= current_room_->GetHeight();
-              break;
-
-            case kSouth:
-              current_position_.y += current_room_->GetHeight();
-              break;
-
-            case kEast:
-              current_position_.x -= current_room_->GetWidth();
-              break;
-
-            case kWest:
-              current_position_.x += current_room_->GetWidth();
-              break;
-
-            case kUndefined:
-              throw exceptions::InvalidDirectionException();
-          }
-
-          // Clamp Position within the room. Add Margin to prevent unexpected void-view
-          if (current_position_.x < 0) {
-            current_position_.x = WALL_MARGIN;
-          }
-          if (current_position_.x > current_room_->GetWidth()) {
-            current_position_.x =  current_room_->GetWidth() - WALL_MARGIN;
-          }
-          if (current_position_.y < 0) {
-            current_position_.y = WALL_MARGIN;
-          }
-          if (current_position_.y > current_room_->GetHeight()) {
-            current_position_.y =  current_room_->GetHeight() - WALL_MARGIN;
-          }
+          TraverseRoom(traversal_direction);
         }
         return; // No need to translate position afterwards
 
       case kRoomWall:
       case kWall:
-        // Only limit motion
-        if (std::abs(speed) > std::abs(hit.hit_distance_)) {
-          // Need to limit speed to stop before the intersection
-          float abs = hit.hit_distance_ - WALL_MARGIN; // Margin between player and thr wall.
-          // Prevents undesirable wall-trapping
-          if (speed > 0) {
-            // Positive speed
-            speed = abs;
-          } else {
-            // Negative distance
-            speed = -abs;
-          }
-        }
+        speed = AbsoluteClamp(speed, hit_iterator->first - WALL_MARGIN);
         break;
 
       case kVoid:
@@ -147,3 +108,46 @@ void GameEngine::MoveForward(float speed) {
   current_position_ += speed * view_direction_;
 }
 
+
+void GameEngine::TraverseRoom(const Direction& direction) {
+  current_room_ = current_room_->GetConnectedRoom(direction);
+
+  switch (direction) {
+    case kNorth:
+      current_position_.y -= current_room_->GetHeight();
+      break;
+
+    case kSouth:
+      current_position_.y += current_room_->GetHeight();
+      break;
+
+    case kEast:
+      current_position_.x -= current_room_->GetWidth();
+      break;
+
+    case kWest:
+      current_position_.x += current_room_->GetWidth();
+      break;
+
+    case kUndefined:
+      throw exceptions::InvalidDirectionException();
+  }
+
+  ClampWithinRoom();
+}
+
+void GameEngine::ClampWithinRoom() {
+  // Clamp Position within the room. Add Margin to prevent unexpected void-view
+  if (current_position_.x < 0) {
+    current_position_.x = WALL_MARGIN;
+  } else if (current_position_.x > current_room_->GetWidth()) {
+    current_position_.x =  current_room_->GetWidth() - WALL_MARGIN;
+  }
+
+  if (current_position_.y < 0) {
+    current_position_.y = WALL_MARGIN;
+  } else if (current_position_.y > current_room_->GetHeight()) {
+    current_position_.y =  current_room_->GetHeight() - WALL_MARGIN;
+  }
+}
+// End of Player Motion Methods ========================================================================================

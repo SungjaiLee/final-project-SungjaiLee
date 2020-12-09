@@ -31,6 +31,17 @@ bool FloatApproximation(float a, float b, float epsilon = .0000005f);
  * @return If the two 2d vectors are good enough approximation of each other.
  */
 bool FloatApproximation(const glm::vec2& vec_a, const glm::vec2& vec_b, float epsilon = .0000005f);
+
+/**
+ * Returns value clamped between +-limiter.
+ * Limiter must be positive. If the limiter is negative or zero, will default to 0 for return.
+ * @param value Value to be clamped.
+ * @param limiter Positive limit of the range.
+ *        If the limiter is less than 0, will default to 0.
+ * @return Original value if value is in range.
+ *         Else, positive or negative of the limiter depending on value's sign.
+ */
+float AbsoluteClamp(float value, float limiter);
 // end of Numeric Utilities ============================================================================================
 
 // Geometric Utilities ======================================================================================
