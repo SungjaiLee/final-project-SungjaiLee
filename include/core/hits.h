@@ -9,15 +9,6 @@
 
 #include <cinder/gl/gl.h>
 
-/**
- * handles collision with wall, room wall, portal, and entity.
- * Can return summary of distance and hit type
- *
- *
- * Hit should be calculated only in the room,
- * return package from where it shot,
- * package needs to be able to merge
- */
 namespace room_explorer {
 
 /**
@@ -33,6 +24,11 @@ enum HitType : int {
   kInvalid = 0
 };
 
+/**
+ * Summarizes a single intersection of vision ray with a room-element.
+ * Holds essential information such as intersection distance, intersection type, and texture index.
+ * Allow simple manipulation of distance, such as shifting and scaling hit distance.
+ */
 class Hit {
 public:
   /**
@@ -42,20 +38,42 @@ public:
   Hit();
   Hit(float hit_distance, HitType hit_type, float texture_index);
 
-  float hit_distance_;
-
+  // Public struct-like variables ======================================================================
   HitType hit_type_;
-  float texture_index_; // loads different location of a texture
+  float hit_distance_{};
+  float texture_index_{};
+  // End of Public struct-like variables ===============================================================
 
+
+  // Field Checker ===============================================
+  /**
+   * Checks if Hit does not have invalid hit type.
+   * @return Type if not invalid.
+   */
   bool IsNoHit() const; // if invalid, ignore this hit
+  // End ofField Checker =========================================
 
+  // Distance Manipulator ===================================================================
   void ShiftDistance(float shift);
   void ScaleDistance(float scale);
 
   bool WithinDistance(float max_distance) const;
+  // End of Distance Manipulator ============================================================
 
-  bool operator== (Hit hit) const;
-  bool operator!= (Hit hit) const;
+  // Comparison Overload ====================================================================
+  /**
+   * Equals if and only if all three fields match.
+   * @param hit The other Hit to compare to.
+   * @return If this hit is equal to other.
+   */
+  bool operator== (const Hit& hit) const;
+  /**
+   * Equals if and only if all three fields match.
+   * @param hit The other Hit to compare to.
+   * @return If this hit is not equal to other.
+   */
+  bool operator!= (const Hit& hit) const;
+  // End of Comparison Overload =============================================================
 };
 
 } // namespace room_explorer
