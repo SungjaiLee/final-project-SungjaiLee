@@ -65,6 +65,7 @@ Meta defines all the rendering information.
   "screen_height" : float,
 
   "visible_distance" : float,
+  "brightness_anchor_point" : float,
 
   "half_resolution" : integer,
 
@@ -76,6 +77,52 @@ Meta defines all the rendering information.
 
   "movement_rotation_angle" : float,
   "movement_speed" : float
+
+  "colors" : {
+    "floor" : {
+      "r" : integer,
+      "g" : integer,
+      "b" : integer
+    },
+    "ceiling" : {
+      "r" : integer,
+      "g" : integer,
+      "b" : integer
+    },
+    "wall" : {
+      "window" : {
+        "r" : integer,
+        "g" : integer,
+        "b" : integer,
+        "a" : float
+      },
+      "solid" : {
+        "r" : integer,
+        "g" : integer,
+        "b" : integer
+      }
+    },
+    "portal" : {
+      "r" : integer,
+      "g" : integer,
+      "b" : integer,
+      "a" : float,
+
+      "r_fluctuation_period" : float,
+      "r_fluctuation_coef" : float,
+
+      "g_fluctuation_period" : float,
+      "g_fluctuation_coef" : float,
+
+      "b_fluctuation_period" : float,
+      "b_fluctuation_coef" : float
+    },
+    "room-wall" : {
+      "r" : integer,
+      "g" : integer,
+      "b" : integer
+    }
+  }
 }
 ~~~
 
