@@ -34,7 +34,8 @@ RoomsExplorerApp::RoomsExplorerApp()
 
   // Adjuster adjusts brightness function so that distant enough elements are shaded enough.
   //  LN_EPSILON marks log of brightness of furthest possible element in range
-  kBrightnessDepthAdjuster = LN_EPSILON / kVisibleDistance_;
+  // Anchor point sets the distance at which the brightness is LN_EPSILON
+  kBrightnessDepthAdjuster = LN_EPSILON / meta_json.at("brightness_anchor_point").get<float>();
 
 
   kMovementRotationAngle_ = meta_json.at("movement_rotation_angle");
@@ -265,7 +266,6 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
 
     case kPortal:
       {
-        using std::abs;
         // Most complex patterns. Fluctionas in colors
         float red_fluctuation = LinearCosine(hit.texture_index_ + ticks_, kRPeriod) * kRFluctuationCoefficient;
         float green_fluctuation = LinearCosine(hit.texture_index_ + 2 * ticks_, kGPeriod) * kGFluctuationCoefficient;

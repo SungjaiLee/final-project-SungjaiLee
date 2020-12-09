@@ -1,10 +1,11 @@
 {
-  "screen_width" : 1300,
+  "screen_width" : 1200,
   "screen_height" : 500,
 
-  "visible_distance" : 600,
+  "visible_distance" : 550,
+  "brightness_anchor_point" : 2000,
 
-  "half_resolution" : 50,
+  "half_resolution" : 60,
 
   "half_vision_field" : 1.3,
 
@@ -28,28 +29,28 @@
     },
     "wall" : {
       "window" : {
-        "r" : 217,
-        "g" : 227,
-        "b" : 218,
+        "r" : 181,
+        "g" : 234,
+        "b" : 215,
         "a" : 1.2
       },
       "solid" : {
-        "r" : 243,
-        "g" : 220,
-        "b" : 212
+        "r" : 255,
+        "g" : 255,
+        "b" : 255
       }
     },
     "portal" : {
       "r" : 91,
       "g" : 20,
       "b" : 85,
-      "a" : 0.1,
+      "a" : 0.2,
 
       "r_fluctuation_period" : 100,
       "r_fluctuation_coef" : 1,
 
       "g_fluctuation_period" : 500,
-      "g_fluctuation_coef" : 5,
+      "g_fluctuation_coef" : 0.2,
 
       "b_fluctuation_period" : 80,
       "b_fluctuation_coef" : 0.3
