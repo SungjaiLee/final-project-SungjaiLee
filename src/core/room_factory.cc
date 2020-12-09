@@ -6,7 +6,7 @@
 
 namespace room_explorer {
 
-// JSON Loaders ===============================================
+// JSON Loaders ========================================================================================================
 void from_json(const json& json, RoomFactory& room_factory) {
   room_factory.kRoomWidth_ = json.at("room_dimension").at("width");
   room_factory.kRoomHeight_ = json.at("room_dimension").at("height");
@@ -44,66 +44,22 @@ void from_json(const json& json, RoomFactory::RoomTemplate& room_template) {
   std::copy(json.at("walls").begin(), json.at("walls").end(),
             std::inserter(room_template.walls_, room_template.walls_.begin()));
 }
+// End of JSON Loaders =================================================================================================
 
-// end of JSON Loaders
 
+// Room Template Getters ===============================================================================================
+size_t RoomFactory::RoomTemplate::GetWallCount() const {
+  return walls_.size();
+}
+// End of Room Template Getters ========================================================================================
 
-// RoomFactory Member Handler =====================================
-
+// Room Factory Getters ================================================================================================
+// Geometric Getters =================================================================
 float RoomFactory::RoomWidth() const {
   return kRoomWidth_;
 }
-
 float RoomFactory::RoomHeight() const {
   return kRoomHeight_;
-}
-
-size_t RoomFactory::RoomTemplateCount() const {
-  return kTemplateCounts_;
-}
-
-bool RoomFactory::ContainsRoomId(const std::string &id) const {
-  return kIds_.find(id) != kIds_.end();
-}
-
-const std::set<std::string>& RoomFactory::GetAvailableIds() const {
-  return kIds_;
-}
-
-const std::string &RoomFactory::RandomId() const {
-  auto it = kIds_.begin();
-  if (kTemplateCounts_ == 0) {
-    throw exceptions::NoRoomTemplateException();
-  }
-  size_t advance_length = std::rand() % kTemplateCounts_;
-  std::advance(it, advance_length);
-  return *it;
-}
-
-Room* RoomFactory::GenerateRoom(const std::string &id) const {
-  if (!ContainsRoomId(id)) {
-    return nullptr;
-  }
-
-  Room* room = new Room();
-
-  room->factory = this;
-
-  const RoomTemplate& room_temp = kRoomTemplates_.at(id);
-
-  // Link straight to source. Reduces space complexity, which may be a source of slowness.
-  // Due to non-euclidean physics, small repeating room unit will define infinite space.
-  room->walls_ = &room_temp.walls_;
-
-  return room;
-}
-
-Room* RoomFactory::GenerateRandomRoom() const {
-  return GenerateRoom(RandomId());
-}
-
-const glm::vec2& RoomFactory::GetEntryPosition() const {
-  return kEntryPosition_;
 }
 
 float RoomFactory::GetNSPortalWidth() const {
@@ -116,27 +72,69 @@ float RoomFactory::GetEWPortalWidth() const {
 float RoomFactory::GetNSPortalBegin() const {
   return kNSDoorBegin_;
 }
-
-float RoomFactory::GetNSPortalEnd() const {
-  return kNSDoorBegin_ + kNSDoorWidth_;
-}
-
 float RoomFactory::GetEWPortalBegin() const {
   return kEWDoorBegin_;
 }
 
+float RoomFactory::GetNSPortalEnd() const {
+  return kNSDoorBegin_ + kNSDoorWidth_;
+}
 float RoomFactory::GetEWPortalEnd() const {
   return kEWDoorBegin_ + kEWDoorWidth_;
 }
 
+const glm::vec2& RoomFactory::GetEntryPosition() const {
+  return kEntryPosition_;
+}
+// End of Geometric Getters ==========================================================
 
-//RoomTemplate Methods ============================================
-
-size_t RoomFactory::RoomTemplate::GetWallCount() const {
-  return walls_.size();
+// Template Characteristics Getters ==================================================
+size_t RoomFactory::RoomTemplateCount() const {
+  return kTemplateCounts_;
 }
 
-// End of RoomTemplate ===========================
+const std::string &RoomFactory::RandomId() const {
+  auto it = kIds_.begin();
+  if (kTemplateCounts_ == 0) {
+    throw exceptions::NoRoomTemplateException();
+  }
+  size_t advance_length = std::rand() % kTemplateCounts_;
+  std::advance(it, advance_length);
+  return *it;
+}
 
+const std::set<std::string>& RoomFactory::GetAvailableIds() const {
+  return kIds_;
+}
+// End of Template Characteristics Getters ===========================================
+
+// End of Room Factory Getters =========================================================================================
+
+// Room Factory Generation Methods =====================================================================================
+bool RoomFactory::ContainsRoomId(const std::string &id) const {
+  return kIds_.find(id) != kIds_.end();
+}
+
+Room* RoomFactory::GenerateRoom(const std::string &id) const {
+  if (!ContainsRoomId(id)) {
+    return nullptr;
+  }
+
+  Room* room = new Room();
+  // Every room has to hold reference to factory from which it and its adjacent rooms are generated
+  room->factory = this;
+
+  const RoomTemplate& room_temp = kRoomTemplates_.at(id);
+  // Link straight to source. Reduces space complexity, which may be a source of slowness.
+  // Due to non-euclidean physics, small repeating room unit will define infinite space.
+  room->walls_ = &room_temp.walls_;
+
+  return room;
+}
+
+Room* RoomFactory::GenerateRandomRoom() const {
+  return GenerateRoom(RandomId());
+}
+// End of Room Factory Generation Methods ==============================================================================
 
 } // namespace room_explorer
