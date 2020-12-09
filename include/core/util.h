@@ -10,7 +10,7 @@
 // TODO look into quaternions
 namespace room_explorer {
 
-// Numeric Utilities ===================================================================================
+// Numeric Utilities ===================================================================================================
 /**
  * Utilizes weak relative-difference approximation to confirm that two floats approximate each other.
  * @param a First float.
@@ -31,10 +31,9 @@ bool FloatApproximation(float a, float b, float epsilon = .0000005f);
  * @return If the two 2d vectors are good enough approximation of each other.
  */
 bool FloatApproximation(const glm::vec2& vec_a, const glm::vec2& vec_b, float epsilon = .0000005f);
-// end of Numeric Utilities
+// end of Numeric Utilities ============================================================================================
 
 // Geometric Utilities ======================================================================================
-
 bool IsUnitVector(const glm::vec2& vec);
 
 /**
@@ -118,15 +117,17 @@ float TextureIndexOnLineOfRay(const glm::vec2& line_head, const glm::vec2& line_
                               const glm::vec2& ray_pos, const glm::vec2& ray_dir);
 
 /**
- * Rotate vector utilizing sine and cosine values pre-calculated.
- * Coseina dn Sine must
- * @param vec Vector to be rotated. Reference is passed and will be altered.
+ * Rotation of passed vector using pre-calculated cosine and sine.
+ * Reduces rotation into simple addition and multiplication problem.
+ * Validity of the cosine and sine will be not be checked.
+ *      After rotation by passed values, vector will be normalize.
+ * @param vec Vector to be rotated.
  * @param rotation_cos Cosine of angle of rotation.
  * @param rotation_sin Sine of angle of rotation.
- * @return Returns vector rotated by the appropriate angle.
- *          Vector will be normalized afterwards, if improper sine and cosine were given.
+ *           Positive for Clockwise rotation, negative for counter clockwise.
+ * @return Rotated vector normalized.
  */
-glm::vec2& FastRotate(glm::vec2& vec, float rotation_cos, float rotation_sin);
+glm::vec2& FastRotation(glm::vec2& vec, float rotation_cos, float rotation_sin);
 
 // end of Geometric Utilities ==========================================================================================
 

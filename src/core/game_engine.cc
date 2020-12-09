@@ -35,8 +35,8 @@ std::vector<HitPackage> GameEngine::GetVision(float cos, float sin, size_t half_
 
   for (size_t i = 0; i < half_resolution; ++i) {
     // Rotate the ray each time, preparing to shoot the next ray
-    FastRotate(counter_clockwise_direction, cos, -sin); // negative sign for counter clockwise rotation
-    FastRotate(clockwise_direction, cos, sin); // positive sin for clockwise rotation
+    FastRotation(counter_clockwise_direction, cos, -sin); // negative sign for counter clockwise rotation
+    FastRotation(clockwise_direction, cos, sin); // positive sin for clockwise rotation
 
     //To avoid fish-eye effect, each hit must be scaled down by cos of angle of ray,
     //  which can be computed by dot product. This must be absolute dot product, to avoid negative wall height
@@ -54,7 +54,7 @@ std::vector<HitPackage> GameEngine::GetVision(float cos, float sin, size_t half_
 }
 
 void GameEngine::RotateDirection(float cos, float sin) {
-  FastRotate(view_direction_, cos, sin);
+  FastRotation(view_direction_, cos, sin);
 }
 
 void GameEngine::MoveForward(float speed) {

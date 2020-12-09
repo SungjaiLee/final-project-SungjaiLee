@@ -112,11 +112,6 @@ bool RayIntersectsWithSegment(const glm::vec2& segment_head, const glm::vec2& se
     return true;
   }
 
-  //TODO calculation based on flowchart I created. Post will be up on my math blog later,
-  // but current implementation is purely based on the dot-product representation,
-  // which has valid geometric interpretation, but such are not yet implemented in this version
-  //TODO make this more readable
-
   // Calculation is based on relative position to head and tail from the position of ray-head
   glm::vec2 head = segment_head - ray_pos;
   glm::vec2 tail = segment_tail - ray_pos;
@@ -234,7 +229,7 @@ float TextureIndexOnLineOfRay(const glm::vec2& line_head, const glm::vec2& line_
 }
 
 // Rotate counter clockwise
-glm::vec2& FastRotate(glm::vec2& vec, const float rotation_cos, const float rotation_sin) {
+glm::vec2& FastRotation(glm::vec2& vec, float rotation_cos, float rotation_sin) {
   float x =  vec.x * rotation_cos + vec.y * rotation_sin;
   float y = -vec.x * rotation_sin + vec.y * rotation_cos;
 
