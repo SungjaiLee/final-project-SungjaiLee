@@ -87,6 +87,17 @@ private:
   ci::ColorA kPortalPureColor;
 
   ci::ColorA kRoomWallColor;
+
+  // Portal Fluctuation ==================================
+  float kRPeriod;
+  float kGPeriod;
+  float kBPeriod;
+
+  float kRFluctuationCoefficient;
+  float kGFluctuationCoefficient;
+  float kBFluctuationCoefficient;
+  // End of Portal Fluctuation ===========================
+
   // End of Colors ===================================================
 
   // Cosmetic Constants ===============================================================

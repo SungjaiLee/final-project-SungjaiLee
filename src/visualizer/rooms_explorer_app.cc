@@ -78,6 +78,14 @@ RoomsExplorerApp::RoomsExplorerApp()
                       portal_pure_color.at("b").get<float>() / 256,
                           portal_pure_color.at("a").get<float>()};
 
+  kRPeriod = portal_pure_color.at("r_fluctuation_period").get<float>();
+  kGPeriod = portal_pure_color.at("g_fluctuation_period").get<float>();
+  kBPeriod = portal_pure_color.at("b_fluctuation_period").get<float>();
+
+  kRFluctuationCoefficient = portal_pure_color.at("r_fluctuation_coef");
+  kGFluctuationCoefficient = portal_pure_color.at("g_fluctuation_coef");
+  kBFluctuationCoefficient = portal_pure_color.at("b_fluctuation_coef");
+
   ci::app::setWindowSize(kScreenWidth_, kScreenHeight_);
 
   // Tick initially 0
@@ -205,7 +213,9 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
                        {(left_index + 1) * kStripWidth_, upper_height}};
         float shade{GetBrightness(hit.hit_distance_)};
 
-        ci::gl::color(shade * kRoomWallColor);
+        auto col = shade * kRoomWallColor;
+        col.a = 1;
+        ci::gl::color(col);
         ci::gl::drawSolidRect(wall);
       }
       break;
@@ -231,7 +241,9 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
         float shade{GetBrightness(hit.hit_distance_)};
         // Wall needs to be rendered in pieces
         // Solid Wall, no transparency
-        ci::gl::color(shade * kWallSolidColor);
+        auto col = shade * kWallSolidColor;
+        col.a = 1; // Do not effect transparency
+        ci::gl::color(col);
         // lower section
         ci::Rectf wall {{left_index * kStripWidth_,       lower_height},
                         {(left_index + 1) * kStripWidth_, lower_height - lower_window}};
@@ -242,7 +254,7 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
         ci::gl::drawSolidRect(wall);
 
         // Transparent Wall, green with greater transparency as player nears it
-        auto col = shade * kWallWindowColor;
+        col = shade * kWallWindowColor;
         col.a = kWallWindowColor.a - shade; // Window shade decreases linearly with shade //TODO
         ci::gl::color(col);
         wall = {{left_index * kStripWidth_,       lower_height - lower_window},
@@ -254,18 +266,16 @@ void RoomsExplorerApp::DrawStrip(float left_index, const Hit& hit) const {
     case kPortal:
       {
         using std::abs;
-        // Most complex patterns.
-        // Portals will have flowing veil-like waves depending on tick counts
-        //  Red Fluctuation flows to the right, whereas blue flows left
-        float red_fluctuation{static_cast<float>(
-                            abs(std::fmod(hit.texture_index_ + ticks_, 20) - 10)  / 30)};
-        float blue_fluctuation{static_cast<float>(
-            abs(std::fmod(abs(hit.texture_index_ - 2 * ticks_), 52) - 26) / 100)};
+        // Most complex patterns. Fluctionas in colors
+        float red_fluctuation = LinearCosine(hit.texture_index_ + ticks_, kRPeriod) * kRFluctuationCoefficient;
+        float green_fluctuation = LinearCosine(hit.texture_index_ + 2 * ticks_, kGPeriod) * kGFluctuationCoefficient;
+        float blue_fluctuation = LinearCosine(hit.texture_index_ + 3 * ticks_, kBPeriod) * kBFluctuationCoefficient;
 
         // Transparent to allow viewing of adjacent rooms
         //  For more unreal effect, portals do not get effected by distance
         auto col = kPortalPureColor;
         col.r += red_fluctuation;
+        col.g += green_fluctuation;
         col.b += blue_fluctuation;
         ci::gl::color(col);
         ci::Rectf wall = {{left_index * kStripWidth_, lower_height},

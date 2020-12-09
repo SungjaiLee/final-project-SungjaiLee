@@ -45,6 +45,12 @@ float AbsoluteClamp(float value, float limiter) {
   }
   return value;
 }
+
+float LinearCosine(float value, float half_period) {
+  float result = 2 * std::fmod(value, half_period) / half_period;
+  result -= 1;
+  return std::abs(result);
+}
 // end of Numeric Utilities ============================================================================================
 
 

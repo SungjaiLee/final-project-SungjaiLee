@@ -42,6 +42,16 @@ bool FloatApproximation(const glm::vec2& vec_a, const glm::vec2& vec_b, float ep
  *         Else, positive or negative of the limiter depending on value's sign.
  */
 float AbsoluteClamp(float value, float limiter);
+
+/**
+ * Retrieves linear-cosine value.
+ * Linear zig-zag pattern that is continuous.
+ * Is always between 0 and 1.
+ * @param value Value of which the linear cos will be calculated.
+ * @param half_period Half period of the linear cosine graph.
+ * @return Positive Linear cosine value.
+ */
+float LinearCosine(float value, float half_period);
 // end of Numeric Utilities ============================================================================================
 
 // Geometric Utilities ======================================================================================
