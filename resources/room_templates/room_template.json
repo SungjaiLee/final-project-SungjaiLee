@@ -1,0 +1,79 @@
+{
+  "_comment" : "This is a debug json room templates, involving only a single room as possible template.",
+
+  "entry_x" : 250,
+  "entry_y" : 300,
+
+  "room_dimension" : {
+    "width" : 500,
+    "height" : 600,
+    "ns_door_width" : 490,
+    "ew_door_width" : 590
+  },
+
+  "rooms" : {
+    "entry" : {
+      "walls" : [
+        {
+          "head_x" : 50,
+          "head_y" : 40,
+          "tail_x" : 450,
+          "tail_y" : 40
+        },
+        {
+          "head_x" : 50,
+          "head_y" : 550,
+          "tail_x" : 100,
+          "tail_y" : 500
+        },
+        {
+          "head_x" : 400,
+          "head_y" : 600,
+          "tail_x" : 500,
+          "tail_y" : 500
+        },
+        {
+          "head_x" : 350,
+          "head_y" : 400,
+          "tail_x" : 500,
+          "tail_y" : 500
+        }
+      ]
+    },
+    "type-1" : {
+      "walls" : [
+        {
+          "head_x" : 0,
+          "head_y" : 0,
+          "tail_x" : 200,
+          "tail_y" : 200
+        },
+        {
+          "head_x" : 500,
+          "head_y" : 600,
+          "tail_x" : 400,
+          "tail_y" : 400
+        }
+      ]
+    },
+    "type-2" : {
+      "walls" : []
+    },
+    "type-3" : {
+      "walls" : [
+        {
+          "head_x" : 80,
+          "head_y" : 30,
+          "tail_x" : 400,
+          "tail_y" : 20
+        },
+        {
+          "head_x" : 80,
+          "head_y" : 500,
+          "tail_x" : 400,
+          "tail_y" : 400
+        }
+      ]
+    }
+  }
+}

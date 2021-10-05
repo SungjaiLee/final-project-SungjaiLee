@@ -1,0 +1,93 @@
+{
+
+  "entry_x" : 5,
+  "entry_y" : 100,
+
+  "room_dimension" : {
+    "width" : 200,
+    "height" : 200,
+    "ns_door_width" : 180,
+    "ew_door_width" : 180
+  },
+
+  "rooms" : {
+    "entry" : {
+      "walls" : [
+        {
+          "head_x" : 10,
+          "head_y" : 10,
+          "tail_x" : 190,
+          "tail_y" : 10
+        },
+        {
+          "head_x" : 10,
+          "head_y" : 10,
+          "tail_x" : 190,
+          "tail_y" : 10
+        },
+        {
+          "head_x" : 10,
+          "head_y" : 190,
+          "tail_x" : 190,
+          "tail_y" : 190
+        },
+        {
+          "head_x" : 190,
+          "head_y" : 10,
+          "tail_x" : 190,
+          "tail_y" : 190
+        },
+        {
+          "head_x" : 10,
+          "head_y" : 10,
+          "tail_x" : 10,
+          "tail_y" : 190
+        }
+      ]
+    },
+    "cross" : {
+      "walls" : [
+        {
+          "head_x" : 20,
+          "head_y" : 20,
+          "tail_x" : 180,
+          "tail_y" : 180
+        },
+        {
+          "head_x" : 20,
+          "head_y" : 180,
+          "tail_x" : 180,
+          "tail_y" : 20
+        }
+      ]
+    },
+    "pilar" : {
+      "walls" : [
+        {
+          "head_x" : 90,
+          "head_y" : 90,
+          "tail_x" : 110,
+          "tail_y" : 90
+        },
+        {
+          "head_x" : 90,
+          "head_y" : 110,
+          "tail_x" : 110,
+          "tail_y" : 110
+        },
+        {
+          "head_x" : 90,
+          "head_y" : 90,
+          "tail_x" : 90,
+          "tail_y" : 110
+        },
+        {
+          "head_x" : 110,
+          "head_y" : 90,
+          "tail_x" : 110,
+          "tail_y" : 110
+        }
+      ]
+    }
+  }
+}

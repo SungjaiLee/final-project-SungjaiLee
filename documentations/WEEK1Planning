@@ -1,0 +1,50 @@
+1. RoomFactory
+- design JSON template
+- Test Room Factory
+: should be able to:
+- load from json, correct dimension, number of rooms, correct ids, correct walls, !!!Portal width
+- getRoom by id,
+
+2. RoomLinkage
+- allow room to generate new rooms and connect
+- test for get Room, check connection
+
+3. Current Room
+- Room, and player pos and orientation
+- allow room transfer, which will place the player in the new correct relative position
+
+
+4. Ray package
+- start position, direction, and list of all the items hit on the way, each summary should be a struct,
+- Distance limit!!
+:: hit-summary
+
+!!!!need to be able to shoot from a position and direction from the room
+!!!!!!!Room should have parameter of specifying locaiotn to shoot from
+!!!!!!!After shooting, check if portal intersected
+!!!!!!!Shoot from that room's portal, which returns a stuff on its own
+!!!!!!!!!!!!MERGE DATA
+
+
+
+JSON STRUCTURE ::
+
+{
+    "room_dimension" : {
+        "width" : 500,
+        "height" : 500
+    },
+    "_comment_Room_Map" : "map of id and Room conntnt"
+    "rooms" : [
+        "start_room" : {
+            "walls" : [
+                {
+                },
+            ]
+        },
+        "1" : {
+        ...
+        },
+        ""
+    ]
+}

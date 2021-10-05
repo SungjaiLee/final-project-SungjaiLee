@@ -1,0 +1,3 @@
+meta jsons will hold application's values such as screenwidth, screenheight,
+also half_resolution, half-vision field range, max visible distance.
+and so on
